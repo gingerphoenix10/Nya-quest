@@ -153,7 +153,6 @@ struct Gif
 
         // FrameBuffer
         TextureColor *pixelData = new TextureColor[width * height];
-        // IDX <= length
 
         // Persist data from the previous frame
         GifColorType* color;

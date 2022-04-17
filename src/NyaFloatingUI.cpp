@@ -104,8 +104,8 @@ std::string get_api_path() {
         UnityEngine::GameObject::DontDestroyOnLoad(UIScreen);
         screenhandle = UIScreen->GetComponent<QuestUI::FloatingScreen*>()->handle;
         UIScreen->GetComponent<QuestUI::FloatingScreen*>()->bgGo->GetComponentInChildren<QuestUI::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 1.0f);
-        screenhandle->get_transform()->set_localPosition(UnityEngine::Vector3(0.0f, -15.0f, 0.0f));
-        screenhandle->get_transform()->set_localScale(UnityEngine::Vector3(3.3f, 3.3f, 3.3f));
+        screenhandle->get_transform()->set_localPosition(UnityEngine::Vector3(0.0f, -23.0f, 0.0f));
+        screenhandle->get_transform()->set_localScale(UnityEngine::Vector3(5.3f, 3.3f, 5.3f));
         QuestUI::FloatingScreen* thing = UIScreen->GetComponent<QuestUI::FloatingScreen*>();
 
         auto* vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(UIScreen->get_transform());
@@ -120,11 +120,11 @@ std::string get_api_path() {
         ele->set_preferredWidth(50);
 
         auto horz = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
-    horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
-    horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
-    horz->set_spacing(10);
+        horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+        horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+        horz->set_spacing(10);
 
-    this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
+        this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
         [this]() {
             this->nyaButton->set_interactable(false);
 
@@ -195,7 +195,92 @@ std::string get_api_path() {
             });
         });
 
+        // Settings button
+        UnityEngine::UI::Button* settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+        [this]() {
+            getLogger().debug("Settings button clicked");
+            // Run UI on the main thread
+            QuestUI::MainThreadScheduler::Schedule([this]
+            {
+                std::string API = getModConfig().API.GetValue();
+                std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
 
+                // Restore api endpoint state
+                this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
+                this->api_switch->set_selectedIndex(Nya::Utils::findStrIndexInList(this->api_list,API));
+                
+                // Restore sfw endpoint state
+                this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
+                this->sfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+
+                #ifdef NSFW
+                    bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
+                    StringW NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
+
+                    // Restore nsfw state
+                    this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
+                    this->nsfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
+                    this->nsfw_toggle->set_isOn(NSFWEnabled);
+                #endif
+
+        
+                this->settingsModal->Show(true, true, nullptr);
+            });
+        });
+
+        {
+            this->settingsModal =  QuestUI::BeatSaberUI::CreateModal(thing->get_transform(),  { 65, 65 }, nullptr);
+
+            // Create a text that says "Hello World!" and set the parent to the container.
+            UnityEngine::UI::VerticalLayoutGroup* vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(this->settingsModal->get_transform());
+            vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            vert->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(60.0);
+
+
+            TMPro::TextMeshProUGUI* title = QuestUI::BeatSaberUI::CreateText(vert->get_transform(), "Settings");
+            title->GetComponent<TMPro::TMP_Text*>()->set_alignment(TMPro::TextAlignmentOptions::Center);
+            title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
+
+            // API Selection (nothing to select for now)
+            std::string API = getModConfig().API.GetValue();
+            this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [](StringW value){
+                getModConfig().API.SetValue(std::string(value));
+            });
+
+
+            // SFW endpoint switch
+            std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
+            this->sfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("SFW endpoint"),  "Loading..", {"Loading.."}, [](StringW value){
+                getModConfig().SFWEndpoint.SetValue(std::string(value));
+                
+            });
+
+            #ifdef NSFW
+            // NSFW endpoint selector
+            // std::string NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
+            this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value){
+                getModConfig().NSFWEndpoint.SetValue(std::string(value));
+            });
+
+            // NSFW toggle
+            bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
+            this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){ 
+                getModConfig().NSFWEnabled.SetValue(isChecked);
+            });
+            #endif
+
+            UnityEngine::UI::HorizontalLayoutGroup* horz = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
+            horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            horz->set_spacing(10);
+
+
+            UnityEngine::UI::Button* closeButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
+            [this]() {
+                this->settingsModal->Hide(true, nullptr);
+            });
+        }
 
         UINoGlow = QuestUI::ArrayUtil::First(UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>(), [](UnityEngine::Material* x) { return x->get_name() == "UINoGlow"; });
         // GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(createPanelNotes(line1, line2, line3)));
