@@ -155,6 +155,7 @@ void Nya::ImageView::UpdateStaticImage(UnityEngine::Sprite *image)
   cleanupTextures();
   currentFrame = 0;
   imageView->set_sprite(image);
+  this->canvasRenderer = this->imageView->get_canvasRenderer();
 }
 
 

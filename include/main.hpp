@@ -10,7 +10,20 @@
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
+#include "NyaFloatingUI.hpp"
+#include "NyaConfig.hpp"
+
 inline ModInfo modInfo; // Stores the ID and version of our mod, and is sent to the modloader upon startup
+
+namespace Nya{
+    class Main {
+        public:
+            static Config config;
+            static bool configValid;
+            static void loadConfig();
+            static Nya::NyaFloatingUI* NyaFloatingUI;
+    };
+}
 
 // Define these functions here so that we can easily read configuration and log information from other files
 Configuration& getConfig();
