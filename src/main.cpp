@@ -54,17 +54,17 @@ MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
 
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!Nya::Main::config.inGame) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Menubutton, &PauseMenuManager::MenuButtonPressed , void, PauseMenuManager* self) {
     Menubutton(self);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!Nya::Main::config.inMenu) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!Nya::Main::config.inGame) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
@@ -91,7 +91,7 @@ MAKE_HOOK_MATCH(BackToLobbyButtonPressed, &MultiplayerResultsViewController::Bac
 MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &GlobalNamespace::MainMenuViewController::DidActivate, void, GlobalNamespace::MainMenuViewController* self,  bool firstActivation, bool addedToHeirarchy, bool screenSystemEnabling) {
      MainMenuViewController_DidActivate(self, firstActivation, addedToHeirarchy, screenSystemEnabling);
      getLogger().info("Main menu show!");
-    //  if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onPause();
+//     if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onPause();
 }
 
 MAKE_HOOK_MATCH(BackToMenuButtonPressed, &MultiplayerResultsViewController::BackToMenuPressed, void, MultiplayerResultsViewController* self) {
@@ -112,7 +112,7 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "Gamep
     if (Nya::Main::config.isEnabled) {
         if (Nya::Main::NyaFloatingUI == nullptr){
             firstActivation = true;
-            Nya::Main::NyaFloatingUI = (Nya::NyaFloatingUI*)malloc(sizeof(Nya::NyaFloatingUI));
+            Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
             Nya::Main::NyaFloatingUI->initScreen();
         }
         Nya::Main::NyaFloatingUI->UIScreen->set_active(false);
@@ -124,6 +124,8 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "Gamep
         }
     else if (!Nya::Main::config.isEnabled && Nya::Main::NyaFloatingUI != nullptr){
         GameObject::Destroy(Nya::Main::NyaFloatingUI->UIScreen->get_gameObject());
+
+        GameObject::Destroy(Nya::Main::NyaFloatingUI->get_gameObject());
         delete Nya::Main::NyaFloatingUI;
         Nya::Main::NyaFloatingUI = nullptr;
     }

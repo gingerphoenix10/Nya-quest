@@ -6,6 +6,7 @@
 #define _USE_MATH_DEFINES
 #include "HMUI/ModalView.hpp"
 #include "UI/PanelUI.hpp"
+#include "custom-types/shared/macros.hpp"
 #include "questui/shared/CustomTypes/Components/FloatingScreen/FloatingScreenMoverPointer.hpp"
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
@@ -17,39 +18,43 @@
 
 using namespace UnityEngine::UI;
 
-namespace Nya {
-    class NyaFloatingUI {
+
+DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
         public:
             void initScreen();
-
             void onPause();
             void onUnPause();
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
             void updateCoordinates(UnityEngine::Transform* transform);
-            UnityEngine::GameObject* screenhandle = nullptr;
-            UnityEngine::GameObject* UIScreen = nullptr;
-//            HMUI::ModalView* modal = nullptr;
-            UnityEngine::Material* UINoGlow = nullptr;
+
+            DECLARE_CTOR(ctor);
+
+            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);
+            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, UIScreen);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
             bool isPaused = false;
-            Nya::HoverClickHelper* hoverClickHelper = nullptr;
+            DECLARE_INSTANCE_FIELD(Nya::HoverClickHelper*, hoverClickHelper);
 //            Nya::ModalHelper* modalHelper = nullptr;
 
             // NYA
-            HMUI::ImageView* NYA;
+            DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
 
-            UnityEngine::UI::Button* nyaButton;
+            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
             // Settings buttons and modal
-            HMUI::ModalView* settingsModal;
-            UnityEngine::UI::Button* settingsButton;
-            HMUI::SimpleTextDropdown* api_switch;
-            HMUI::SimpleTextDropdown* sfw_endpoint;
+            DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
+            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
+            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
+            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
             #ifdef NSFW
-                HMUI::SimpleTextDropdown* nsfw_endpoint;
-                UnityEngine::UI::Toggle* nsfw_toggle;
+                DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
+                DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
             #endif
-            List<StringW>* sfw_endpoints;
-            List<StringW>* nsfw_endpoints;
-            List<StringW>* api_list;
-    };
-}
+            DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
+            DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);
+            DECLARE_INSTANCE_FIELD(List<StringW>*, api_list);
+
+        static NyaFloatingUI* get_instance();
+private:
+        static NyaFloatingUI* instance;
+)

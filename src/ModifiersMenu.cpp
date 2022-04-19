@@ -141,48 +141,32 @@ void Nya::ModifiersMenu::ctor() {
         // Run UI on the main thread
         QuestUI::MainThreadScheduler::Schedule([this]
         {
-            try {
-                getLogger().info("Showing settings modal");
-                if (this->settingsModal != nullptr) {
-                    std::function modalOpened = [&](){
-                        std::string API = Nya::Main::config.API;
-                        std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
+            getLogger().info("Showing settings modal");
 
-                        getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
-                        getLogger().info("Selected api: %s", API.data());
+            std::string API = Nya::Main::config.API;
+            std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
 
+            getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
+            getLogger().info("Selected api: %s", API.data());
 
-                        // Restore api endpoint state
-                        this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
-                        this->api_switch->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->api_list,API));
+            // Restore api endpoint state
+            this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
+            this->api_switch->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->api_list,API));
 
-                        // Restore sfw endpoint state
-                        this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
-                        this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+            // Restore sfw endpoint state
+            this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
+            this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
 
 #ifdef NSFW
-                        bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
-                        StringW NSFWEndpoint =  Nya::Main::config.NSFWEndpoint;
+            bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+            StringW NSFWEndpoint =  Nya::Main::config.NSFWEndpoint;
 
-                        // Restore nsfw state
-                        this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
-                        this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
-                        this->nsfw_toggle->set_isOn(NSFWEnabled);
+            // Restore nsfw state
+            this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
+            this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
+            this->nsfw_toggle->set_isOn(NSFWEnabled);
 #endif
-
-                    };
-                    auto modalOpenedDelegate = il2cpp_utils::MakeDelegate<System::Action *>(classof(System::Action *), modalOpened);
-
-                    this->settingsModal->Show(true, true, modalOpenedDelegate);
-                }  else{
-                    getLogger().info("settingsModal is null");
-                }
-
-
-            } catch (Il2CppException& e) {
-                getLogger().debug("Settings button clicked %s", to_utf8(csstrtostr(e.message)).c_str());
-            }
-
+            this->settingsModal->Show(true, true, nullptr);
         });
     });
 

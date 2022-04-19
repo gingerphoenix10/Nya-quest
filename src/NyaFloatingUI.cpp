@@ -7,12 +7,32 @@
 #include "ImageView.hpp"
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 #include "API.hpp"
+#include "custom-types/shared/coroutine.hpp"
+#include "custom-types/shared/macros.hpp"
 
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
 
+DEFINE_TYPE(Nya, NyaFloatingUI);
+
 namespace Nya {
     // Function gets url for the current selected category
+
+    void NyaFloatingUI::ctor()
+    {
+//        DEBUG("Created NyaFloatingUI instance: {}", fmt::ptr(this));
+
+        getLogger().debug("Created NyaFloatingUI instance");
+        instance = this;
+        screenhandle = nullptr;
+        UIScreen = nullptr;
+        UINoGlow = nullptr;
+        hoverClickHelper = nullptr;
+
+        // Init screen
+        initScreen();
+    }
+
     void NyaFloatingUI::initScreen(){
         // APIS: waifu.pics
         this->api_list =  Nya::Utils::vectorToList({"waifu.pics" });
@@ -97,11 +117,9 @@ namespace Nya {
                                                 int height = gif.get_height();
                                                 int length = gif.get_length();
                                                 AllFramesResult result = gif.get_all_frames();
-                                                
                                 
                                                 Nya::ImageView* view = NYA->get_gameObject()->GetComponent<Nya::ImageView*>();
                                                 view->UpdateImage(result.frames,result.timings,  (float)width, (float)height);
-                                                
                                             });
                                     } else {
                                         getLogger().debug("Static image");
@@ -262,16 +280,20 @@ namespace Nya {
   
     void NyaFloatingUI::onPause(){
         isPaused = true;
-        UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.pausePosX, Nya::Main::config.pausePosY, Nya::Main::config.pausePosZ));
-        UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.pauseRotX, Nya::Main::config.pauseRotY, Nya::Main::config.pauseRotZ));
-        UIScreen->set_active(true);
+        if (this->UIScreen != nullptr) {
+            UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.pausePosX, Nya::Main::config.pausePosY, Nya::Main::config.pausePosZ));
+            UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.pauseRotX, Nya::Main::config.pauseRotY, Nya::Main::config.pauseRotZ));
+            UIScreen->set_active(true);
 //        modal->Show(false, true, nullptr);
 //        modal->Hide(false, nullptr);
-        
-        auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
-        // Mover to move the ui component
-        auto* mover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
-        mover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
+
+            auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
+            // Mover to move the ui component
+            auto* mover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            mover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
+        } else {
+
+        }
     }
     void NyaFloatingUI::onUnPause(){
         isPaused = false;
@@ -326,5 +348,15 @@ namespace Nya {
             getConfig().Write();
         }
         ConfigHelper::LoadConfig(Nya::Main::config, getConfig().config);
+    }
+
+    NyaFloatingUI* NyaFloatingUI::instance = nullptr;
+    NyaFloatingUI* NyaFloatingUI::get_instance()
+    {
+        if (instance)
+            return instance;
+        auto go = GameObject::New_ctor(StringW(___TypeRegistration::get()->name()));
+        Object::DontDestroyOnLoad(go);
+        return go->AddComponent<NyaFloatingUI*>();
     }
 }
