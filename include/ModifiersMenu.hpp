@@ -1,6 +1,7 @@
 #pragma once
 
 #include "main.hpp"
+#include "NyaConfig.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "HMUI/ImageView.hpp"
@@ -27,9 +28,11 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_DTOR(dtor);
 
     // Settings buttons and modal
+    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
     DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
     DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
     DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
+
     #ifdef NSFW
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);

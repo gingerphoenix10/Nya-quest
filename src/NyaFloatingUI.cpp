@@ -5,85 +5,14 @@
 #include "Utils/Gif.hpp"
 #include "Utils/Utils.hpp"
 #include "ImageView.hpp"
-#include "ModConfig.hpp"
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "API.hpp"
 
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
 
 namespace Nya {
-    void NyaFloatingUI::createGridIndicator(UnityEngine::Transform* parent){
-        auto* screen = QuestUI::BeatSaberUI::CreateFloatingScreen({300.0f, 200.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, true, false, 0);
-        screen->GetComponent<QuestUI::FloatingScreen*>()->bgGo->GetComponentInChildren<QuestUI::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 0.985f);
-        auto* vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(screen->get_transform());
-        auto* line1 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
-        auto* line2 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
-        auto* line3 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
-
-        line1->set_spacing(60.8f); line2->set_spacing(60.8f); line3->set_spacing(60.8f); vert->set_spacing(-5.5f);
-
-        // GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(createGridDots(line1, line2, line3)));
-
-        screen->get_transform()->set_position(screen->get_transform()->get_localPosition() + Vector3(0.0f, 15.0f, -1.2f));
-        screen->get_transform()->SetParent(parent, false);
-    }
-
     // Function gets url for the current selected category
-std::string get_api_path() {
-    // Get all config parametes
-    std::string API = getModConfig().API.GetValue();
-    std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
-    
-    #ifdef NSFW
-        std::string NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
-        bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-    #else
-        bool NSFWEnabled = false;
-        std::string NSFWEndpoint = "";
-    #endif
-
-    if (API == "waifu.pics") {
-        std::string url = "https://api.waifu.pics/";
-        url += NSFWEnabled? "nsfw/": "sfw/";        
-
-        if (NSFWEnabled) {
-            url += NSFWEndpoint;
-        } else {
-            url += SFWEndpoint;
-        };
-
-        return url;
-    } else {
-        return "";
-    }
-}
-
-
-    void NyaFloatingUI::createModalUI(UnityEngine::Transform* parent){
-        modal = QuestUI::BeatSaberUI::CreateModal(parent, UnityEngine::Vector2(70, 32), [](HMUI::ModalView *modal) {}, true);
-        modal->get_transform()->Translate({0.0f, 0.0f, -0.01f});
-
-        auto* mainLayout = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(modal->get_transform());
-
-        auto* leftSide = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(mainLayout->get_transform());
-        auto* rightSide = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(mainLayout->get_transform());
-
-        auto* leftLine1 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(leftSide->get_transform());
-        auto* leftLine2 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(leftSide->get_transform());
-        auto* leftLine3 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(leftSide->get_transform());
-
-        auto* rightLine1 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(rightSide->get_transform());
-        auto* rightLine2 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(rightSide->get_transform());
-        auto* rightLine3 = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(rightSide->get_transform());
-
-        leftLine1->set_spacing(9.4f); leftLine2->set_spacing(9.4f); leftLine3->set_spacing(9.4f); leftSide->set_spacing(9.4f);
-
-        rightLine1->set_spacing(9.4f); rightLine2->set_spacing(9.4f); rightLine3->set_spacing(9.4f); rightSide->set_spacing(9.4f);
-
-        // GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(createNotes(leftLine1, leftLine2, leftLine3, rightLine1, rightLine2, rightLine3)));
-    }
-
-
     void NyaFloatingUI::initScreen(){
         // APIS: waifu.pics
         this->api_list =  Nya::Utils::vectorToList({"waifu.pics" });
@@ -128,7 +57,7 @@ std::string get_api_path() {
         [this]() {
             this->nyaButton->set_interactable(false);
 
-            WebUtils::GetAsync(get_api_path(), 10.0, [&](long code, std::string result){
+            WebUtils::GetAsync(NyaAPI::get_api_path(), 10.0, [&](long code, std::string result){
                 switch (code)
                 {
                     case 200:
@@ -196,35 +125,73 @@ std::string get_api_path() {
         });
 
         // Settings button
-        UnityEngine::UI::Button* settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+        this->settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
         [this]() {
             getLogger().debug("Settings button clicked");
             // Run UI on the main thread
             QuestUI::MainThreadScheduler::Schedule([this]
             {
-                std::string API = getModConfig().API.GetValue();
-                std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
+                try {
+                getLogger().debug("Run main thread");
 
+               getLogger().info("Showing settings modal");
+               if (this->settingsModal != nullptr) {
+                   this->settingsModal->Show(true, true, nullptr);
+               }  else{
+                   getLogger().info("settingsModal is null");
+               }
+
+                std::string API = Nya::Main::config.API;
+                std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
+                getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
+                getLogger().info("Selected api: %s", API.data());
+
+
+                getLogger().info("Checking api switch is null");
                 // Restore api endpoint state
-                this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
-                this->api_switch->set_selectedIndex(Nya::Utils::findStrIndexInList(this->api_list,API));
-                
-                // Restore sfw endpoint state
-                this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
-                this->sfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+                if (this->api_switch != nullptr) {
+                    getLogger().info("2");
+                    if (this->api_list == nullptr) {
+                        getLogger().info("api_list is null");
+                    } else {
+                        this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
+                        getLogger().info("4");
+                        int index = Nya::Utils::findStrIndexInList(this->api_list,API);
+                        getLogger().info("Selected index: %i", index);
+                        this->api_switch->SelectCellWithIdx(index);
+                    }
+
+                } else {
+                    getLogger().info("api_switch is null");
+                }
+
+                // SFW endpoints
+                getLogger().info("Check if sfw_endpoint is null");
+                if (this->sfw_endpoint != nullptr) {
+                    this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
+                    this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+                } else {
+                    getLogger().info("sfw_endpoint is null");
+                }
+
+
 
                 #ifdef NSFW
-                    bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-                    StringW NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
+                   if (this->nsfw_endpoint != nullptr) {
+                       // Restore nsfw state
+                       this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
+                       this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, Nya::Main::config.NSFWEndpoint));
+                       this->nsfw_toggle->set_isOn(Nya::Main::config.NSFWEnabled);
+                   } else {
+                       getLogger().info("nsfw_endpoint is null");
+                   }
 
-                    // Restore nsfw state
-                    this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
-                    this->nsfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
-                    this->nsfw_toggle->set_isOn(NSFWEnabled);
                 #endif
 
-        
-                this->settingsModal->Show(true, true, nullptr);
+                } catch (Il2CppException& e) {
+                    getLogger().debug("Error caught in Floating settings %s", to_utf8(csstrtostr(e.message)).c_str());
+                }
+
             });
         });
 
@@ -243,32 +210,31 @@ std::string get_api_path() {
             title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
 
             // API Selection (nothing to select for now)
-            std::string API = getModConfig().API.GetValue();
+            std::string API = Nya::Main::config.API;
             this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [](StringW value){
-                getModConfig().API.SetValue(std::string(value));
+                setString(getConfig().config, "API", std::string(value));
             });
 
 
             // SFW endpoint switch
-            std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
+            std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
             this->sfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("SFW endpoint"),  "Loading..", {"Loading.."}, [](StringW value){
-                getModConfig().SFWEndpoint.SetValue(std::string(value));
-                
+                setString(getConfig().config, "SFWEndpoint", std::string(value));
             });
 
-            #ifdef NSFW
+#ifdef NSFW
             // NSFW endpoint selector
-            // std::string NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
+            std::string NSFWEndpoint = Nya::Main::config.NSFWEndpoint;
             this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value){
-                getModConfig().NSFWEndpoint.SetValue(std::string(value));
+                setString(getConfig().config, "NSFWEndpoint", std::string(value));
             });
 
             // NSFW toggle
-            bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-            this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){ 
-                getModConfig().NSFWEnabled.SetValue(isChecked);
+            bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+            this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){
+                setBool(getConfig().config, "NSFWEnabled", isChecked);
             });
-            #endif
+#endif
 
             UnityEngine::UI::HorizontalLayoutGroup* horz = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
             horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
@@ -277,21 +243,21 @@ std::string get_api_path() {
 
 
             UnityEngine::UI::Button* closeButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
-            [this]() {
-                this->settingsModal->Hide(true, nullptr);
-            });
+                                                                                        [this]() {
+                                                                                            this->settingsModal->Hide(true, nullptr);
+                                                                                        });
         }
 
         UINoGlow = QuestUI::ArrayUtil::First(UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>(), [](UnityEngine::Material* x) { return x->get_name() == "UINoGlow"; });
         // GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(createPanelNotes(line1, line2, line3)));
 
         auto* screenthingidk = thing->get_gameObject()->AddComponent<HMUI::Screen*>();
-        createModalUI(thing->get_transform());
-        createGridIndicator(modal->get_transform());
+//        createModalUI(thing->get_transform());
+//        createGridIndicator(modal->get_transform());
 
         auto* normalpointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
-        hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
-        modalHelper = Nya::addModalHelper(normalpointer, thing);
+//        hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
+//        modalHelper = Nya::addModalHelper(normalpointer, thing);
     }
   
     void NyaFloatingUI::onPause(){
@@ -299,41 +265,45 @@ std::string get_api_path() {
         UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.pausePosX, Nya::Main::config.pausePosY, Nya::Main::config.pausePosZ));
         UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.pauseRotX, Nya::Main::config.pauseRotY, Nya::Main::config.pauseRotZ));
         UIScreen->set_active(true);
-        modal->Show(false, true, nullptr);
-        modal->Hide(false, nullptr);
+//        modal->Show(false, true, nullptr);
+//        modal->Hide(false, nullptr);
         
         auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
+        // Mover to move the ui component
         auto* mover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
         mover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
-        hoverClickHelper->vrPointer = pausepointer;
-        modalHelper->vrPointer = pausepointer;
-        hoverClickHelper->resetBools();
     }
     void NyaFloatingUI::onUnPause(){
         isPaused = false;
         if (UIScreen != nullptr){
-            modal->Hide(false, nullptr);
-            UIScreen->set_active(false);
-        }
-    }
-    void NyaFloatingUI::onResultsScreenActivate(){
-        auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
-        hoverClickHelper->vrPointer = pointer;
-        modalHelper->vrPointer = pointer;
-        hoverClickHelper->resetBools();
-        UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.resultPosX , Nya::Main::config.resultPosY, Nya::Main::config.resultPosZ));
-        UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.resultRotX, Nya::Main::config.resultRotY, Nya::Main::config.resultRotZ));
-        UIScreen->set_active(true);
-        modal->Show(false, true, nullptr);
-        modal->Hide(false, nullptr);
-    }
-    void NyaFloatingUI::onResultsScreenDeactivate(){
-        if (UIScreen != nullptr){
-            modal->Hide(false, nullptr);
+//            modal->Hide(false, nullptr);
             UIScreen->set_active(false);
         }
     }
 
+    // S
+    void NyaFloatingUI::onResultsScreenActivate(){
+//        auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
+//        hoverClickHelper->vrPointer = pointer;
+//        modalHelper->vrPointer = pointer;
+//        hoverClickHelper->resetBools();
+        UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.resultPosX , Nya::Main::config.resultPosY, Nya::Main::config.resultPosZ));
+        UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.resultRotX, Nya::Main::config.resultRotY, Nya::Main::config.resultRotZ));
+        UIScreen->set_active(true);
+//        modal->Show(false, true, nullptr);
+//        modal->Hide(false, nullptr);
+    }
+
+    // When results screen os deactivated
+    void NyaFloatingUI::onResultsScreenDeactivate(){
+        if (UIScreen != nullptr){
+            // TODO:Hide modal window
+//            modal->Hide(false, nullptr);
+            UIScreen->set_active(false);
+        }
+    }
+
+    // Saves the coordinates to a config
     void NyaFloatingUI::updateCoordinates(UnityEngine::Transform* transform){
         if (Nya::Main::NyaFloatingUI->isPaused){
             setFloat(getConfig().config, "pausePosX", transform->get_position().x);

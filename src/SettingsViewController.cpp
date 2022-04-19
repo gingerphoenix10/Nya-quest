@@ -12,5 +12,11 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
         QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Enable on Results Screen", Main::config.inResults, [](bool value){
             setBool(getConfig().config, "inResults", value, false);
         });
+        QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Enable on Menu Screen", Main::config.inMenu, [](bool value){
+            setBool(getConfig().config, "inMenu", value, false);
+        });
+        QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Enable in game", Main::config.inGame, [](bool value){
+            setBool(getConfig().config, "inGame", value, false);
+        });
     }
 }

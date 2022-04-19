@@ -1,6 +1,5 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
-#include "ModConfig.hpp"
 #include "SettingsViewController.hpp"
 #include "questui/shared/QuestUI.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
@@ -25,12 +24,13 @@
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
+#include "GlobalNamespace/MainMenuViewController.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
 using namespace Nya;
 
-DEFINE_CONFIG(ModConfig);
+//DEFINE_CONFIG(ModConfig);
 
 Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 Nya::Config Nya::Main::config;
@@ -87,9 +87,16 @@ MAKE_HOOK_MATCH(BackToLobbyButtonPressed, &MultiplayerResultsViewController::Bac
     if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
 }
 
+
+MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &GlobalNamespace::MainMenuViewController::DidActivate, void, GlobalNamespace::MainMenuViewController* self,  bool firstActivation, bool addedToHeirarchy, bool screenSystemEnabling) {
+     MainMenuViewController_DidActivate(self, firstActivation, addedToHeirarchy, screenSystemEnabling);
+     getLogger().info("Main menu show!");
+    //  if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onPause();
+}
+
 MAKE_HOOK_MATCH(BackToMenuButtonPressed, &MultiplayerResultsViewController::BackToMenuPressed, void, MultiplayerResultsViewController* self) {
     BackToMenuButtonPressed(self);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    // if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
 }
 
 MAKE_HOOK_MATCH(UnMultiplayer, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling){
@@ -154,7 +161,6 @@ extern "C" void load() {
     il2cpp_functions::Init();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
-    getModConfig().Init(modInfo);
     Nya::Main::loadConfig();
     QuestUI::Init();
 
@@ -178,6 +184,7 @@ extern "C" void load() {
     INSTALL_HOOK(getLogger(), BackToMenuButtonPressed);
     INSTALL_HOOK(getLogger(), UnMultiplayer);
     INSTALL_HOOK(getLogger(), MenuTransitionsHelper_RestartGame);
+    INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
 
     getLogger().info("Installed all hooks!");
 }

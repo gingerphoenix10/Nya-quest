@@ -43,22 +43,22 @@ void Nya::HoverClickHelper::Update(){
                 isHit = false;
             }
             if (!isHit){
-                // panelUI = Nya::Main::NyaFloatingUI->panelImages[std::stoi(static_cast<std::string>(hit.get_collider()->get_name()).substr(13, 2))];
-                // currentCollider = hit.get_collider()->get_transform();
-                // if (!Nya::Main::NyaFloatingUI->modal->dyn__isShown() && Nya::Main::NyaFloatingUI->gridNotes[panelUI->index]->cutCount != 0){
-                //     isHit = true;
-                //     panelUI->image->set_color(UnityEngine::Color(0.70f, 0.70f, 0.70f, 1.0f));
-                //     hintController->SetupAndShowHintPanel(panelUI->hoverHint);
-                //     panelUI->hoverHint->set_enabled(true);
-                //     panelUI->hoverHint->get_gameObject()->set_active(true);
-                //     hintController->dyn__hoverHintPanel()->get_transform()->set_localScale({0.6f, 0.6f, 0.0f});
-                //     hintController->dyn__hoverHintPanel()->get_transform()->set_position(panelUI->hoverHint->get_transform()->get_position());
-                //     hintController->dyn__hoverHintPanel()->get_transform()->Translate({0.0f, 0.22f, 0.0f}, UnityEngine::Space::Self);
-                // }
-                // else panelUI = nullptr;
+//                 panelUI = Nya::Main::NyaFloatingUI->panelImages[std::stoi(static_cast<std::string>(hit.get_collider()->get_name()).substr(13, 2))];
+//                 currentCollider = hit.get_collider()->get_transform();
+//                 if (!Nya::Main::NyaFloatingUI->settingsModal->dyn__isShown()){
+//                     isHit = true;
+//                     panelUI->image->set_color(UnityEngine::Color(0.70f, 0.70f, 0.70f, 1.0f));
+//                     hintController->SetupAndShowHintPanel(panelUI->hoverHint);
+//                     panelUI->hoverHint->set_enabled(true);
+//                     panelUI->hoverHint->get_gameObject()->set_active(true);
+//                     hintController->dyn__hoverHintPanel()->get_transform()->set_localScale({0.6f, 0.6f, 0.0f});
+//                     hintController->dyn__hoverHintPanel()->get_transform()->set_position(panelUI->hoverHint->get_transform()->get_position());
+//                     hintController->dyn__hoverHintPanel()->get_transform()->Translate({0.0f, 0.22f, 0.0f}, UnityEngine::Space::Self);
+//                 }
+//                 else panelUI = nullptr;
             }
         }
-        else if (isHit && !Nya::Main::NyaFloatingUI->modal->dyn__isShown()){
+        else if (isHit){
             panelUI->image->set_color(UnityEngine::Color::get_gray());
             hintController->dyn__hoverHintPanel()->Hide();
             panelUI = nullptr;
@@ -76,7 +76,7 @@ void Nya::HoverClickHelper::Update(){
         }
     }
     else {
-        if (isHit && !Nya::Main::NyaFloatingUI->modal->dyn__isShown()){
+        if (isHit && !Nya::Main::NyaFloatingUI->settingsModal->dyn__isShown()){
             panelUI->image->GetComponent<UnityEngine::UI::Image*>()->set_color(UnityEngine::Color::get_gray());
             hintController->dyn__hoverHintPanel()->Hide();
             panelUI = nullptr;
@@ -93,20 +93,20 @@ void Nya::HoverClickHelper::Update(){
         notClickedModal = false;
         panelUI->image->set_color(UnityEngine::Color::get_gray());
         // Nya::Main::NyaFloatingUI->updateGridNotesInfo(panelUI->index);
-        Nya::Main::NyaFloatingUI->modal->Show(true, true, nullptr);
+        Nya::Main::NyaFloatingUI->settingsModal->Show(true, true, nullptr);
         hintController->dyn__hoverHintPanel()->Hide();
         panelUI = nullptr;
         isHit = false;
         modalLocked = true;
     }
-    if (!Nya::Main::NyaFloatingUI->modal->dyn__isShown() && !modalLocked && !notClickedModal) notClickedModal = true;
+    if (!Nya::Main::NyaFloatingUI->settingsModal->dyn__isShown() && !modalLocked && !notClickedModal) notClickedModal = true;
     if (justClosedModal) modalLocked = false;
     if (grabbingController) outOfRange = true;
 }
 
 void Nya::HoverClickHelper::LateUpdate(){
     if(!triggerPressed && !isHit && vrPointer->get_vrController()->get_triggerValue() > 0.9f && !(hoveringHandle || grabbingHandle)){
-        Nya::Main::NyaFloatingUI->modal->Hide(true, nullptr);
+        Nya::Main::NyaFloatingUI->settingsModal->Hide(true, nullptr);
         justClosedModal = true;
     }
     if (vrPointer->get_vrController()->get_triggerValue() > 0.9f && !triggerPressed){
@@ -130,7 +130,7 @@ void Nya::HoverClickHelper::LateUpdate(){
         outOfRange = false;
         grabbingHandle = false;
     } 
-    if (isHit && Nya::Main::NyaFloatingUI->modal->dyn__isShown()) isHit = false; 
+    if (isHit && Nya::Main::NyaFloatingUI->settingsModal->dyn__isShown()) isHit = false;
     
 }
 

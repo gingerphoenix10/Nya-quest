@@ -196,3 +196,7 @@ void Nya::ImageView::cleanupTextures(){
 void Nya::ImageView::dtor(){
   cleanupTextures();
 }
+
+void Nya::ImageView::DownloadImage(StringW url){
+    // TODO: Move downloading inside
+}

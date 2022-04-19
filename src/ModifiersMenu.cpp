@@ -2,7 +2,7 @@
 #include "ModifiersMenu.hpp"
 #include "Utils/WebUtils.hpp"
 #include "ImageView.hpp"
-#include "ModConfig.hpp"
+#include "API.hpp"
 #include "beatsaber-hook/shared/utils/typedefs.h"
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/UI/LayoutElement.hpp"
@@ -14,41 +14,12 @@
 #include "Utils/Utils.hpp"
 #include "UnityEngine/Sprite.hpp"
 #include "UnityEngine/SpriteMeshType.hpp"
+#include "HMUI/ModalView.hpp"
+#include "System/Action.hpp"
 
 using namespace UnityEngine;
 
 DEFINE_TYPE(Nya, ModifiersMenu);
-
-
-// Function gets url for the current selected category
-std::string get_api_path() {
-    // Get all config parametes
-    std::string API = getModConfig().API.GetValue();
-    std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
-    
-    #ifdef NSFW
-        std::string NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
-        bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-    #else
-        bool NSFWEnabled = false;
-        std::string NSFWEndpoint = "";
-    #endif
-
-    if (API == "waifu.pics") {
-        std::string url = "https://api.waifu.pics/";
-        url += NSFWEnabled? "nsfw/": "sfw/";        
-
-        if (NSFWEnabled) {
-            url += NSFWEndpoint;
-        } else {
-            url += SFWEndpoint;
-        };
-
-        return url;
-    } else {
-        return "";
-    }
-}
 
 
 
@@ -97,7 +68,7 @@ void Nya::ModifiersMenu::ctor() {
         [this]() {
             this->nyaButton->set_interactable(false);
 
-            WebUtils::GetAsync(get_api_path(), 10.0, [&](long code, std::string result){
+            WebUtils::GetAsync(NyaAPI::get_api_path(), 10.0, [&](long code, std::string result){
                 switch (code)
                 {
                     case 200:
@@ -164,35 +135,54 @@ void Nya::ModifiersMenu::ctor() {
         });
    
     // Settings button
-    UnityEngine::UI::Button* settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+    this->settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
     [this]() {
         getLogger().debug("Settings button clicked");
         // Run UI on the main thread
         QuestUI::MainThreadScheduler::Schedule([this]
         {
-            std::string API = getModConfig().API.GetValue();
-            std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
+            try {
+                getLogger().info("Showing settings modal");
+                if (this->settingsModal != nullptr) {
+                    std::function modalOpened = [&](){
+                        std::string API = Nya::Main::config.API;
+                        std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
 
-            // Restore api endpoint state
-            this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
-            this->api_switch->set_selectedIndex(Nya::Utils::findStrIndexInList(this->api_list,API));
-            
-            // Restore sfw endpoint state
-            this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
-            this->sfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+                        getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
+                        getLogger().info("Selected api: %s", API.data());
 
-            #ifdef NSFW
-                bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-                StringW NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
 
-                // Restore nsfw state
-                this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
-                this->nsfw_endpoint->set_selectedIndex(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
-                this->nsfw_toggle->set_isOn(NSFWEnabled);
-            #endif
+                        // Restore api endpoint state
+                        this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
+                        this->api_switch->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->api_list,API));
 
-    
-            this->settingsModal->Show(true, true, nullptr);
+                        // Restore sfw endpoint state
+                        this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
+                        this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+
+#ifdef NSFW
+                        bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+                        StringW NSFWEndpoint =  Nya::Main::config.NSFWEndpoint;
+
+                        // Restore nsfw state
+                        this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
+                        this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, NSFWEndpoint));
+                        this->nsfw_toggle->set_isOn(NSFWEnabled);
+#endif
+
+                    };
+                    auto modalOpenedDelegate = il2cpp_utils::MakeDelegate<System::Action *>(classof(System::Action *), modalOpened);
+
+                    this->settingsModal->Show(true, true, modalOpenedDelegate);
+                }  else{
+                    getLogger().info("settingsModal is null");
+                }
+
+
+            } catch (Il2CppException& e) {
+                getLogger().debug("Settings button clicked %s", to_utf8(csstrtostr(e.message)).c_str());
+            }
+
         });
     });
 
@@ -211,30 +201,35 @@ void Nya::ModifiersMenu::ctor() {
         title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
 
         // API Selection (nothing to select for now)
-        std::string API = getModConfig().API.GetValue();
+        std::string API = Nya::Main::config.API;
         this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [](StringW value){
-            getModConfig().API.SetValue(std::string(value));
+            setString(getConfig().config, "API", std::string(value));
+            getConfig().Write();
         });
 
 
         // SFW endpoint switch
-        std::string SFWEndpoint = getModConfig().SFWEndpoint.GetValue();
+        std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
         this->sfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("SFW endpoint"),  "Loading..", {"Loading.."}, [](StringW value){
-            getModConfig().SFWEndpoint.SetValue(std::string(value));
-            
+            getLogger().debug("Saving sfw value of: %s ", std::string(value).c_str());
+            setString(getConfig().config, "SFWEndpoint", std::string(value));
+            getConfig().Write();
         });
 
         #ifdef NSFW
         // NSFW endpoint selector
-        // std::string NSFWEndpoint = getModConfig().NSFWEndpoint.GetValue();
+        std::string NSFWEndpoint = Nya::Main::config.NSFWEndpoint;
         this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value){
-            getModConfig().NSFWEndpoint.SetValue(std::string(value));
+            getLogger().debug("Saving nsfw value of: %s ", std::string(value).c_str());
+            setString(getConfig().config, "NSFWEndpoint", std::string(value));
+            getConfig().Write();
         });
 
         // NSFW toggle
-        bool NSFWEnabled = getModConfig().NSFWEnabled.GetValue();
-        this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){ 
-            getModConfig().NSFWEnabled.SetValue(isChecked);
+        bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+        this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){
+            setBool(getConfig().config, "NSFWEnabled", isChecked);
+            getConfig().Write();
         });
         #endif
 
@@ -256,7 +251,7 @@ void Nya::ModifiersMenu::DidActivate(bool firstActivation)
 {
     if(firstActivation)
     {
-        WebUtils::GetAsync(get_api_path(), 10.0, [&](long code, std::string result){
+        WebUtils::GetAsync(NyaAPI::get_api_path(), 10.0, [&](long code, std::string result){
             switch (code)
             {
                 case 200:
