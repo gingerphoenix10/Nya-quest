@@ -25,66 +25,54 @@
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/MainMenuViewController.hpp"
+#include "NyaConfig.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
 using namespace Nya;
 
-//DEFINE_CONFIG(ModConfig);
+DEFINE_CONFIG(NyaConfig);
 
 Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
-Nya::Config Nya::Main::config;
-
-// Loads the config from disk using our modInfo, then returns it for use
-Configuration& getConfig() {
-    static Configuration config(modInfo);
-    config.Load();
-    return config;
-}
-
-void Main::loadConfig() {
-    getConfig().Load();
-    ConfigHelper::LoadConfig(config, getConfig().config);
-}
 
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
-    if (Nya::Main::config.inPause) Nya::Main::NyaFloatingUI->onPause();
+    if (getNyaConfig().inPause.GetValue()) Nya::Main::NyaFloatingUI->onPause();
 }
 
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
-    if (!Nya::Main::config.inGame) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Menubutton, &PauseMenuManager::MenuButtonPressed , void, PauseMenuManager* self) {
     Menubutton(self);
-    if (!Nya::Main::config.inMenu) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inMenu.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
-    if (!Nya::Main::config.inGame) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
 }
 
 MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
     Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
-    if (Nya::Main::config.inResults) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
+    if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
 }
 
 MAKE_HOOK_MATCH(Unresults, &ResultsViewController::DidDeactivate, void, ResultsViewController* self, bool removedFromHierarchy, bool screenSystemDisabling) {
     Unresults(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
 }
 
 MAKE_HOOK_MATCH(BackToLobbyButtonPressed, &MultiplayerResultsViewController::BackToLobbyPressed, void, MultiplayerResultsViewController* self) {
     BackToLobbyButtonPressed(self);
-    if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
 }
 
 
@@ -101,7 +89,7 @@ MAKE_HOOK_MATCH(BackToMenuButtonPressed, &MultiplayerResultsViewController::Back
 
 MAKE_HOOK_MATCH(UnMultiplayer, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling){
     UnMultiplayer(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::Main::config.isEnabled && Nya::Main::NyaFloatingUI != nullptr) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled() && Nya::Main::NyaFloatingUI != nullptr) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
 }
 
 MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "GameplayCoreSceneSetupData", ".ctor", void, GameplayCoreSceneSetupData* self, IDifficultyBeatmap* difficultyBeatmap, IPreviewBeatmapLevel* previewBeatmapLevel, GameplayModifiers* gameplayModifiers, PlayerSpecificSettings* playerSpecificSettings, PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects, EnvironmentInfoSO* environmentInfo, ColorScheme* colorScheme, MainSettingsModelSO* mainSettingsModel)
@@ -109,7 +97,10 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "Gamep
     GameplayCoreSceneSetupData_ctor(self, difficultyBeatmap, previewBeatmapLevel, gameplayModifiers, playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects, environmentInfo, colorScheme, mainSettingsModel);
 
     bool firstActivation = false;
-    if (Nya::Main::config.isEnabled) {
+    if (getNyaConfig().inGame.GetValue() ||
+            getNyaConfig().inMenu.GetValue() ||
+            getNyaConfig().inPause.GetValue() ||
+            getNyaConfig().inResults.GetValue()) {
         if (Nya::Main::NyaFloatingUI == nullptr){
             firstActivation = true;
             Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
@@ -122,7 +113,7 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "Gamep
             // Nya::Main::NyaFloatingUI->leftHand = colorScheme->get_saberAColor();
             // Nya::Main::NyaFloatingUI->rightHand = colorScheme->get_saberBColor();
         }
-    else if (!Nya::Main::config.isEnabled && Nya::Main::NyaFloatingUI != nullptr){
+    else if (!Nya::NyaFloatingUI::isEnabled() && Nya::Main::NyaFloatingUI != nullptr){
         GameObject::Destroy(Nya::Main::NyaFloatingUI->UIScreen->get_gameObject());
 
         GameObject::Destroy(Nya::Main::NyaFloatingUI->get_gameObject());
@@ -153,8 +144,7 @@ extern "C" void setup(ModInfo& info) {
     info.id = ID;
     info.version = VERSION;
     modInfo = info;
-	
-    getConfig().Load(); // Load the config file
+
     getLogger().info("Completed setup!");
 }
 
@@ -163,7 +153,7 @@ extern "C" void load() {
     il2cpp_functions::Init();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
-    Nya::Main::loadConfig();
+    getNyaConfig().Init(modInfo);
     QuestUI::Init();
 
     QuestUI::Register::RegisterGameplaySetupMenu<Nya::ModifiersMenu*>(modInfo, "Nya");

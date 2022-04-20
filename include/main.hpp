@@ -18,7 +18,6 @@ inline ModInfo modInfo; // Stores the ID and version of our mod, and is sent to 
 namespace Nya{
     class Main {
         public:
-            static Config config;
             static bool configValid;
             static void loadConfig();
             static Nya::NyaFloatingUI* NyaFloatingUI;

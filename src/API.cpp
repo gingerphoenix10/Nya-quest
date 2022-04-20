@@ -4,15 +4,15 @@
     // Function gets url for the current selected category
     std::string NyaAPI::get_api_path() {
         // Get all config parametes
-        std::string API = Nya::Main::config.API;
-        std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
+        std::string API = getNyaConfig().API.GetValue();
+        std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
         getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
         getLogger().info("Selected api :%s", API.data());
 #ifdef NSFW
 
-        std::string NSFWEndpoint = Nya::Main::config.NSFWEndpoint;
+        std::string NSFWEndpoint = getNyaConfig().NSFWEndpoint.GetValue();
         getLogger().info("Selected nsfw category :%s", NSFWEndpoint.data());
-        bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+        bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
         getLogger().info("NSFW enabled :%i", NSFWEnabled);
 #else
         bool NSFWEnabled = false;

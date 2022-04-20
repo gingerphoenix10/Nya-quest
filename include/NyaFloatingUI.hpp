@@ -55,6 +55,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_FIELD(List<StringW>*, api_list);
 
         static NyaFloatingUI* get_instance();
+        static bool isEnabled();
 private:
         static NyaFloatingUI* instance;
 )

@@ -152,15 +152,11 @@ namespace Nya {
                 try {
                 getLogger().debug("Run main thread");
 
-               getLogger().info("Showing settings modal");
-               if (this->settingsModal != nullptr) {
                    this->settingsModal->Show(true, true, nullptr);
-               }  else{
-                   getLogger().info("settingsModal is null");
-               }
 
-                std::string API = Nya::Main::config.API;
-                std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
+
+                std::string API = getNyaConfig().API.GetValue();
+                std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
                 getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
                 getLogger().info("Selected api: %s", API.data());
 
@@ -184,26 +180,18 @@ namespace Nya {
                 }
 
                 // SFW endpoints
-                getLogger().info("Check if sfw_endpoint is null");
-                if (this->sfw_endpoint != nullptr) {
-                    this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
-                    this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
-                } else {
-                    getLogger().info("sfw_endpoint is null");
-                }
+
+                this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
+                this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+
 
 
 
                 #ifdef NSFW
-                   if (this->nsfw_endpoint != nullptr) {
-                       // Restore nsfw state
-                       this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
-                       this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, Nya::Main::config.NSFWEndpoint));
-                       this->nsfw_toggle->set_isOn(Nya::Main::config.NSFWEnabled);
-                   } else {
-                       getLogger().info("nsfw_endpoint is null");
-                   }
-
+                   // Restore nsfw state
+                   this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
+                   this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, getNyaConfig().NSFWEndpoint.GetValue()));
+                   this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
                 #endif
 
                 } catch (Il2CppException& e) {
@@ -228,29 +216,29 @@ namespace Nya {
             title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
 
             // API Selection (nothing to select for now)
-            std::string API = Nya::Main::config.API;
+            std::string API = getNyaConfig().API.GetValue();
             this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [](StringW value){
-                setString(getConfig().config, "API", std::string(value));
+                getNyaConfig().API.SetValue(value);
             });
 
 
             // SFW endpoint switch
-            std::string SFWEndpoint = Nya::Main::config.SFWEndpoint;
+            std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
             this->sfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("SFW endpoint"),  "Loading..", {"Loading.."}, [](StringW value){
-                setString(getConfig().config, "SFWEndpoint", std::string(value));
+                getNyaConfig().SFWEndpoint.SetValue(value);
             });
 
 #ifdef NSFW
             // NSFW endpoint selector
-            std::string NSFWEndpoint = Nya::Main::config.NSFWEndpoint;
+            std::string NSFWEndpoint = getNyaConfig().NSFWEndpoint.GetValue();
             this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value){
-                setString(getConfig().config, "NSFWEndpoint", std::string(value));
+                getNyaConfig().NSFWEndpoint.SetValue(value);
             });
 
             // NSFW toggle
-            bool NSFWEnabled = Nya::Main::config.NSFWEnabled;
+            bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
             this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(vert->get_transform(),  to_utf16("NSFW toggle"), NSFWEnabled,  [](bool isChecked){
-                setBool(getConfig().config, "NSFWEnabled", isChecked);
+                getNyaConfig().NSFWEnabled.SetValue(isChecked);
             });
 #endif
 
@@ -281,12 +269,9 @@ namespace Nya {
     void NyaFloatingUI::onPause(){
         isPaused = true;
         if (this->UIScreen != nullptr) {
-            UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.pausePosX, Nya::Main::config.pausePosY, Nya::Main::config.pausePosZ));
-            UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.pauseRotX, Nya::Main::config.pauseRotY, Nya::Main::config.pauseRotZ));
+            UIScreen->get_transform()->set_position(getNyaConfig().pausePosition.GetValue());
+            UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(getNyaConfig().resultRotation.GetValue()));
             UIScreen->set_active(true);
-//        modal->Show(false, true, nullptr);
-//        modal->Hide(false, nullptr);
-
             auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
             // Mover to move the ui component
             auto* mover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
@@ -309,8 +294,8 @@ namespace Nya {
 //        hoverClickHelper->vrPointer = pointer;
 //        modalHelper->vrPointer = pointer;
 //        hoverClickHelper->resetBools();
-        UIScreen->get_transform()->set_position(UnityEngine::Vector3(Nya::Main::config.resultPosX , Nya::Main::config.resultPosY, Nya::Main::config.resultPosZ));
-        UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(Nya::Main::config.resultRotX, Nya::Main::config.resultRotY, Nya::Main::config.resultRotZ));
+        UIScreen->get_transform()->set_position(getNyaConfig().resultPosition.GetValue());
+        UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(getNyaConfig().resultRotation.GetValue()));
         UIScreen->set_active(true);
 //        modal->Show(false, true, nullptr);
 //        modal->Hide(false, nullptr);
@@ -328,26 +313,13 @@ namespace Nya {
     // Saves the coordinates to a config
     void NyaFloatingUI::updateCoordinates(UnityEngine::Transform* transform){
         if (Nya::Main::NyaFloatingUI->isPaused){
-            setFloat(getConfig().config, "pausePosX", transform->get_position().x);
-            setFloat(getConfig().config, "pausePosY", transform->get_position().y);
-            setFloat(getConfig().config, "pausePosZ", transform->get_position().z);
-            getConfig().Write();
-            setFloat(getConfig().config, "pauseRotX", transform->get_rotation().get_eulerAngles().x);
-            setFloat(getConfig().config, "pauseRotY", transform->get_rotation().get_eulerAngles().y);
-            setFloat(getConfig().config, "pauseRotZ", transform->get_rotation().get_eulerAngles().z);
-            getConfig().Write();
+            getNyaConfig().pausePosition.SetValue(transform->get_position());
+            getNyaConfig().pauseRotation.SetValue(transform->get_rotation().get_eulerAngles());
         }
         else{
-            setFloat(getConfig().config, "resultPosX", transform->get_position().x);
-            setFloat(getConfig().config, "resultPosY", transform->get_position().y);
-            setFloat(getConfig().config, "resultPosZ", transform->get_position().z);
-            getConfig().Write();
-            setFloat(getConfig().config, "resultRotX", transform->get_rotation().get_eulerAngles().x);
-            setFloat(getConfig().config, "resultRotY", transform->get_rotation().get_eulerAngles().y);
-            setFloat(getConfig().config, "resultRotZ", transform->get_rotation().get_eulerAngles().z);
-            getConfig().Write();
+            getNyaConfig().resultPosition.SetValue(transform->get_position());
+            getNyaConfig().resultPosition.SetValue(transform->get_rotation().get_eulerAngles());
         }
-        ConfigHelper::LoadConfig(Nya::Main::config, getConfig().config);
     }
 
     NyaFloatingUI* NyaFloatingUI::instance = nullptr;
@@ -358,5 +330,15 @@ namespace Nya {
         auto go = GameObject::New_ctor(StringW(___TypeRegistration::get()->name()));
         Object::DontDestroyOnLoad(go);
         return go->AddComponent<NyaFloatingUI*>();
+    }
+
+//    Check if nya is enabled anywhere
+    bool NyaFloatingUI::isEnabled (){
+        return (
+                getNyaConfig().inGame.GetValue() ||
+                getNyaConfig().inMenu.GetValue() ||
+                getNyaConfig().inPause.GetValue() ||
+                getNyaConfig().inResults.GetValue()
+                );
     }
 }

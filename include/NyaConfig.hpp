@@ -4,70 +4,65 @@
 #include "beatsaber-hook/shared/config/config-utils.hpp"
 #include <string>
 #include <iostream>
+#include "config-utils/shared/config-utils.hpp"
+#include "UnityEngine/Color.hpp"
+#include "UnityEngine/Vector2.hpp"
+#include "UnityEngine/Vector3.hpp"
+#include "UnityEngine/Vector4.hpp"
 
 
-std::optional<bool> getBool(rapidjson::Value& obj, std::string_view fieldName, bool required = false);
-std::optional<bool> setBool(rapidjson::Value& obj, std::string_view fieldName,  bool value, bool required = false);
-std::optional<float> getFloat(rapidjson::Value& obj, std::string_view fieldName, bool required = false);
-std::optional<float> setFloat(rapidjson::Value& obj, std::string_view fieldName, float value, bool required = false);
-std::optional<std::string> getString(rapidjson::Value& obj, std::string_view fieldName, bool required = false);
-std::optional<std::string> setString(rapidjson::Value& obj, std::string_view fieldName, std::string value, bool required = false);
-std::optional<int> getInt(rapidjson::Value& obj, std::string_view fieldName, bool required = false);
-std::optional<int> setInt(rapidjson::Value& obj, std::string_view fieldName, int value, bool required = false);
+DECLARE_CONFIG(NyaConfig,
+    CONFIG_VALUE(inPause, bool, "Show in pause", true);
+    CONFIG_VALUE(inResults, bool, "Show in results", true);
+    CONFIG_VALUE(inGame, bool, "Show in game", false);
+    CONFIG_VALUE(inMenu, bool, "Show in menu", false);
 
-namespace Nya {
-    class Config {
-    public:
-        bool isEnabled;
-        bool inPause;
-        bool inResults;
-        bool inGame;
-        bool inMenu;
-        float pausePosX;
-        float pausePosY;
-        float pausePosZ;
-        float pauseRotX;
-        float pauseRotY;
-        float pauseRotZ;
+    CONFIG_VALUE(API, std::string, "Selected API", "waifu.pics");
+    CONFIG_VALUE(SFWEndpoint, std::string, "SFW endpoint", "neko");
+    CONFIG_VALUE(NSFWEndpoint, std::string, "NSFW endpoint", "neko");
 
-        float gamePosX;
-        float gamePosY;
-        float gamePosZ;
-        float gameRotX;
-        float gameRotY;
-        float gameRotZ;
+    CONFIG_VALUE(AutoNya, bool, "Auto Nya", false);
+    CONFIG_VALUE(AutoNyaInGame, bool, "Auto Nya in game", false);
+    CONFIG_VALUE(AutoNyaDelay, int, "Auto Nya delay", 10);
 
-        float menuPosX;
-        float menuPosY;
-        float menuPosZ;
-        float menuRotX;
-        float menuRotY;
-        float menuRotZ;
+    CONFIG_VALUE(NSFWEnabled, bool, "NSFW Enabled", false);
+    CONFIG_VALUE(SkipNSFWWarning, bool, "Skip NSFW warning", false);
+    
+    CONFIG_VALUE(pausePosition, UnityEngine::Vector3, "Pause Position", UnityEngine::Vector3(1, 2, 3));
+    CONFIG_VALUE(pauseRotation, UnityEngine::Vector3, "Pause Rotation", UnityEngine::Vector3(1, 2, 3));
 
-        float resultPosX;
-        float resultPosY;
-        float resultPosZ;
-        float resultRotX;
-        float resultRotY;
-        float resultRotZ;
+    CONFIG_VALUE(gamePosition, UnityEngine::Vector3, "Game Position", UnityEngine::Vector3(1, 2, 3));
+    CONFIG_VALUE(gameRotation, UnityEngine::Vector3, "Game Rotation", UnityEngine::Vector3(1, 2, 3));
 
-        // Variables for nya things
-        std::string API;
-        std::string SFWEndpoint;
+    CONFIG_VALUE(menuPosition, UnityEngine::Vector3, "Menu Position", UnityEngine::Vector3(1, 2, 3));
+    CONFIG_VALUE(menuRotation, UnityEngine::Vector3, "Menu Rotation", UnityEngine::Vector3(1, 2, 3));
 
-        // Auto refresh and delay
-        bool AutoNya;
-        int AutoNyaDelay;
-        
-        #ifdef NSFW
-        std::string NSFWEndpoint;
-        bool NSFWEnabled;
-        bool SkipNSFWWarning;
-        #endif
-    };
-}
-class ConfigHelper {
-public:
-    static bool LoadConfig(Nya::Config& con, ConfigDocument& config);
-    static void CreateDefaultConfig(ConfigDocument& config);
-};
+    CONFIG_VALUE(resultPosition, UnityEngine::Vector3, "Result Position", UnityEngine::Vector3(1, 2, 3));
+    CONFIG_VALUE(resultRotation, UnityEngine::Vector3, "Result Rotation", UnityEngine::Vector3(1, 2, 3));
+
+
+    CONFIG_INIT_FUNCTION(
+        CONFIG_INIT_VALUE(pausePosition);
+        CONFIG_INIT_VALUE(pauseRotation);
+        CONFIG_INIT_VALUE(gamePosition);
+        CONFIG_INIT_VALUE(gameRotation);
+        CONFIG_INIT_VALUE(menuPosition);
+        CONFIG_INIT_VALUE(menuRotation);
+        CONFIG_INIT_VALUE(resultPosition);
+        CONFIG_INIT_VALUE(resultRotation);
+
+        CONFIG_INIT_VALUE(inPause);
+        CONFIG_INIT_VALUE(inResults);
+        CONFIG_INIT_VALUE(inGame);
+        CONFIG_INIT_VALUE(inMenu);
+
+        CONFIG_INIT_VALUE(API);
+        CONFIG_INIT_VALUE(SFWEndpoint);
+        CONFIG_INIT_VALUE(NSFWEndpoint);
+        CONFIG_INIT_VALUE(AutoNya);
+        CONFIG_INIT_VALUE(AutoNyaInGame);
+        CONFIG_INIT_VALUE(AutoNyaDelay);
+        CONFIG_INIT_VALUE(NSFWEnabled);
+        CONFIG_INIT_VALUE(SkipNSFWWarning);
+    )
+)

@@ -2,6 +2,7 @@
 #include <string>
 
 #include "beatsaber-hook/shared/utils/typedefs.h"
+#include "main.hpp"
 
 namespace Nya::Utils {
     List<StringW>* vectorToList(std::vector<StringW> values);
