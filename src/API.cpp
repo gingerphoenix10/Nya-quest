@@ -1,5 +1,5 @@
 #include "API.hpp"
-
+#include "nya-utils/shared/WebUtils.hpp"
 
     // Function gets url for the current selected category
     std::string NyaAPI::get_api_path() {
@@ -33,4 +33,35 @@
         } else {
             return "";
         }
+    }
+
+
+    void NyaAPI::get_path_from_api(
+        std::string url,
+        float timeoutInSeconds,
+        std::function<void(bool success, std::string url)> finished) {
+        WebUtils::GetAsync(NyaAPI::get_api_path(), 10.0, [&, finished](long code, std::string result){
+            if (code != 200) {
+                if(finished != nullptr) finished(false, "");
+                return;
+            }
+
+            rapidjson::Document document;
+            document.Parse(result);
+            if(document.HasParseError() || !document.IsObject()) {
+                if(finished != nullptr) finished(false, "");
+                return;
+            }
+                
+            std::string url = "";
+            if(document.HasMember("url"))
+            {
+                url = document.FindMember("url")->value.GetString();
+                if(finished != nullptr) finished(true, url);
+            } else {
+                if(finished != nullptr) finished(false, "");
+                return;
+            }
+           
+        });
     }

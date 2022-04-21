@@ -10,6 +10,12 @@
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Vector4.hpp"
 
+#define NYA_PATH_FORMAT "/sdcard/ModData/%s/Mods/Nya/"
+
+namespace NyaGlobals {
+    static std::string nyaPath = string_format(NYA_PATH_FORMAT, Modloader::getApplicationId().c_str());;
+    static std::string imagesPath = nyaPath + "Images/";
+}
 
 DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(inPause, bool, "Show in pause", true);

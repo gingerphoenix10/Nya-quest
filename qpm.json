@@ -56,6 +56,11 @@
       "id": "gif-lib",
       "versionRange": "^5.2.2",
       "additionalData": {}
+    },
+    {
+      "id": "nya-utils",
+      "versionRange": "^0.1.2",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

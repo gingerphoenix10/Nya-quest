@@ -37,42 +37,42 @@ Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
-    if (getNyaConfig().inPause.GetValue()) Nya::Main::NyaFloatingUI->onPause();
+    if (getNyaConfig().inPause.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
 }
 
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
-    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);;
 }
 
 MAKE_HOOK_MATCH(Menubutton, &PauseMenuManager::MenuButtonPressed , void, PauseMenuManager* self) {
     Menubutton(self);
-    if (!getNyaConfig().inMenu.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inMenu.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
-    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onUnPause();
+    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);
 }
 
 MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
     Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
-    if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
+    if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(Unresults, &ResultsViewController::DidDeactivate, void, ResultsViewController* self, bool removedFromHierarchy, bool screenSystemDisabling) {
     Unresults(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenActivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Results);
 }
 
 MAKE_HOOK_MATCH(BackToLobbyButtonPressed, &MultiplayerResultsViewController::BackToLobbyPressed, void, MultiplayerResultsViewController* self) {
     BackToLobbyButtonPressed(self);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 
@@ -84,12 +84,12 @@ MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &GlobalNamespace::MainMenuVi
 
 MAKE_HOOK_MATCH(BackToMenuButtonPressed, &MultiplayerResultsViewController::BackToMenuPressed, void, MultiplayerResultsViewController* self) {
     BackToMenuButtonPressed(self);
-    // if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(UnMultiplayer, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling){
     UnMultiplayer(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::NyaFloatingUI::isEnabled() && Nya::Main::NyaFloatingUI != nullptr) Nya::Main::NyaFloatingUI->onResultsScreenDeactivate();
+    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "GameplayCoreSceneSetupData", ".ctor", void, GameplayCoreSceneSetupData* self, IDifficultyBeatmap* difficultyBeatmap, IPreviewBeatmapLevel* previewBeatmapLevel, GameplayModifiers* gameplayModifiers, PlayerSpecificSettings* playerSpecificSettings, PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects, EnvironmentInfoSO* environmentInfo, ColorScheme* colorScheme, MainSettingsModelSO* mainSettingsModel)
@@ -132,6 +132,26 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
     MenuTransitionsHelper_RestartGame(self, finishCallback);
 }
 
+void makeFolder() 
+{    
+    if (!direxists(NyaGlobals::nyaPath.c_str()))
+    {
+        int makePath = mkpath(NyaGlobals::nyaPath.c_str());
+        if (makePath == -1)
+        {
+            getLogger().error("Failed to make Nya Folder path!");
+        }
+    }
+
+    if (!direxists(NyaGlobals::imagesPath.c_str()))
+    {
+        int makePath = mkpath(NyaGlobals::imagesPath.c_str());
+        if (makePath == -1)
+        {
+            getLogger().error("Failed to make Images Folder path!");
+        }
+    }
+}
 
 // Returns a logger, useful for printing debug messages
 Logger& getLogger() {
@@ -154,6 +174,9 @@ extern "C" void load() {
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
+
+    // Make local folders if they do not exist
+    makeFolder();
     QuestUI::Init();
 
     QuestUI::Register::RegisterGameplaySetupMenu<Nya::ModifiersMenu*>(modInfo, "Nya");
@@ -180,3 +203,5 @@ extern "C" void load() {
 
     getLogger().info("Installed all hooks!");
 }
+
+

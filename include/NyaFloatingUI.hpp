@@ -18,6 +18,12 @@
 
 using namespace UnityEngine::UI;
 
+namespace Nya{
+    enum FloatingUIScene {
+        Unknown, Pause, Results, MainMenu, InGame
+    };
+};
+
 
 DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
         public:
@@ -27,13 +33,16 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
             void updateCoordinates(UnityEngine::Transform* transform);
+            void onSceneChange(Nya::FloatingUIScene scene);
+            
+            Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Unknown;
 
             DECLARE_CTOR(ctor);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, UIScreen);
             DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
-            bool isPaused = false;
+            
             DECLARE_INSTANCE_FIELD(Nya::HoverClickHelper*, hoverClickHelper);
 //            Nya::ModalHelper* modalHelper = nullptr;
 
