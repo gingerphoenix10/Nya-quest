@@ -24,5 +24,11 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
                                                getNyaConfig().inMenu.SetValue(value);
 
                                            });
+         QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Floating in Game",
+                                           getNyaConfig().inGame.GetValue(),
+                                           [](bool value) {
+                                               getNyaConfig().inGame.SetValue(value);
+
+                                           });
     }
 }

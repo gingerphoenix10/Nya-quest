@@ -200,8 +200,24 @@ namespace Nya {
         this->currentScene = scene;
         if (scene == Nya::FloatingUIScene::Pause) {
             if (this->UIScreen != nullptr) {
-                UIScreen->get_transform()->set_position(getNyaConfig().pausePosition.GetValue());
-                UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(getNyaConfig().pauseRotation.GetValue()));
+                if (!getNyaConfig().inPause.GetValue()) {
+                    UIScreen->set_active(false);
+                    return;
+                };
+                UIScreen->get_transform()->set_position(
+                    UnityEngine::Vector3(
+                        getNyaConfig().pausePositionX.GetValue(), 
+                        getNyaConfig().pausePositionY.GetValue(),
+                        getNyaConfig().pausePositionZ.GetValue()
+                    )
+                );
+                UIScreen->get_transform()->set_rotation(
+                    UnityEngine::Quaternion::Euler(
+                        getNyaConfig().pauseRotationX.GetValue(), 
+                        getNyaConfig().pauseRotationY.GetValue(), 
+                        getNyaConfig().pauseRotationZ.GetValue()
+                    )
+                );
                 UIScreen->set_active(true);
                 hoverClickHelper->resetBools();
                 auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
@@ -212,44 +228,126 @@ namespace Nya {
         }
 
         if (scene == Nya::FloatingUIScene::Results) {
+            if (!getNyaConfig().inResults.GetValue()) {
+                UIScreen->set_active(false);
+                return;
+            };
             auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
             hoverClickHelper->vrPointer = pointer;
 
             hoverClickHelper->resetBools();
-            UIScreen->get_transform()->set_position(getNyaConfig().resultPosition.GetValue());
-            UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(getNyaConfig().resultRotation.GetValue()));
+            UIScreen->get_transform()->set_position(
+                UnityEngine::Vector3(
+                    getNyaConfig().resultPositionX.GetValue(), 
+                    getNyaConfig().resultPositionY.GetValue(),
+                    getNyaConfig().resultPositionZ.GetValue()
+                )
+            );
+            UIScreen->get_transform()->set_rotation(
+                UnityEngine::Quaternion::Euler(
+                    getNyaConfig().resultRotationX.GetValue(), 
+                    getNyaConfig().resultRotationY.GetValue(), 
+                    getNyaConfig().resultRotationZ.GetValue()
+                )
+            );
             UIScreen->set_active(true);
 
         }
         if (scene == Nya::FloatingUIScene::MainMenu) {
+            if (!getNyaConfig().inMenu.GetValue()) {
+                UIScreen->set_active(false);
+                return;
+            };
             auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
             hoverClickHelper->vrPointer = pointer;
             hoverClickHelper->resetBools();
-            UIScreen->get_transform()->set_position(getNyaConfig().menuPosition.GetValue());
-            UIScreen->get_transform()->set_rotation(UnityEngine::Quaternion::Euler(getNyaConfig().menuRotation.GetValue()));
+
+            UIScreen->get_transform()->set_position(
+                UnityEngine::Vector3(
+                    getNyaConfig().menuPositionX.GetValue(), 
+                    getNyaConfig().menuPositionY.GetValue(),
+                    getNyaConfig().menuPositionZ.GetValue()
+                )
+            );
+            UIScreen->get_transform()->set_rotation(
+                UnityEngine::Quaternion::Euler(
+                    getNyaConfig().menuRotationX.GetValue(), 
+                    getNyaConfig().menuRotationY.GetValue(), 
+                    getNyaConfig().menuRotationZ.GetValue()
+                )
+            );
+            
             UIScreen->set_active(true);
             hoverClickHelper->resetBools();
+        }
+
+        if (scene == Nya::FloatingUIScene::InGame) {
+            if (this->UIScreen != nullptr) {
+                if (!getNyaConfig().inGame.GetValue()) {
+                    UIScreen->set_active(false);
+                    return;
+                };
+                UIScreen->get_transform()->set_position(
+                    UnityEngine::Vector3(
+                        getNyaConfig().pausePositionX.GetValue(), 
+                        getNyaConfig().pausePositionY.GetValue(),
+                        getNyaConfig().pausePositionZ.GetValue()
+                    )
+                );
+                UIScreen->get_transform()->set_rotation(
+                    UnityEngine::Quaternion::Euler(
+                        getNyaConfig().pauseRotationX.GetValue(), 
+                        getNyaConfig().pauseRotationY.GetValue(), 
+                        getNyaConfig().pauseRotationZ.GetValue()
+                    )
+                );
+                UIScreen->set_active(true);
+            }
         }
     }
 
     // Saves the coordinates to a config
     void NyaFloatingUI::updateCoordinates(UnityEngine::Transform* transform){
+        auto position = transform->get_position();
+        auto rotation = transform->get_rotation().get_eulerAngles();
+
+        getLogger().info("Position: %.02f, %.02f, %.02f", position.x, position.y, position.z);
+        getLogger().info("Rotation: %.02f, %.02f, %.02f", rotation.x, rotation.y, rotation.z);
         if (this->currentScene == Nya::FloatingUIScene::Pause){
-            getNyaConfig().pausePosition.SetValue(transform->get_position());
-            getNyaConfig().pauseRotation.SetValue(transform->get_rotation().get_eulerAngles());
+            getLogger().info("Saved to Pause");
+            getNyaConfig().pausePositionX.SetValue(position.x);
+            getNyaConfig().pausePositionY.SetValue(position.y);
+            getNyaConfig().pausePositionZ.SetValue(position.z);
+        
+            getNyaConfig().pauseRotationX.SetValue(rotation.x);
+            getNyaConfig().pauseRotationY.SetValue(rotation.y);
+            getNyaConfig().pauseRotationZ.SetValue(rotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::Results){
-            getNyaConfig().resultPosition.SetValue(transform->get_position());
-            getNyaConfig().resultRotation.SetValue(transform->get_rotation().get_eulerAngles());
+            getLogger().info("Saved to Results");
+            getNyaConfig().resultPositionX.SetValue(position.x);
+            getNyaConfig().resultPositionY.SetValue(position.y);
+            getNyaConfig().resultPositionZ.SetValue(position.z);
+            
+            
+            getNyaConfig().resultRotationX.SetValue(rotation.x);
+            getNyaConfig().resultRotationY.SetValue(rotation.y);
+            getNyaConfig().resultRotationZ.SetValue(rotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
-            getNyaConfig().menuPosition.SetValue(transform->get_position());
-            getNyaConfig().menuRotation.SetValue(transform->get_rotation().get_eulerAngles());
+            getLogger().info("Saved to MainMenu");
+            getNyaConfig().menuPositionX.SetValue(position.x);
+            getNyaConfig().menuPositionY.SetValue(position.y);
+            getNyaConfig().menuPositionZ.SetValue(position.z);
+            
+            getNyaConfig().menuRotationX.SetValue(rotation.x);
+            getNyaConfig().menuRotationY.SetValue(rotation.y);
+            getNyaConfig().menuRotationZ.SetValue(rotation.z);
         }
-        if (this->currentScene == Nya::FloatingUIScene::InGame){
-            getNyaConfig().gamePosition.SetValue(transform->get_position());
-            getNyaConfig().gameRotation.SetValue(transform->get_rotation().get_eulerAngles());
-        }
+        // if (this->currentScene == Nya::FloatingUIScene::InGame){
+        //     getNyaConfig().gamePosition.SetValue(transform->get_position());
+        //     getNyaConfig().gameRotation.SetValue(transform->get_rotation().get_eulerAngles());
+        // }
     }
 
     NyaFloatingUI* NyaFloatingUI::instance = nullptr;

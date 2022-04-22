@@ -1,7 +1,6 @@
 #pragma once
 
 #include "beatsaber-hook/shared/utils/logging.hpp"
-#include "beatsaber-hook/shared/config/config-utils.hpp"
 #include <string>
 #include <iostream>
 #include "config-utils/shared/config-utils.hpp"
@@ -34,17 +33,32 @@ DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(NSFWEnabled, bool, "NSFW Enabled", false);
     CONFIG_VALUE(SkipNSFWWarning, bool, "Skip NSFW warning", false);
     
-    CONFIG_VALUE(pausePosition, UnityEngine::Vector3, "Pause Position", UnityEngine::Vector3(-1.648f, 1.516f, 0.916f));
-    CONFIG_VALUE(pauseRotation, UnityEngine::Vector3, "Pause Rotation", UnityEngine::Vector3(1.120f, 286.746f, 2.421f));
+    CONFIG_VALUE(pausePositionX, float, "Pause PositionX", -2.12f);
+    CONFIG_VALUE(pausePositionY, float, "Pause PositionY", 1.52f);
+    CONFIG_VALUE(pausePositionZ, float, "Pause PositionZ", 1.65f);
 
-    CONFIG_VALUE(gamePosition, UnityEngine::Vector3, "Game Position", UnityEngine::Vector3(-1.648f, 1.516f, 0.916f));
-    CONFIG_VALUE(gameRotation, UnityEngine::Vector3, "Game Rotation", UnityEngine::Vector3(1.120f, 286.746f, 2.421f));
+    CONFIG_VALUE(pauseRotationX, float, "Pause RotationX", 4.52f);
+    CONFIG_VALUE(pauseRotationY, float, "Pause RotationY", 312.22f);
+    CONFIG_VALUE(pauseRotationZ, float, "Pause RotationZ", 359.63f);
 
-    CONFIG_VALUE(menuPosition, UnityEngine::Vector3, "Menu Position", UnityEngine::Vector3(-1.648f, 1.516f, 0.916f));
-    CONFIG_VALUE(menuRotation, UnityEngine::Vector3, "Menu Rotation", UnityEngine::Vector3(1.120f, 286.746f, 2.421f));
 
-    CONFIG_VALUE(resultPosition, UnityEngine::Vector3, "Result Position", UnityEngine::Vector3(2.321f, 2.883f, 3.851f));
-    CONFIG_VALUE(resultRotation, UnityEngine::Vector3, "Result Rotation", UnityEngine::Vector3(338.810f, 30.401f, 359.280f));
+    CONFIG_VALUE(menuPositionX, float, "Menu PositionX", 0.09f);
+    CONFIG_VALUE(menuPositionY, float, "Menu PositionY", 2.92f);
+    CONFIG_VALUE(menuPositionZ, float, "Menu PositionZ", 1.60f);
+
+    CONFIG_VALUE(menuRotationX, float, "Menu RotationX", 324.01f);
+    CONFIG_VALUE(menuRotationY, float, "Menu RotationY", 1.62f);
+    CONFIG_VALUE(menuRotationZ, float, "Menu RotationZ", 358.97f);
+
+
+    CONFIG_VALUE(resultPositionX, float, "Result PositionX", 0.09f);
+    CONFIG_VALUE(resultPositionY, float, "Result PositionY", 2.92f);
+    CONFIG_VALUE(resultPositionZ, float, "result PositionZ", 1.60f);
+
+    CONFIG_VALUE(resultRotationX, float, "Result RotationX", 324.01f);
+    CONFIG_VALUE(resultRotationY, float, "Result RotationY", 1.62f);
+    CONFIG_VALUE(resultRotationZ, float, "Result RotationZ", 358.97f);
+
 
     CONFIG_INIT_FUNCTION(
         CONFIG_INIT_VALUE(inPause);
@@ -61,13 +75,33 @@ DECLARE_CONFIG(NyaConfig,
         CONFIG_INIT_VALUE(NSFWEnabled);
         CONFIG_INIT_VALUE(SkipNSFWWarning);
 
-        CONFIG_INIT_VALUE(pausePosition);
-        CONFIG_INIT_VALUE(pauseRotation);
-        CONFIG_INIT_VALUE(gamePosition);
-        CONFIG_INIT_VALUE(gameRotation);
-        CONFIG_INIT_VALUE(menuPosition);
-        CONFIG_INIT_VALUE(menuRotation);
-        CONFIG_INIT_VALUE(resultPosition);
-        CONFIG_INIT_VALUE(resultRotation);
+
+        // Positions because vectors crash
+
+        CONFIG_INIT_VALUE(pausePositionX);
+        CONFIG_INIT_VALUE(pausePositionY);
+        CONFIG_INIT_VALUE(pausePositionZ);
+
+        CONFIG_INIT_VALUE(pauseRotationX);
+        CONFIG_INIT_VALUE(pauseRotationY);
+        CONFIG_INIT_VALUE(pauseRotationZ);
+
+
+        CONFIG_INIT_VALUE(menuPositionX);
+        CONFIG_INIT_VALUE(menuPositionY);
+        CONFIG_INIT_VALUE(menuPositionZ);
+
+        CONFIG_INIT_VALUE(menuRotationX);
+        CONFIG_INIT_VALUE(menuRotationY);
+        CONFIG_INIT_VALUE(menuRotationZ);
+
+
+        CONFIG_INIT_VALUE(resultPositionX);
+        CONFIG_INIT_VALUE(resultPositionY);
+        CONFIG_INIT_VALUE(resultPositionZ);
+
+        CONFIG_INIT_VALUE(resultRotationX);
+        CONFIG_INIT_VALUE(resultRotationY);
+        CONFIG_INIT_VALUE(resultRotationZ);
     )
 )
