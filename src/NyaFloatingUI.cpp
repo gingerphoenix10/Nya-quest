@@ -27,12 +27,13 @@ namespace Nya {
         UIScreen = nullptr;
         UINoGlow = nullptr;
         hoverClickHelper = nullptr;
-
-        // Init screen
-        initScreen();
+        getLogger().debug("Created NyaFloatingUI instance");
     }
 
     void NyaFloatingUI::initScreen(){
+        if (this->isInitialized){
+            return;
+        }
         // APIS: waifu.pics
         this->api_list =  Nya::Utils::vectorToList({ "waifu.pics", "local" });
 
@@ -96,7 +97,7 @@ namespace Nya {
                 });
             }
         });
-
+        getLogger().debug("00001111112222");
         // Settings button
         this->settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
         [this]() {
@@ -130,7 +131,6 @@ namespace Nya {
 
         {
             this->settingsModal =  QuestUI::BeatSaberUI::CreateModal(thing->get_transform(),  { 65, 65 }, nullptr);
-
             // Create a text that says "Hello World!" and set the parent to the container.
             UnityEngine::UI::VerticalLayoutGroup* vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(this->settingsModal->get_transform());
             vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
@@ -181,20 +181,20 @@ namespace Nya {
                 }
             );
         }
-
+        getLogger().debug("00000");
         UINoGlow = QuestUI::ArrayUtil::First(UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>(), [](UnityEngine::Material* x) { return x->get_name() == "UINoGlow"; });
 
         auto* screenthingidk = thing->get_gameObject()->AddComponent<HMUI::Screen*>();
 
         auto* normalpointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
+        getLogger().debug("00001");
         hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
+        getLogger().debug("13");
+        this->isInitialized = true;
     }
   
     void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene) {
         // Do nothing if the scene did not change
-        if (scene == this->currentScene ) {
-            return;
-        }
         getLogger().debug("Switched from %i to %i ", this->currentScene, scene);
 
         this->currentScene = scene;
@@ -204,6 +204,8 @@ namespace Nya {
                     UIScreen->set_active(false);
                     return;
                 };
+                this->initScreen();
+            
                 UIScreen->get_transform()->set_position(
                     UnityEngine::Vector3(
                         getNyaConfig().pausePositionX.GetValue(), 
@@ -232,6 +234,8 @@ namespace Nya {
                 UIScreen->set_active(false);
                 return;
             };
+            this->initScreen();
+
             auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
             hoverClickHelper->vrPointer = pointer;
 
@@ -258,6 +262,9 @@ namespace Nya {
                 UIScreen->set_active(false);
                 return;
             };
+
+            this->initScreen();
+
             auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
             hoverClickHelper->vrPointer = pointer;
             hoverClickHelper->resetBools();
@@ -287,6 +294,9 @@ namespace Nya {
                     UIScreen->set_active(false);
                     return;
                 };
+
+                this->initScreen();
+
                 UIScreen->get_transform()->set_position(
                     UnityEngine::Vector3(
                         getNyaConfig().pausePositionX.GetValue(), 
@@ -369,4 +379,28 @@ namespace Nya {
                 getNyaConfig().inResults.GetValue()
                 );
     }
+
+    void NyaFloatingUI::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+        std::string prevSceneName(prevScene.get_name());
+        std::string nextSceneName(nextScene.get_name());
+        getLogger().debug("scene changed from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+        
+   
+        if (nextSceneName.find("Menu")) {
+             QuestUI::MainThreadScheduler::Schedule([this]
+            {
+                this->onSceneChange(Nya::FloatingUIScene::MainMenu);
+           
+            });
+             return;
+        }
+        if (nextSceneName.find("Pause")) {
+             QuestUI::MainThreadScheduler::Schedule([this]
+            {
+                this->onSceneChange(Nya::FloatingUIScene::Pause);
+           
+            });
+            return;
+        }
+};
 }

@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
+#include "NyaFloatingUI.hpp"
 #include "SettingsViewController.hpp"
 #include "questui/shared/QuestUI.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
@@ -25,7 +26,9 @@
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/MainMenuViewController.hpp"
+#include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "NyaConfig.hpp"
+#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
@@ -45,11 +48,6 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
     if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);;
 }
 
-MAKE_HOOK_MATCH(Menubutton, &PauseMenuManager::MenuButtonPressed , void, PauseMenuManager* self) {
-    Menubutton(self);
-    if (!getNyaConfig().inMenu.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-}
-
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
     if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);
@@ -57,12 +55,7 @@ MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, Pa
 
 MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
     Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
-    if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-}
-
-MAKE_HOOK_MATCH(Unresults, &ResultsViewController::DidDeactivate, void, ResultsViewController* self, bool removedFromHierarchy, bool screenSystemDisabling) {
-    Unresults(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
+    // if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
@@ -70,66 +63,41 @@ MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, vo
     if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Results);
 }
 
-MAKE_HOOK_MATCH(BackToLobbyButtonPressed, &MultiplayerResultsViewController::BackToLobbyPressed, void, MultiplayerResultsViewController* self) {
-    BackToLobbyButtonPressed(self);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-}
-
-
-MAKE_HOOK_MATCH(MainMenuViewController_DidActivate, &GlobalNamespace::MainMenuViewController::DidActivate, void, GlobalNamespace::MainMenuViewController* self,  bool firstActivation, bool addedToHeirarchy, bool screenSystemEnabling) {
-     MainMenuViewController_DidActivate(self, firstActivation, addedToHeirarchy, screenSystemEnabling);
-     getLogger().info("Main menu show!");
-//     if (Nya::Main::config.isEnabled) Nya::Main::NyaFloatingUI->onPause();
-}
-
-MAKE_HOOK_MATCH(BackToMenuButtonPressed, &MultiplayerResultsViewController::BackToMenuPressed, void, MultiplayerResultsViewController* self) {
-    BackToMenuButtonPressed(self);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-}
-
-MAKE_HOOK_MATCH(UnMultiplayer, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling){
-    UnMultiplayer(self, removedFromHierarchy, screenSystemDisabling);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-}
-
 MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "GameplayCoreSceneSetupData", ".ctor", void, GameplayCoreSceneSetupData* self, IDifficultyBeatmap* difficultyBeatmap, IPreviewBeatmapLevel* previewBeatmapLevel, GameplayModifiers* gameplayModifiers, PlayerSpecificSettings* playerSpecificSettings, PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects, EnvironmentInfoSO* environmentInfo, ColorScheme* colorScheme, MainSettingsModelSO* mainSettingsModel)
 {
     GameplayCoreSceneSetupData_ctor(self, difficultyBeatmap, previewBeatmapLevel, gameplayModifiers, playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects, environmentInfo, colorScheme, mainSettingsModel);
 
-    bool firstActivation = false;
-    if (getNyaConfig().inGame.GetValue() ||
-            getNyaConfig().inMenu.GetValue() ||
-            getNyaConfig().inPause.GetValue() ||
-            getNyaConfig().inResults.GetValue()) {
-        if (Nya::Main::NyaFloatingUI == nullptr){
-            firstActivation = true;
-            Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
-            Nya::Main::NyaFloatingUI->initScreen();
-        }
-        Nya::Main::NyaFloatingUI->UIScreen->set_active(false);
-
-        // if (firstActivation) Nya::Main::NyaFloatingUI->initNoteData();
-            // else Nya::Main::NyaFloatingUI->refreshNoteData();
-            // Nya::Main::NyaFloatingUI->leftHand = colorScheme->get_saberAColor();
-            // Nya::Main::NyaFloatingUI->rightHand = colorScheme->get_saberBColor();
-        }
-    else if (!Nya::NyaFloatingUI::isEnabled() && Nya::Main::NyaFloatingUI != nullptr){
-        GameObject::Destroy(Nya::Main::NyaFloatingUI->UIScreen->get_gameObject());
-
-        GameObject::Destroy(Nya::Main::NyaFloatingUI->get_gameObject());
-        delete Nya::Main::NyaFloatingUI;
-        Nya::Main::NyaFloatingUI = nullptr;
-    }
 }
 
 MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::RestartGame, void, MenuTransitionsHelper* self, System::Action_1<Zenject::DiContainer*>* finishCallback)
 {
-    if (Nya::Main::NyaFloatingUI != nullptr){
-        GameObject::Destroy(Nya::Main::NyaFloatingUI->UIScreen->get_gameObject());
-        delete Nya::Main::NyaFloatingUI;
-        Nya::Main::NyaFloatingUI = nullptr;
-    }
     MenuTransitionsHelper_RestartGame(self, finishCallback);
+}
+
+MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoordinator::DidActivate, void, GlobalNamespace::MainFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+    MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+    
+    static bool hasInited = false;
+    Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
+    Nya::Main::NyaFloatingUI->initScreen();
+    Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
+    hasInited = true;
+}
+
+// On scene change
+MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneManagement::SceneManager::Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
+    
+    // If floating ui exists
+    if(prevScene.IsValid() && nextScene.IsValid()) {
+        std::string prevSceneName(prevScene.get_name());
+        std::string nextSceneName(nextScene.get_name());
+        getLogger().debug("scene changed from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+
+        if (Nya::Main::NyaFloatingUI != nullptr && Nya::Main::NyaFloatingUI->isInitialized ) {
+            Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
+        }
+    }   
 }
 
 void makeFolder() 
@@ -191,15 +159,11 @@ extern "C" void load() {
     INSTALL_HOOK(getLogger(), Results);
     INSTALL_HOOK(getLogger(), GameplayCoreSceneSetupData_ctor);
     INSTALL_HOOK(getLogger(), Unpause);
-    INSTALL_HOOK(getLogger(), Menubutton);
     INSTALL_HOOK(getLogger(), Restartbutton);
-    INSTALL_HOOK(getLogger(), Unresults);
     INSTALL_HOOK(getLogger(), MultiResults);
-    INSTALL_HOOK(getLogger(), BackToLobbyButtonPressed);
-    INSTALL_HOOK(getLogger(), BackToMenuButtonPressed);
-    INSTALL_HOOK(getLogger(), UnMultiplayer);
     INSTALL_HOOK(getLogger(), MenuTransitionsHelper_RestartGame);
-    INSTALL_HOOK(getLogger(), MainMenuViewController_DidActivate);
+    INSTALL_HOOK(getLogger(), SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(getLogger(), MainFlowCoordinator_DidActivate);
 
     getLogger().info("Installed all hooks!");
 }

@@ -15,6 +15,7 @@
 #include "HMUI/Screen.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
 
 using namespace UnityEngine::UI;
 
@@ -33,10 +34,12 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
             void updateCoordinates(UnityEngine::Transform* transform);
+            void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
             void onSceneChange(Nya::FloatingUIScene scene);
-            
-            Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Unknown;
 
+            Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Unknown;
+            bool isInitialized = false;
+        
             DECLARE_CTOR(ctor);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);
