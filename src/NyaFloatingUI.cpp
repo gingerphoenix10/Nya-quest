@@ -52,7 +52,7 @@ namespace Nya {
         UIScreen->GetComponent<UnityEngine::Canvas*>()->set_sortingOrder(31);
         UnityEngine::GameObject::DontDestroyOnLoad(UIScreen);
         screenhandle = UIScreen->GetComponent<QuestUI::FloatingScreen*>()->handle;
-        UIScreen->GetComponent<QuestUI::FloatingScreen*>()->bgGo->GetComponentInChildren<QuestUI::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 1.0f);
+        UIScreen->GetComponent<QuestUI::FloatingScreen*>()->bgGo->GetComponentInChildren<QuestUI::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 0.0f);
         screenhandle->get_transform()->set_localPosition(UnityEngine::Vector3(0.0f, -23.0f, 0.0f));
         screenhandle->get_transform()->set_localScale(UnityEngine::Vector3(5.3f, 3.3f, 5.3f));
         QuestUI::FloatingScreen* thing = UIScreen->GetComponent<QuestUI::FloatingScreen*>();
@@ -97,7 +97,7 @@ namespace Nya {
                 });
             }
         });
-        getLogger().debug("00001111112222");
+
         // Settings button
         this->settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
         [this]() {
@@ -181,15 +181,10 @@ namespace Nya {
                 }
             );
         }
-        getLogger().debug("00000");
         UINoGlow = QuestUI::ArrayUtil::First(UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>(), [](UnityEngine::Material* x) { return x->get_name() == "UINoGlow"; });
-
         auto* screenthingidk = thing->get_gameObject()->AddComponent<HMUI::Screen*>();
-
         auto* normalpointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
-        getLogger().debug("00001");
         hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
-        getLogger().debug("13");
         this->isInitialized = true;
     }
   
