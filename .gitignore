@@ -6,3 +6,7 @@ qpm_defines.cmake
 qpm.shared.json
 ndkpath.txt
 logs/
+binary_cache/
+perf.data
+report.html
+*.qmod

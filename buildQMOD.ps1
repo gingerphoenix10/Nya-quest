@@ -82,11 +82,16 @@ foreach ($lib in $modJson.libraryFiles)
 $zip = $qmodName + ".zip"
 $qmod = $qmodName + ".qmod"
 
+if ((-not (Test-Path -Path "mods")))
+{
+    $out = new-item -Path mods -ItemType Directory
+} 
+
 if ((-not ($clean.IsPresent)) -and (Test-Path $qmod))
 {
     echo "Making Clean Qmod"
-    Move-Item $qmod $zip -Force
+    Move-Item "mods"+$qmod $zip -Force
 }
 
 Compress-Archive -Path $filelist -DestinationPath $zip -Update
-Move-Item $zip $qmod -Force
+Move-Item $zip "mods/$qmod" -Force

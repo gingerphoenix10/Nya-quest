@@ -4,17 +4,16 @@
 	"name": "Nya",
 	"id": "Nya",
 	"author": "FrozenAlex, originally by FutureMapper and SirSpam",
-	"version": "0.1.2-Dev.1",
+	"version": "0.1.3-Dev.1",
 	"packageId": "com.beatgames.beatsaber",
-	"packageVersion": "1.21.0",
+	"packageVersion": "1.24.0",
 	"description": "Beat Saber mod for displaying nya-tastic images from various anime themed web APIs",
 	"dependencies": [],
 	"modFiles": [
 		"libNya.so"
 	],
 	"libraryFiles": [
-		"libbeatsaber-hook_3_8_1.so",
-		"libnya-utils.so"
+		"libbeatsaber-hook_3_12_0.so"
 	],
 	"fileCopies": []
 }

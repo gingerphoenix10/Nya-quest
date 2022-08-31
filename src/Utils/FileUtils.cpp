@@ -53,7 +53,8 @@ namespace FileUtils {
                     findCaseInsensitive(entry.path(), ".webp") != std::string::npos ||
                     findCaseInsensitive(entry.path(), ".tiff") != std::string::npos ||
                     findCaseInsensitive(entry.path(), ".bmp") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".gif") != std::string::npos
+                    findCaseInsensitive(entry.path(), ".gif") != std::string::npos ||
+                    findCaseInsensitive(entry.path(), ".mp4") != std::string::npos
                 ) {
                     strings.push_back(entry.path());
                 } 

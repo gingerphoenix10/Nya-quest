@@ -9,5 +9,6 @@ namespace Nya::Utils {
     std::vector<StringW> listWToVector(List<StringW>* values);
     int findStrIndexInList(List<StringW>* values, StringW string );
     int random(int min, int max);
+    ListWrapper<StringW> listStringToStringW(std::list<std::string> values);
 }
 

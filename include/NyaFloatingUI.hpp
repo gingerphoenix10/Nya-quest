@@ -11,6 +11,7 @@
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
 #include "UnityEngine/Vector3.hpp"
+#include "UnityEngine/Plane.hpp"
 #include "HMUI/SimpleTextDropdown.hpp"
 #include "HMUI/Screen.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
@@ -51,6 +52,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
 
             // NYA
             DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Plane*, plane);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
             // Settings buttons and modal

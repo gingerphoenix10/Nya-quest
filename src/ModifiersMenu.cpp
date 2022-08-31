@@ -14,7 +14,7 @@
 #include "UnityEngine/SpriteMeshType.hpp"
 #include "HMUI/ModalView.hpp"
 #include "System/Action.hpp"
-#include "nya-utils/shared/ImageView.hpp"
+#include "ImageView.hpp"
 
 #include <dirent.h>
 #include <string>
@@ -86,9 +86,11 @@ void Nya::ModifiersMenu::ctor() {
             } else {
                 NyaAPI::get_path_from_api(NyaAPI::get_api_path(), 10.0f, [this, view](bool success, std::string url) {
                     if (success) {
-                        view->DownloadImage(url, 10.0f, [this](bool success, long code) {
-                            this->nyaButton->set_interactable(true);
-                        });
+                        GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                            view->DownloadImage(url, 10.0f, [this](bool success, long code) {
+                                this->nyaButton->set_interactable(true);
+                            })
+                        ));
                     } else {
                         this->nyaButton->set_interactable(true);
                     }

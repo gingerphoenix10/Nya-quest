@@ -2,12 +2,13 @@
 #include "NyaConfig.hpp"
 #include "main.hpp"
 #include "Utils/Utils.hpp"
-#include "nya-utils/shared/ImageView.hpp"
+#include "ImageView.hpp"
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 #include "API.hpp"
 #include "custom-types/shared/coroutine.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "Utils/FileUtils.hpp"
+#include "GlobalNamespace/SharedCoroutineStarter.hpp"
 
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
@@ -19,7 +20,7 @@ namespace Nya {
 
     void NyaFloatingUI::ctor()
     {
-//        DEBUG("Created NyaFloatingUI instance: {}", fmt::ptr(this));
+//      DEBUG("Created NyaFloatingUI instance: {}", fmt::ptr(this));
 
         getLogger().debug("Created NyaFloatingUI instance");
         instance = this;
@@ -73,29 +74,75 @@ namespace Nya {
         horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
         horz->set_spacing(10);
 
+
+        // Get new picture
         this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
         [this, view]() {
+            // Disable the button
             this->nyaButton->set_interactable(false);
 
-            if (getNyaConfig().API.GetValue() == "local") {
-                auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
-                int randomIndex = Utils::random(0, fileList.size()-1);
-                getLogger().debug("Index is %i", randomIndex);
-                getLogger().debug("File is %s", fileList[randomIndex].c_str());
-                view->LoadFile(fileList[randomIndex], [this](bool success) {
-                    this->nyaButton->set_interactable(true);
-                });
-            } else {
-                NyaAPI::get_path_from_api(NyaAPI::get_api_path(), 10.0f, [this, view](bool success, std::string url) {
-                    if (success) {
-                        view->DownloadImage(url, 10.0f, [this](bool success, long code) {
-                            this->nyaButton->set_interactable(true);
-                        });
-                    } else {
+            try
+            {   
+                // Get value
+                std::string currentAPI = getNyaConfig().API.GetValue();
+                // TODO: Make dynamic
+                SourceData source =  NyaAPI::get_data_source("xSky");
+                // Local files
+                if (source.Mode == DataMode::Local) {
+                    auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
+                    int randomIndex = Utils::random(0, fileList.size()-1);
+                    getLogger().debug("Index is %i", randomIndex);
+                    getLogger().debug("File is %s", fileList[randomIndex].c_str());
+                    view->LoadFile(fileList[randomIndex], [this](bool success) {
                         this->nyaButton->set_interactable(true);
+                    });
+                } else 
+                if (source.Mode == DataMode::Json) {
+                    bool NSFWEnabled = false;
+                    
+                    #ifdef NSFW
+                        NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
+                        getLogger().info("NSFW enabled :%i", NSFWEnabled);
+                    #endif
+                    
+                    // Construct the url
+                    // TODO: check if endpoint from the setting exists and make it dynamic
+                    std::string endpointURL = "";
+                    if (NSFWEnabled) {
+                        endpointURL = source.BaseEndpoint + "furry";  
+                    } else {
+                        endpointURL = source.BaseEndpoint + "catboy";  
                     }
-                });
+                    
+
+                    getLogger().debug("Endpoint URL: %s", endpointURL.c_str());
+                    NyaAPI::get_path_from_api(endpointURL, 10.0f, [this, view](bool success, std::string url) {
+                        getLogger().debug("Image URL: %s", url.c_str());
+                        if (success) {
+                            
+                            QuestUI::MainThreadScheduler::Schedule([this, view, url]{
+                                // Use coroutine to get download image
+                                GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(view->DownloadImage(url, 10.0f, [this](bool success, long code) {
+                                    this->nyaButton->set_interactable(true);
+                                })));
+                            });
+                        } else {
+                            // Error getting things
+                            getLogger().debug("Failed to load image from api lel");
+                            this->nyaButton->set_interactable(true);
+                        }
+                    });
+                }
+
+               
+          
             }
+            // TODO: If the source is not set up, set up the default
+            catch(const std::exception& e)
+            {
+                getLogger().error("Custom fail");
+                // getLogger().error(e.what());
+            }           
         });
 
         // Settings button
@@ -111,19 +158,25 @@ namespace Nya {
                 std::string API = getNyaConfig().API.GetValue();
                 std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
 
-                this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->api_list));
+                // Get current api or set the default one
+                SourceData source =  NyaAPI::get_data_source("waifu.pics");
+                auto sources = Nya::Utils::vectorToList(NyaAPI::get_source_list());
+                auto sfwList = Nya::Utils::listStringToStringW(source.SfwEndpoints);
+
+                this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(sources));
            
-                int index = Nya::Utils::findStrIndexInList(this->api_list,API);
-                this->api_switch->SelectCellWithIdx(index);
+                int index = Nya::Utils::findStrIndexInList(sources, "waifu.pics");
+                // this->api_switch->SelectCellWithIdx(index);
         
                 // SFW endpoints
-                this->sfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->sfw_endpoints));
-                this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+                this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
+                // this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
 
                 #ifdef NSFW
                    // Restore nsfw state
-                   this->nsfw_endpoint->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(this->nsfw_endpoints));
-                   this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, getNyaConfig().NSFWEndpoint.GetValue()));
+                   auto nsfwList = Nya::Utils::listStringToStringW(source.NsfwEndpoints);
+                   this->nsfw_endpoint->SetTexts(nsfwList->i_IReadOnlyList_1_T());
+                    //    this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, getNyaConfig().NSFWEndpoint.GetValue()));
                    this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
                 #endif
             });
@@ -144,8 +197,32 @@ namespace Nya {
 
             // API Selection (nothing to select for now)
             std::string API = getNyaConfig().API.GetValue();
-            this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [](StringW value){
+            this->api_switch = QuestUI::BeatSaberUI::CreateDropdown(vert->get_transform(), to_utf16("API"),  "Loading..", {"Loading.."} , [this](StringW value){
                 getNyaConfig().API.SetValue(value);
+
+                SourceData source =  NyaAPI::get_data_source(value);
+
+                auto sfwList = Nya::Utils::listStringToStringW(source.SfwEndpoints);
+
+                // SFW endpoints
+                this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
+                // this->sfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->sfw_endpoints,SFWEndpoint));
+
+                #ifdef NSFW
+                   // Restore nsfw state
+                   if (source.NsfwEndpoints.size() == 0) {
+                        this->nsfw_endpoint->set_enabled(false);
+                   } else {
+                        this->nsfw_endpoint->set_enabled(true);
+                        auto nsfwList = Nya::Utils::listStringToStringW(source.NsfwEndpoints);
+
+                        this->nsfw_endpoint->SetTexts(nsfwList->i_IReadOnlyList_1_T());
+                        //    this->nsfw_endpoint->SelectCellWithIdx(Nya::Utils::findStrIndexInList(this->nsfw_endpoints, getNyaConfig().NSFWEndpoint.GetValue()));
+                        this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
+                   }
+                   
+                #endif
+
             });
 
 

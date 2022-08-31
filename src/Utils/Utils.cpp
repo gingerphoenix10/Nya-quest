@@ -17,6 +17,21 @@ namespace Nya::Utils {
         return list;
     }
 
+    ListWrapper<StringW> listStringToStringW(std::list<std::string> values) {
+        // TODO: Fix
+        int count = values.size();
+        
+        // Convert stuff to list
+        ListWrapper<StringW> list(List<StringW>::New_ctor());
+        if (count == 0) {
+            return list;
+        }
+        list->EnsureCapacity(count);
+        for (auto item : values) {list->Add(item);};
+
+        return list;
+    }
+
     /**
      * @brief Converts listW to vector
      * 
