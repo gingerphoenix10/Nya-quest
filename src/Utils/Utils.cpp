@@ -60,6 +60,28 @@ namespace Nya::Utils {
         return -1;
     }
 
+    /**
+     * @brief Finds the string in a list
+     * 
+     * @param values 
+     * @param string 
+     * @return int -1 if not found anything or index of the element if the item is found
+     */
+    int findStrIndexInListC(std::list<std::string> values, StringW string ) {
+        
+        // Create iterator pointing to first element
+        std::list<std::string>::iterator it = values.begin();
+
+        for (int i = 0; i < values.size(); i++){
+            auto value = *it;
+            if (value == string) {
+                return i;
+            }
+            std::advance(it, 1);
+        }
+        return -1;
+    }
+
     // Generate random number 
     // Stolen from https://stackoverflow.com/questions/7560114/random-number-c-in-some-range
     int random(int min, int max) //range : [min, max]

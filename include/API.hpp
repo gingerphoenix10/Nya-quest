@@ -1,4 +1,4 @@
-
+#pragma once
 #include "NyaConfig.hpp"
 #include "main.hpp"
 
@@ -43,4 +43,5 @@ namespace NyaAPI {
     std::vector<StringW> get_source_list();
     void get_path_from_api(std::string url,float timeoutInSeconds,std::function<void(bool success, std::string url)> finished);
     // void NyaAPI::downloadImageFile();
+    std::map<std::string, SourceData> getEndpoints();
 }

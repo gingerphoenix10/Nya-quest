@@ -9,6 +9,7 @@
 #include "HMUI/ModalView.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
+#include "API.hpp"
 
 
 DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,

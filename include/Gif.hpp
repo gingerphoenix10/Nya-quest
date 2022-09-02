@@ -1,3 +1,4 @@
+#pragma once
 #include "gif-lib/shared/gif_lib.h"
 #include <string>
 #include <vector>
@@ -133,7 +134,7 @@ public:
             [this, finished]
             {
                 std::thread::id this_id = std::this_thread::get_id();
-                il2cpp_utils::getLogger().warning("Runs in a thread %d", this_id);
+                // il2cpp_utils::getLogger().warning("Runs in a thread %d", this_id);
                 
                 int slurpResult = this->Slurp();
 

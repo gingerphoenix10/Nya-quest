@@ -1,6 +1,6 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
-#include "NyaFloatingUI.hpp"
+
 #include "SettingsViewController.hpp"
 #include "questui/shared/QuestUI.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
@@ -122,8 +122,8 @@ void makeFolder()
 }
 
 // Returns a logger, useful for printing debug messages
-Logger& getLogger() {
-    static Logger* logger = new Logger(modInfo);
+Logger& Nya::getLogger() {
+    static Logger* logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
 
@@ -142,6 +142,9 @@ extern "C" void load() {
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
+
+    // Init our custom config branch
+    EndpointConfig::migrate(getNyaConfig().config);
 
     // Make local folders if they do not exist
     makeFolder();

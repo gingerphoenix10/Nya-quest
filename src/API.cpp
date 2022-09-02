@@ -1,5 +1,7 @@
 #include "API.hpp"
 #include "WebUtils.hpp"
+#include "main.hpp"
+using namespace Nya;
 
 inline std::map<std::string, SourceData> endpoint_data = {
     {"waifu.pics",
@@ -34,10 +36,10 @@ inline std::map<std::string, SourceData> endpoint_data = {
          "https://anime-api.hisoka17.repl.co/img/",
          DataMode::Json,
          {
-             "hug", "kiss", "slap", "wink", "pat", "kill", "cuddle", "punch", "waifu"
+            "hug", "kiss", "slap", "wink", "pat", "kill", "cuddle", "punch", "waifu"
          },
          {
-             "hentai", "boobs", "lesbian"
+            "hentai", "nsfw/boobs", "nsfw/lesbian" 
          }
         }
     },
@@ -64,6 +66,10 @@ inline std::map<std::string, SourceData> endpoint_data = {
         }
     }
 };
+
+std::map<std::string, SourceData> NyaAPI::getEndpoints() {
+    return endpoint_data;
+}
 
 SourceData NyaAPI::get_data_source(std::string name) {
     if (name.empty()) {
@@ -156,3 +162,11 @@ void NyaAPI::get_path_from_api(
         
     });
 }
+
+// std::vector<StringW> NyaAPI::get_source_list() {
+//     std::vector<StringW> keys;
+//     for (const auto& [key, _] : endpoint_data) {
+//         keys.push_back(key);
+//     }
+//     return keys;
+// }

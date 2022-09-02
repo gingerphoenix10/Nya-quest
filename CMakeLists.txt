@@ -28,7 +28,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-frtti -fexceptions)
 add_compile_options(-O3)
 # NSFW toggle
-# add_compile_options(-DNSFW)
+add_compile_options(-DNSFW)
 # compile definitions used
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
 add_compile_definitions(ID=\"${MOD_ID}\")

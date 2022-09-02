@@ -1,6 +1,6 @@
 // This code is mostly taken from https://github.com/Royston1999/SliceDetails-Quest
-
 #pragma once
+
 #include "UI/HoverClickHelper.hpp"
 #include <cmath>
 #define _USE_MATH_DEFINES
@@ -20,7 +20,7 @@
 
 using namespace UnityEngine::UI;
 
-namespace Nya{
+namespace Nya {
     enum FloatingUIScene {
         Unknown, Pause, Results, MainMenu, InGame
     };
@@ -48,7 +48,6 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
             
             DECLARE_INSTANCE_FIELD(Nya::HoverClickHelper*, hoverClickHelper);
-//            Nya::ModalHelper* modalHelper = nullptr;
 
             // NYA
             DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
@@ -60,16 +59,16 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
             DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
             DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
-            #ifdef NSFW
-                DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
-                DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
-            #endif
+           
+            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
+            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
+          
             DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
             DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);
             DECLARE_INSTANCE_FIELD(List<StringW>*, api_list);
 
-        static NyaFloatingUI* get_instance();
-        static bool isEnabled();
-private:
-        static NyaFloatingUI* instance;
+            static NyaFloatingUI* get_instance();
+            static bool isEnabled();
+        private:
+            static NyaFloatingUI* instance;
 )

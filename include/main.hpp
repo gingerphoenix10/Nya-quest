@@ -12,6 +12,7 @@
 
 #include "NyaFloatingUI.hpp"
 #include "NyaConfig.hpp"
+#include "EndpointConfig.hpp"
 
 inline ModInfo modInfo; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 
@@ -22,8 +23,9 @@ namespace Nya{
             static void loadConfig();
             static Nya::NyaFloatingUI* NyaFloatingUI;
     };
-}
 
-// Define these functions here so that we can easily read configuration and log information from other files
-Configuration& getConfig();
-Logger& getLogger();
+    Logger& getLogger();
+
+    // Define these functions here so that we can easily read configuration and log information from other files
+    Configuration& getConfig();    
+}
