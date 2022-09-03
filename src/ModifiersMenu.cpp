@@ -35,7 +35,7 @@ namespace Nya {
     }
 
     void ModifiersMenu::ctor() {
-        getLogger().fmtLog<Paper::LogLevel::DBG>("Creator runs");
+        DEBUG("Creator runs");
 
         auto vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
         vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
@@ -43,7 +43,7 @@ namespace Nya {
         NYA = QuestUI::BeatSaberUI::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
-        getLogger().fmtLog<Paper::LogLevel::DBG>("Adds component");
+        DEBUG("Adds component");
         auto view = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
         ele->set_preferredHeight(50);
         ele->set_preferredWidth(50);
@@ -190,7 +190,7 @@ namespace Nya {
     }
 
     void ModifiersMenu::dtor(){
-        getLogger().fmtLog<Paper::LogLevel::INF>("Modifiers menu destroyed");
+        INFO("Modifiers menu destroyed");
     }
 }
 

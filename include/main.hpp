@@ -31,3 +31,10 @@ namespace Nya {
     // Old version of the logger
     Logger& getLoggerOld();  
 }
+
+
+#define INFO(...) Nya::getLogger().fmtLog<Paper::LogLevel::INF>(__VA_ARGS__)
+#define ERROR(...) Nya::getLogger().fmtLog<Paper::LogLevel::ERR>(__VA_ARGS__)
+#define CRITICAL(...) Nya::getLogger().fmtLog<Paper::LogLevel::ERR>(__VA_ARGS__)
+#define DEBUG(...) Nya::getLogger().fmtLog<Paper::LogLevel::DBG>(__VA_ARGS__)
+#define WARNING(...) Nya::getLogger().fmtLog<Paper::LogLevel::WRN>(__VA_ARGS__)

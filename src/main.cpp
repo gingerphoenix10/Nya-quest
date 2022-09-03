@@ -92,7 +92,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
     if(prevScene.IsValid() && nextScene.IsValid()) {
         std::string prevSceneName(prevScene.get_name());
         std::string nextSceneName(nextScene.get_name());
-        getLogger().fmtLog<Paper::LogLevel::INF>("scene changed from {} to {}", prevSceneName, nextSceneName);
+        INFO("scene changed from {} to {}", prevSceneName, nextSceneName);
 
         if (Nya::Main::NyaFloatingUI != nullptr && Nya::Main::NyaFloatingUI->isInitialized ) {
             Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
@@ -107,7 +107,7 @@ void makeFolder()
         int makePath = mkpath(NyaGlobals::nyaPath.c_str());
         if (makePath == -1)
         {
-            getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to make Nya Folder path!");
+            ERROR("Failed to make Nya Folder path!");
         }
     }
 
@@ -116,7 +116,7 @@ void makeFolder()
         int makePath = mkpath(NyaGlobals::imagesPath.c_str());
         if (makePath == -1)
         {
-            getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to make Images Folder path!");
+            ERROR("Failed to make Images Folder path!");
         }
     }
 }
@@ -138,7 +138,7 @@ extern "C" void setup(ModInfo& info) {
     info.version = VERSION;
     modInfo = info;
 
-    Nya::getLogger().fmtLog<Paper::LogLevel::INF>("Completed setup!");
+    INFO("Completed setup!");
 }
 
 // Called later on in the game loading - a good time to install function hooks

@@ -143,9 +143,9 @@ namespace Nya::Utils {
                 }
                 
 
-                getLogger().fmtLog<Paper::LogLevel::INF>("Endpoint URL: {}", endpointURL.c_str());
+                INFO("Endpoint URL: {}", endpointURL);
                 NyaAPI::get_path_from_api(endpointURL, 10.0f, [button, imageView](bool success, std::string url) {
-                    getLogger().fmtLog<Paper::LogLevel::DBG>("Image URL: {}", url);
+                    INFO("Image URL: {}", url);
                     if (success) {
                         
                         QuestUI::MainThreadScheduler::Schedule([button, imageView, url]{
@@ -156,7 +156,7 @@ namespace Nya::Utils {
                         });
                     } else {
                         // Error getting things
-                        getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to load image from api");
+                        ERROR("Failed to load image from api");
                         getLogger().Backtrace(20);
                         button->set_interactable(true);
                     }
@@ -169,7 +169,7 @@ namespace Nya::Utils {
         // TODO: If the source is not set up, set up the default
         catch(const std::exception& e)
         {
-            getLogger().fmtLog<Paper::LogLevel::ERR>("Custom fail");
+            ERROR("Custom fail");
             getLogger().Backtrace(20);
           
         }  
@@ -184,7 +184,7 @@ namespace Nya::Utils {
         UnityEngine::UI::Toggle* nsfw_toggle
     ) { 
 
-        getLogger().fmtLog<Paper::LogLevel::INF>("Settings button clicked");
+        INFO("Settings button clicked");
             // Run UI on the main thread
             QuestUI::MainThreadScheduler::Schedule([
                     settingsModal,
