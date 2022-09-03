@@ -216,16 +216,12 @@ namespace Nya::Utils {
                 std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, API, false);
                 int sfw_index = -1;
                 if (endpoint_sfw != "") {
-                    getLogger().debug("Sfw Endpoint is %s", endpoint_sfw.c_str());
                     sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
                 }
 
-                if (sfw_index > 0) {
-                    getLogger().debug("Sfw Endpoint found, setting index to %i", sfw_index);
+                if (sfw_index != -1) {
                     sfw_endpoint->SelectCellWithIdx(sfw_index); 
                 }
-
-
 
 
                 #ifdef NSFW
@@ -244,12 +240,10 @@ namespace Nya::Utils {
                         std::string endpoint_nsfw = EndpointConfig::getEndpointValue(getNyaConfig().config, API, true);
                         int nsfw_index = -1;
                         if (endpoint_nsfw != "") {
-
-                            getLogger().debug("Nsfw Endpoint is %s", endpoint_nsfw.c_str());
                             nsfw_index = Nya::Utils::findStrIndexInListC(source->NsfwEndpoints, endpoint_nsfw);
                         }
                         
-                        if (nsfw_index > 0) {
+                        if (nsfw_index != -1) {
                             nsfw_endpoint->SelectCellWithIdx(nsfw_index); 
                         }
                    }
