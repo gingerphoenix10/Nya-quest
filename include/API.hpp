@@ -39,9 +39,8 @@ struct SourceData
 namespace NyaAPI {
     // Function gets url for the current selected category
     SourceData* get_data_source(std::string name);
-    std::string get_api_path();
     std::vector<StringW> get_source_list();
     void get_path_from_api(std::string url,float timeoutInSeconds,std::function<void(bool success, std::string url)> finished);
     // void NyaAPI::downloadImageFile();
-    std::map<std::string, SourceData> getEndpoints();
+    std::map<std::string, SourceData>* getEndpoints();
 }

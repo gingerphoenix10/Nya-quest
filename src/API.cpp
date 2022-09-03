@@ -67,8 +67,8 @@ inline std::map<std::string, SourceData> endpoint_data = {
     }
 };
 
-std::map<std::string, SourceData> NyaAPI::getEndpoints() {
-    return endpoint_data;
+std::map<std::string, SourceData>* NyaAPI::getEndpoints() {
+    return &endpoint_data;
 }
 
 SourceData* NyaAPI::get_data_source(std::string name) {
@@ -87,49 +87,6 @@ std::vector<StringW> NyaAPI::get_source_list() {
         keys.push_back(key);
     }
     return keys;
-}
-
-    // void NyaAPI::downloadImageFile(
-    //     std::string url,
-    //     float timeoutInSeconds,
-    //     std::function<void(bool success, std::string url)> finished) {
-    //     WebUtils::GetAsync(NyaAPI::get_api_path(), 10.0, [&, finished](long code, std::string result){
-            
-    //     });
-    // }
-
- // Function gets url for the current selected category
-std::string NyaAPI::get_api_path() {
-    // Get all config parametes
-    std::string API = getNyaConfig().API.GetValue();
-    std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
-    getLogger().info("Selected sfw category: %s", SFWEndpoint.data());
-    getLogger().info("Selected api :%s", API.data());
-#ifdef NSFW
-
-    std::string NSFWEndpoint = getNyaConfig().NSFWEndpoint.GetValue();
-    getLogger().info("Selected nsfw category :%s", NSFWEndpoint.data());
-    bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-    getLogger().info("NSFW enabled :%i", NSFWEnabled);
-#else
-    bool NSFWEnabled = false;
-    std::string NSFWEndpoint = "";
-#endif
-
-    if (API == "waifu.pics") {
-        std::string url = "https://api.waifu.pics/";
-        url += NSFWEnabled ? "nsfw/" : "sfw/";
-
-        if (NSFWEnabled) {
-            url += NSFWEndpoint;
-        } else {
-            url += SFWEndpoint;
-        };
-
-        return url;
-    } else {
-        return "";
-    }
 }
 
 // Grabs path to image from api
@@ -162,11 +119,3 @@ void NyaAPI::get_path_from_api(
         
     });
 }
-
-// std::vector<StringW> NyaAPI::get_source_list() {
-//     std::vector<StringW> keys;
-//     for (const auto& [key, _] : endpoint_data) {
-//         keys.push_back(key);
-//     }
-//     return keys;
-// }

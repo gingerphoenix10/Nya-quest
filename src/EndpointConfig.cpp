@@ -19,7 +19,7 @@ namespace EndpointConfig {
             auto endpoint_data = NyaAPI::getEndpoints();
             
             // Add default endpoints
-            for (const auto& [key, data] : endpoint_data) {
+            for (const auto& [key, data] : *endpoint_data) {
                 if (!endpoints.HasMember(key)) {
                     rapidjson::Value fieldname;
                     fieldname.SetString(key, allocator);
