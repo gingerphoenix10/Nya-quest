@@ -56,6 +56,11 @@
       "id": "gif-lib",
       "versionRange": "^5.2.2",
       "additionalData": {}
+    },
+    {
+      "id": "paper",
+      "versionRange": "^1.2.9",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

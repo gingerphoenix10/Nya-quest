@@ -46,7 +46,7 @@ namespace EndpointConfig {
                 }
             }
             // save
-            getLogger().debug("Migrated config");
+            getLogger().fmtLog<Paper::LogLevel::INF>("Migrated config");
             config->Write();
         }
     }

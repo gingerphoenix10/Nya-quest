@@ -92,7 +92,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
     if(prevScene.IsValid() && nextScene.IsValid()) {
         std::string prevSceneName(prevScene.get_name());
         std::string nextSceneName(nextScene.get_name());
-        getLogger().debug("scene changed from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+        getLogger().fmtLog<Paper::LogLevel::INF>("scene changed from {} to {}", prevSceneName, nextSceneName);
 
         if (Nya::Main::NyaFloatingUI != nullptr && Nya::Main::NyaFloatingUI->isInitialized ) {
             Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
@@ -107,7 +107,7 @@ void makeFolder()
         int makePath = mkpath(NyaGlobals::nyaPath.c_str());
         if (makePath == -1)
         {
-            getLogger().error("Failed to make Nya Folder path!");
+            getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to make Nya Folder path!");
         }
     }
 
@@ -116,24 +116,29 @@ void makeFolder()
         int makePath = mkpath(NyaGlobals::imagesPath.c_str());
         if (makePath == -1)
         {
-            getLogger().error("Failed to make Images Folder path!");
+            getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to make Images Folder path!");
         }
     }
 }
 
-// Returns a logger, useful for printing debug messages
-Logger& Nya::getLogger() {
-    static Logger* logger = new Logger(modInfo, LoggerOptions(false, true));
+Logger& Nya::getLoggerOld() {
+    static Logger* logger = new Logger(modInfo);
     return *logger;
+}
+
+// Returns a logger, useful for printing debug messages
+Paper::ConstLoggerContext<4UL> Nya::getLogger() {
+    static auto fastContext = Paper::Logger::WithContext<"Nya">();
+    return fastContext;
 }
 
 // Called at the early stages of game loading
 extern "C" void setup(ModInfo& info) {
-    info.id = ID;
+    info.id = MOD_ID;
     info.version = VERSION;
     modInfo = info;
 
-    getLogger().info("Completed setup!");
+    Nya::getLogger().fmtLog<Paper::LogLevel::INF>("Completed setup!");
 }
 
 // Called later on in the game loading - a good time to install function hooks
@@ -156,19 +161,19 @@ extern "C" void load() {
 
     custom_types::Register::AutoRegister();
 
-    getLogger().info("Installing hooks...");
+    Nya::getLoggerOld().info("Installing hooks...");
     // Install our hooks
-    INSTALL_HOOK(getLogger(), Pause);
-    INSTALL_HOOK(getLogger(), Results);
-    INSTALL_HOOK(getLogger(), GameplayCoreSceneSetupData_ctor);
-    INSTALL_HOOK(getLogger(), Unpause);
-    INSTALL_HOOK(getLogger(), Restartbutton);
-    INSTALL_HOOK(getLogger(), MultiResults);
-    INSTALL_HOOK(getLogger(), MenuTransitionsHelper_RestartGame);
-    INSTALL_HOOK(getLogger(), SceneManager_Internal_ActiveSceneChanged);
-    INSTALL_HOOK(getLogger(), MainFlowCoordinator_DidActivate);
+    INSTALL_HOOK(Nya::getLoggerOld(), Pause);
+    INSTALL_HOOK(Nya::getLoggerOld(), Results);
+    INSTALL_HOOK(Nya::getLoggerOld(), GameplayCoreSceneSetupData_ctor);
+    INSTALL_HOOK(Nya::getLoggerOld(), Unpause);
+    INSTALL_HOOK(Nya::getLoggerOld(), Restartbutton);
+    INSTALL_HOOK(Nya::getLoggerOld(), MultiResults);
+    INSTALL_HOOK(Nya::getLoggerOld(), MenuTransitionsHelper_RestartGame);
+    INSTALL_HOOK(Nya::getLoggerOld(), SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(Nya::getLoggerOld(), MainFlowCoordinator_DidActivate);
 
-    getLogger().info("Installed all hooks!");
+    Nya::getLoggerOld().info("Installed all hooks!");
 }
 
 

@@ -24,5 +24,8 @@ namespace Nya::Utils {
         HMUI::SimpleTextDropdown* nsfw_endpoint,
         UnityEngine::UI::Toggle* nsfw_toggle
     );
+    bool IsAnimated(StringW str);
+
+    bool IsImage(StringW str);
 }
 

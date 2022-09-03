@@ -1,6 +1,6 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 // OurClass.cpp
-
+#include "main.hpp"
 #include <fstream>
 #include <iostream>
 #include "ImageView.hpp"
@@ -27,6 +27,7 @@
 DEFINE_TYPE(NyaUtils, ImageView);
 
 using namespace UnityEngine;
+
 
 // Start
 void NyaUtils::ImageView::ctor()
@@ -84,7 +85,7 @@ void NyaUtils::ImageView::Update()
       {
         if (imageView == nullptr)
         {
-          il2cpp_utils::getLogger().warning("imageView is null");
+          Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("imageView is null");
           imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
         }
         if (animationFrames.Length() > currentFrame)
@@ -95,7 +96,7 @@ void NyaUtils::ImageView::Update()
           {
             if (this->canvasRenderer == nullptr)
             {
-              il2cpp_utils::getLogger().warning("sprite renderer is null");
+              Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("sprite renderer is null");
             }
             else
             {
@@ -116,17 +117,17 @@ void NyaUtils::ImageView::UpdateImage(ArrayW<UnityEngine::Texture2D *> frames, A
   // Check for nulls
   if (!frames)
   {
-    il2cpp_utils::getLogger().warning("Frames are null, skipping");
+    Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Frames are null, skipping");
     return;
   }
   if (!timings)
   {
-    il2cpp_utils::getLogger().warning("Timings are null, skipping");
+    Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Timings are null, skipping");
     return;
   }
   if (frames.Length() < 1)
   {
-    il2cpp_utils::getLogger().warning("Zero frames, skipping");
+    Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Zero frames, skipping");
     return;
   }
 
@@ -138,14 +139,14 @@ void NyaUtils::ImageView::UpdateImage(ArrayW<UnityEngine::Texture2D *> frames, A
   }
   if (total_length == 0)
   {
-    il2cpp_utils::getLogger().warning("Gif has zero timings for some reason, skipping...");
+    Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Gif has zero timings for some reason, skipping...");
     return;
   }
 
   // Validate width and height
   if (!(ImageWidth > 0 && ImageHeight > 0))
   {
-    il2cpp_utils::getLogger().warning("Timings are null, skipping");
+    Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Timings are null, skipping");
     return;
   }
 
@@ -383,7 +384,7 @@ void NyaUtils::ImageView::LoadFile(
   }
   // else if ( findCaseInsensitive(filePath, ".mp4") != std::string::npos)
   // {
-  //     il2cpp_utils::getLogger().warning("Found mp4");
+  //     Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Found mp4");
   //     play = true;
   //     isVideo = true;
 
@@ -402,7 +403,7 @@ void NyaUtils::ImageView::LoadFile(
   //     // videoPlayer->ta
   //     // RenderTexture* texture = RenderTexture::New_ctor(200,200, 32);
   //     if(meshRenderer){
-  //       il2cpp_utils::getLogger().warning("Found renderer");
+  //       Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("Found renderer");
   //       videoPlayer->set_renderer(meshRenderer);
   //     } else {
 

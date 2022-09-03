@@ -1,5 +1,5 @@
 #pragma once
-
+#include "paper/shared/logger.hpp"
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "modloader/shared/modloader.hpp"
 
@@ -16,7 +16,7 @@
 
 inline ModInfo modInfo; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 
-namespace Nya{
+namespace Nya {
     class Main {
         public:
             static bool configValid;
@@ -24,8 +24,10 @@ namespace Nya{
             static Nya::NyaFloatingUI* NyaFloatingUI;
     };
 
-    Logger& getLogger();
+    Paper::ConstLoggerContext<4UL> getLogger();
 
     // Define these functions here so that we can easily read configuration and log information from other files
-    Configuration& getConfig();    
+    Configuration& getConfig();  
+    // Old version of the logger
+    Logger& getLoggerOld();  
 }

@@ -31,7 +31,6 @@ add_compile_options(-O3)
 add_compile_options(-DNSFW)
 # compile definitions used
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
-add_compile_definitions(ID=\"${MOD_ID}\")
 add_compile_definitions(MOD_ID=\"${MOD_ID}\")
 
 # recursively get all src files

@@ -1,7 +1,8 @@
 #include "NyaFloatingUI.hpp"
 #include "NyaConfig.hpp"
-#include "EndpointConfig.hpp"
 #include "main.hpp"
+#include "EndpointConfig.hpp"
+
 #include "Utils/Utils.hpp"
 #include "ImageView.hpp"
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
@@ -22,13 +23,13 @@ namespace Nya {
     {
 //      DEBUG("Created NyaFloatingUI instance: {}", fmt::ptr(this));
 
-        getLogger().debug("Created NyaFloatingUI instance");
+        // getLogger().fmtLog<Paper::LogLevel::DBG>("Created NyaFloatingUI instance");
         instance = this;
         screenhandle = nullptr;
         UIScreen = nullptr;
         UINoGlow = nullptr;
         hoverClickHelper = nullptr;
-        getLogger().debug("Created NyaFloatingUI instance");
+        // getLogger().fmtLog<Paper::LogLevel::DBG>("Created NyaFloatingUI instance");
     }
 
     void NyaFloatingUI::initScreen(){
@@ -192,7 +193,7 @@ namespace Nya {
   
     void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene) {
         // Do nothing if the scene did not change
-        getLogger().debug("Switched from %i to %i ", this->currentScene, scene);
+        // getLogger().fmtLog<Paper::LogLevel::DBG>("Switched from {} to {} ", this->currentScene, scene);
 
         this->currentScene = scene;
         if (scene == Nya::FloatingUIScene::Pause) {
@@ -318,10 +319,10 @@ namespace Nya {
         auto position = transform->get_position();
         auto rotation = transform->get_rotation().get_eulerAngles();
 
-        getLogger().info("Position: %.02f, %.02f, %.02f", position.x, position.y, position.z);
-        getLogger().info("Rotation: %.02f, %.02f, %.02f", rotation.x, rotation.y, rotation.z);
+        // getLogger().fmtLog<Paper::LogLevel::INF>("Position: %.02f, %.02f, %.02f", position.x, position.y, position.z);
+        // getLogger().fmtLog<Paper::LogLevel::INF>("Rotation: %.02f, %.02f, %.02f", rotation.x, rotation.y, rotation.z);
         if (this->currentScene == Nya::FloatingUIScene::Pause){
-            getLogger().info("Saved to Pause");
+            getLogger().fmtLog<Paper::LogLevel::INF>("Saved to Pause");
             getNyaConfig().pausePositionX.SetValue(position.x);
             getNyaConfig().pausePositionY.SetValue(position.y);
             getNyaConfig().pausePositionZ.SetValue(position.z);
@@ -331,7 +332,7 @@ namespace Nya {
             getNyaConfig().pauseRotationZ.SetValue(rotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::Results){
-            getLogger().info("Saved to Results");
+            getLogger().fmtLog<Paper::LogLevel::INF>("Saved to Results");
             getNyaConfig().resultPositionX.SetValue(position.x);
             getNyaConfig().resultPositionY.SetValue(position.y);
             getNyaConfig().resultPositionZ.SetValue(position.z);
@@ -342,7 +343,7 @@ namespace Nya {
             getNyaConfig().resultRotationZ.SetValue(rotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
-            getLogger().info("Saved to MainMenu");
+            // getLogger().fmtLog<Paper::LogLevel::INF>("Saved to MainMenu");
             getNyaConfig().menuPositionX.SetValue(position.x);
             getNyaConfig().menuPositionY.SetValue(position.y);
             getNyaConfig().menuPositionZ.SetValue(position.z);
@@ -380,7 +381,7 @@ namespace Nya {
     void NyaFloatingUI::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
         std::string prevSceneName(prevScene.get_name());
         std::string nextSceneName(nextScene.get_name());
-        getLogger().debug("scene changed from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+        // getLogger().fmtLog<Paper::LogLevel::INF>("scene changed from {} to {}", prevSceneName, nextSceneName);
         
    
         if (nextSceneName.find("Menu")) {

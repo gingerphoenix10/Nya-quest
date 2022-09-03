@@ -35,7 +35,7 @@ namespace Nya {
     }
 
     void ModifiersMenu::ctor() {
-        getLogger().debug("Creator runs");
+        getLogger().fmtLog<Paper::LogLevel::DBG>("Creator runs");
 
         auto vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
         vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
@@ -43,7 +43,7 @@ namespace Nya {
         NYA = QuestUI::BeatSaberUI::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
-        getLogger().debug("Adds component");
+        getLogger().fmtLog<Paper::LogLevel::DBG>("Adds component");
         auto view = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
         ele->set_preferredHeight(50);
         ele->set_preferredWidth(50);
@@ -99,7 +99,6 @@ namespace Nya {
                 std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, value, false);
                 int sfw_index = -1;
                 if (endpoint_sfw != "") {
-                    getLogger().debug("Sfw Endpoint is %s", endpoint_sfw.c_str());
                     sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
                 }
 
@@ -191,7 +190,7 @@ namespace Nya {
     }
 
     void ModifiersMenu::dtor(){
-    il2cpp_utils::getLogger().debug("Destruct");
+        getLogger().fmtLog<Paper::LogLevel::INF>("Modifiers menu destroyed");
     }
 }
 

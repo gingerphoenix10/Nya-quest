@@ -1,8 +1,11 @@
+
 #include "Utils/FileUtils.hpp"
+#include "Utils/Utils.hpp"
 #include <vector>
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include "beatsaber-hook/shared/utils/typedefs.h"
 namespace FileUtils {
 
     std::string FixIlegalName(std::string_view path) {
@@ -46,19 +49,10 @@ namespace FileUtils {
          std::vector<std::string> strings;
         for (const auto & entry : std::filesystem::directory_iterator(path)) {
             if (entry.is_regular_file()) {
-                if (
-                    findCaseInsensitive(entry.path(), ".png") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".jpg") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".jpeg") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".webp") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".tiff") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".bmp") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".gif") != std::string::npos ||
-                    findCaseInsensitive(entry.path(), ".mp4") != std::string::npos
-                ) {
+                StringW path = StringW(entry.path().c_str());
+                if (Nya::Utils::IsImage(path)) {
                     strings.push_back(entry.path());
-                } 
-               
+                }            
             }
         }
         return strings;

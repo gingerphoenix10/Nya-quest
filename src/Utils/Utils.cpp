@@ -1,6 +1,9 @@
 #include "Utils/Utils.hpp"
 #include <random>
 
+#include "System/StringComparison.hpp"
+#include "System/Uri.hpp"
+
 namespace Nya::Utils {
     /**
      * @brief Converts vector to list
@@ -110,8 +113,7 @@ namespace Nya::Utils {
             if (source->Mode == DataMode::Local) {
                 auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
                 int randomIndex = Utils::random(0, fileList.size()-1);
-                getLogger().debug("Index is %i", randomIndex);
-                getLogger().debug("File is %s", fileList[randomIndex].c_str());
+
                 imageView->LoadFile(fileList[randomIndex], [button](bool success) {
                     button->set_interactable(true);
                 });
@@ -121,7 +123,6 @@ namespace Nya::Utils {
                 
                 #ifdef NSFW
                     NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-                    getLogger().info("NSFW enabled :%i", NSFWEnabled);
                 #endif
                 
                 // Construct the url
@@ -142,9 +143,9 @@ namespace Nya::Utils {
                 }
                 
 
-                getLogger().debug("Endpoint URL: %s", endpointURL.c_str());
+                getLogger().fmtLog<Paper::LogLevel::INF>("Endpoint URL: {}", endpointURL.c_str());
                 NyaAPI::get_path_from_api(endpointURL, 10.0f, [button, imageView](bool success, std::string url) {
-                    getLogger().debug("Image URL: %s", url.c_str());
+                    getLogger().fmtLog<Paper::LogLevel::DBG>("Image URL: {}", url);
                     if (success) {
                         
                         QuestUI::MainThreadScheduler::Schedule([button, imageView, url]{
@@ -155,7 +156,8 @@ namespace Nya::Utils {
                         });
                     } else {
                         // Error getting things
-                        getLogger().debug("Failed to load image from api");
+                        getLogger().fmtLog<Paper::LogLevel::ERR>("Failed to load image from api");
+                        getLogger().Backtrace(20);
                         button->set_interactable(true);
                     }
                 });
@@ -167,8 +169,9 @@ namespace Nya::Utils {
         // TODO: If the source is not set up, set up the default
         catch(const std::exception& e)
         {
-            getLogger().error("Custom fail");
-            // getLogger().error(e.what());
+            getLogger().fmtLog<Paper::LogLevel::ERR>("Custom fail");
+            getLogger().Backtrace(20);
+          
         }  
     }
 
@@ -181,7 +184,7 @@ namespace Nya::Utils {
         UnityEngine::UI::Toggle* nsfw_toggle
     ) { 
 
-        getLogger().debug("Settings button clicked");
+        getLogger().fmtLog<Paper::LogLevel::INF>("Settings button clicked");
             // Run UI on the main thread
             QuestUI::MainThreadScheduler::Schedule([
                     settingsModal,
@@ -252,4 +255,33 @@ namespace Nya::Utils {
                 #endif
             });
     }
+
+    // Checks if the path is animated
+    bool IsAnimated(StringW str)
+    {
+        return  str->EndsWith(".gif", System::StringComparison::OrdinalIgnoreCase) || 
+                str->EndsWith("_gif", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".apng", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_apng", System::StringComparison::OrdinalIgnoreCase);
+    }
+    bool IsImage(StringW str) {
+     
+        return  str->EndsWith(".gif", System::StringComparison::OrdinalIgnoreCase) || 
+                str->EndsWith("_gif", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".apng", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_apng", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith(".png", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith("_png", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".jpeg", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_jpeg", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".webp", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_webp", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith(".tiff", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_tiff", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".bmp", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_bmp", System::StringComparison::OrdinalIgnoreCase);
+  
+    }
+
 }
+
