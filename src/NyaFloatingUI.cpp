@@ -81,6 +81,7 @@ namespace Nya {
             );
         });
 
+        // TODO: Move modal to its own component
         {
             this->settingsModal =  QuestUI::BeatSaberUI::CreateModal(thing->get_transform(),  { 65, 65 }, nullptr);
             // Create a text that says "Hello World!" and set the parent to the container.
@@ -109,11 +110,10 @@ namespace Nya {
                 std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, value, false);
                 int sfw_index = -1;
                 if (endpoint_sfw != "") {
-                    getLogger().debug("Sfw Endpoint is %s", endpoint_sfw.c_str());
                     sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
                 }
 
-                if (sfw_index > 0) {
+                if (sfw_index >= 0) {
                     this->sfw_endpoint->SelectCellWithIdx(sfw_index); 
                 }
                 
@@ -134,12 +134,10 @@ namespace Nya {
                         std::string endpoint_nsfw = EndpointConfig::getEndpointValue(getNyaConfig().config, value, true);
                         int nsfw_index = -1;
                         if (endpoint_nsfw != "") {
-
-                            getLogger().debug("Nsfw Endpoint is %s", endpoint_nsfw.c_str());
                             nsfw_index = Nya::Utils::findStrIndexInListC(source->NsfwEndpoints, endpoint_nsfw);
                         }
                         
-                        if (nsfw_index > 0) {
+                        if (nsfw_index >= 0) {
                             this->nsfw_endpoint->SelectCellWithIdx(nsfw_index); 
                         }
                    }
