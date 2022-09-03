@@ -51,64 +51,64 @@ void NyaUtils::ImageView::ctor()
 // Update
 void NyaUtils::ImageView::Update()
 {
-  if (play && !isVideo)
-  {
-    int length = animationFrames.Length();
-    if (length > 0)
-    {
-      float deltaTime = Time::get_deltaTime();
+  // if (play && !isVideo)
+  // {
+  //   int length = animationFrames.Length();
+  //   if (length > 0)
+  //   {
+  //     float deltaTime = Time::get_deltaTime();
 
-      bool isFrameNeeded = false;
+  //     bool isFrameNeeded = false;
 
-      // Count frame length
-      float frameLength = animationTimings[currentFrame] / 100;
-      if (frameLength > 0.0f)
-      {
-        // Basic delta time based frame switching
-        while (frameTime > frameLength)
-        {
-          currentFrame = (currentFrame + 1) % length;
-          isFrameNeeded = true;
-          frameTime = frameTime - frameLength;
-          frameLength = animationTimings[currentFrame] / 100;
-        }
-      }
-      else
-      {
-        // Skip the frame with 0 ms
-        currentFrame = (currentFrame + 1) % length;
-        isFrameNeeded = true;
-        frameLength = animationTimings[currentFrame] / 100;
-      }
+  //     // Count frame length
+  //     float frameLength = animationTimings[currentFrame] / 100;
+  //     if (frameLength > 0.0f)
+  //     {
+  //       // Basic delta time based frame switching
+  //       while (frameTime > frameLength)
+  //       {
+  //         currentFrame = (currentFrame + 1) % length;
+  //         isFrameNeeded = true;
+  //         frameTime = frameTime - frameLength;
+  //         frameLength = animationTimings[currentFrame] / 100;
+  //       }
+  //     }
+  //     else
+  //     {
+  //       // Skip the frame with 0 ms
+  //       currentFrame = (currentFrame + 1) % length;
+  //       isFrameNeeded = true;
+  //       frameLength = animationTimings[currentFrame] / 100;
+  //     }
 
-      if (isFrameNeeded)
-      {
-        if (imageView == nullptr)
-        {
-          Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("imageView is null");
-          imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
-        }
-        if (animationFrames.Length() > currentFrame)
-        {
-          auto frame = animationFrames.get(currentFrame);
+  //     if (isFrameNeeded)
+  //     {
+  //       if (imageView == nullptr)
+  //       {
+  //         Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("imageView is null");
+  //         imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
+  //       }
+  //       if (animationFrames.Length() > currentFrame)
+  //       {
+  //         auto frame = animationFrames.get(currentFrame);
 
-          if (frame != nullptr)
-          {
-            if (this->canvasRenderer == nullptr)
-            {
-              Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("sprite renderer is null");
-            }
-            else
-            {
-              canvasRenderer->SetTexture(frame);
+  //         if (frame != nullptr)
+  //         {
+  //           if (this->canvasRenderer == nullptr)
+  //           {
+  //             Nya::getLogger().fmtLog<Paper::LogLevel::WRN>("sprite renderer is null");
+  //           }
+  //           else
+  //           {
+  //             canvasRenderer->SetTexture(frame);
               
-            }
-          }
-        }
-      }
-      frameTime += deltaTime;
-    }
-  }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     frameTime += deltaTime;
+  //   }
+  // }
 }
 
 // Update

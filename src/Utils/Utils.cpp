@@ -1,6 +1,6 @@
 #include "Utils/Utils.hpp"
 #include <random>
-
+#include "Helpers/utilities.hpp"
 #include "System/StringComparison.hpp"
 #include "System/Uri.hpp"
 
@@ -102,6 +102,9 @@ namespace Nya::Utils {
     void onNyaClick(UnityEngine::UI::Button* button, NyaUtils::ImageView* imageView) {
         // Disable the button
         button->set_interactable(false);
+        
+        
+
         try
         {   
             // Get value
@@ -114,8 +117,19 @@ namespace Nya::Utils {
                 auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
                 int randomIndex = Utils::random(0, fileList.size()-1);
 
-                imageView->LoadFile(fileList[randomIndex], [button](bool success) {
-                    button->set_interactable(true);
+                // imageView->LoadFile(fileList[randomIndex], [button](bool success) {
+                //     button->set_interactable(true);
+                // });
+
+                auto path = fileList[randomIndex];
+                QuestUI::MainThreadScheduler::Schedule([button, imageView, path]{
+                    BSML::Utilities::SetImage(imageView->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[button, imageView]() {
+                        button->set_interactable(true);
+                    });
+                //     // Use coroutine to get download image
+                //     GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(imageView->DownloadImage(url, 10.0f, [button](bool success, long code) {
+                //         button->set_interactable(true);
+                //     })));
                 });
             } else 
             if (source->Mode == DataMode::Json) {
@@ -149,10 +163,15 @@ namespace Nya::Utils {
                     if (success) {
                         
                         QuestUI::MainThreadScheduler::Schedule([button, imageView, url]{
-                            // Use coroutine to get download image
-                            GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(imageView->DownloadImage(url, 10.0f, [button](bool success, long code) {
+                            BSML::Utilities::SetImage(imageView->imageView, url ,  true, BSML::Utilities::ScaleOptions(),[button, imageView]() {
                                 button->set_interactable(true);
-                            })));
+
+
+                            });
+                        //     // Use coroutine to get download image
+                        //     GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(imageView->DownloadImage(url, 10.0f, [button](bool success, long code) {
+                        //         button->set_interactable(true);
+                        //     })));
                         });
                     } else {
                         // Error getting things
