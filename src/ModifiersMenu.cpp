@@ -38,21 +38,6 @@ namespace Nya {
     void ModifiersMenu::ctor() {
         getLogger().debug("Creator runs");
 
-            // std::experimental::filesystem
-
-        // APIS: waifu.pics
-        this->api_list =  Utils::vectorToList({ "waifu.pics", "local"  });
-
-        this->sfw_endpoints = Utils::vectorToList({ 
-            "waifu", "neko", "shinobu", "megumin", "bully", "cuddle", "cry", "hug", "awoo", "kiss", "lick", "pat", "smug", "bonk", "yeet", "blush", "smile", "wave", "highfive", "handhold", "nom", "bite", "glomp", "slap", "kill", "kick", "happy", "wink", "poke", "dance", "cringe" 
-        });
-        this->nsfw_endpoints = Utils::vectorToList({
-            "waifu",
-            "neko",
-            "trap",
-            "blowjob"
-        });
-
         auto vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
         vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
 
@@ -79,10 +64,10 @@ namespace Nya {
                 // Get value
                 std::string currentAPI = getNyaConfig().API.GetValue();
                 // TODO: Make dynamic
-                SourceData source =  NyaAPI::get_data_source(currentAPI);
+                SourceData* source =  NyaAPI::get_data_source(currentAPI);
 
                 // Local files
-                if (source.Mode == DataMode::Local) {
+                if (source->Mode == DataMode::Local) {
                     auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
                     int randomIndex = Utils::random(0, fileList.size()-1);
                     getLogger().debug("Index is %i", randomIndex);
@@ -91,7 +76,7 @@ namespace Nya {
                         this->nyaButton->set_interactable(true);
                     });
                 } else 
-                if (source.Mode == DataMode::Json) {
+                if (source->Mode == DataMode::Json) {
                     bool NSFWEnabled = false;
                     
                     #ifdef NSFW
@@ -111,9 +96,9 @@ namespace Nya {
 
                     std::string endpointURL = "";
                     if (NSFWEnabled) {
-                        endpointURL = source.BaseEndpoint + endpointValue;  
+                        endpointURL = source->BaseEndpoint + endpointValue;  
                     } else {
-                        endpointURL = source.BaseEndpoint + endpointValue;  
+                        endpointURL = source->BaseEndpoint + endpointValue;  
                     }
                     
 
@@ -161,10 +146,10 @@ namespace Nya {
                 std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
 
                 // Get current api or set the default one
-                SourceData source =  NyaAPI::get_data_source(API);
+                SourceData* source =  NyaAPI::get_data_source(API);
 
                 auto sources = Nya::Utils::vectorToList(NyaAPI::get_source_list());
-                auto sfwList = Nya::Utils::listStringToStringW(source.SfwEndpoints);
+                auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
 
                 this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(sources));
            
@@ -180,7 +165,7 @@ namespace Nya {
                 int sfw_index = -1;
                 if (endpoint_sfw != "") {
                     getLogger().debug("Sfw Endpoint is %s", endpoint_sfw.c_str());
-                    sfw_index = Nya::Utils::findStrIndexInListC( source.SfwEndpoints ,endpoint_sfw);
+                    sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
                 }
 
                 if (sfw_index > 0) {
@@ -192,11 +177,11 @@ namespace Nya {
 
                 #ifdef NSFW
                    // Restore nsfw state
-                   if (source.NsfwEndpoints.size() == 0) {
-                        this->nsfw_endpoint->set_enabled(false);
+                   if (source->NsfwEndpoints.size() == 0) {
+                        this->nsfw_endpoint->button->set_interactable(false);
                    } else {
-                        this->nsfw_endpoint->set_enabled(true);
-                        auto nsfwList = Nya::Utils::listStringToStringW(source.NsfwEndpoints);
+                        this->nsfw_endpoint->button->set_interactable(true);
+                        auto nsfwList = Nya::Utils::listStringToStringW(source->NsfwEndpoints);
 
                         this->nsfw_endpoint->SetTexts(nsfwList->i_IReadOnlyList_1_T());
 
@@ -205,7 +190,7 @@ namespace Nya {
                         if (endpoint_nsfw != "") {
 
                             getLogger().debug("Nsfw Endpoint is %s", endpoint_nsfw.c_str());
-                            nsfw_index = Nya::Utils::findStrIndexInListC(source.NsfwEndpoints, endpoint_nsfw);
+                            nsfw_index = Nya::Utils::findStrIndexInListC(source->NsfwEndpoints, endpoint_nsfw);
                         }
                         
                         if (nsfw_index > 0) {
@@ -239,7 +224,7 @@ namespace Nya {
 
                 auto source = NyaAPI::get_data_source(value);
 
-                auto sfwList = Nya::Utils::listStringToStringW(source.SfwEndpoints);
+                auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
 
                 // SFW endpoints
                 this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
@@ -248,7 +233,7 @@ namespace Nya {
                 int sfw_index = -1;
                 if (endpoint_sfw != "") {
                     getLogger().debug("Sfw Endpoint is %s", endpoint_sfw.c_str());
-                    sfw_index = Nya::Utils::findStrIndexInListC( source.SfwEndpoints ,endpoint_sfw);
+                    sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
                 }
 
                 if (sfw_index > 0) {
@@ -258,11 +243,11 @@ namespace Nya {
 
                 #ifdef NSFW
                    // Restore nsfw state
-                   if (source.NsfwEndpoints.size() == 0) {
-                        this->nsfw_endpoint->set_enabled(false);
+                   if (source->NsfwEndpoints.size() == 0) {
+                        this->nsfw_endpoint->button->set_interactable(false);
                    } else {
-                        this->nsfw_endpoint->set_enabled(true);
-                        auto nsfwList = Nya::Utils::listStringToStringW(source.NsfwEndpoints);
+                        this->nsfw_endpoint->button->set_interactable(true);
+                        auto nsfwList = Nya::Utils::listStringToStringW(source->NsfwEndpoints);
 
                         this->nsfw_endpoint->SetTexts(nsfwList->i_IReadOnlyList_1_T());
 
@@ -271,7 +256,7 @@ namespace Nya {
                         if (endpoint_nsfw != "") {
 
                             getLogger().debug("Nsfw Endpoint is %s", endpoint_nsfw.c_str());
-                            nsfw_index = Nya::Utils::findStrIndexInListC(source.NsfwEndpoints, endpoint_nsfw);
+                            nsfw_index = Nya::Utils::findStrIndexInListC(source->NsfwEndpoints, endpoint_nsfw);
                         }
                         
                         if (nsfw_index > 0) {

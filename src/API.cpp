@@ -71,14 +71,14 @@ std::map<std::string, SourceData> NyaAPI::getEndpoints() {
     return endpoint_data;
 }
 
-SourceData NyaAPI::get_data_source(std::string name) {
+SourceData* NyaAPI::get_data_source(std::string name) {
     if (name.empty()) {
         throw "String is empty";
     }
     if (endpoint_data.find(name) == endpoint_data.end()) {
         throw "Endpoint not found";
     }
-    else return endpoint_data[name];
+    else return &(endpoint_data[name]);
 }
 
 std::vector<StringW> NyaAPI::get_source_list() {

@@ -80,13 +80,13 @@ namespace EndpointConfig {
                     endpointValue = value;
                 // If not, then try to find it an initialize or skip
                 } else {
-                    if (source_data.NsfwEndpoints.size() > 0) {
+                    if (source_data->NsfwEndpoints.size() > 0) {
                         // Process sfw default
                         endpoint.AddMember("nsfw", rapidjson::Value(rapidjson::kStringType), allocator);
-                        endpoint["nsfw"].SetString(source_data.NsfwEndpoints.front(), allocator);
+                        endpoint["nsfw"].SetString(source_data->NsfwEndpoints.front(), allocator);
                         // Mark to save at the end
                         save = true;
-                        endpointValue = source_data.NsfwEndpoints.front();
+                        endpointValue = source_data->NsfwEndpoints.front();
                     }
                 }
                 
@@ -96,13 +96,13 @@ namespace EndpointConfig {
                     std::string value = endpoint["sfw"].GetString();
                     endpointValue = value;
                 } else {
-                    if (source_data.SfwEndpoints.size() > 0) {
+                    if (source_data->SfwEndpoints.size() > 0) {
                         // Process sfw default
                         endpoint.AddMember("sfw", rapidjson::Value(rapidjson::kStringType), allocator);
-                        endpoint["sfw"].SetString(source_data.SfwEndpoints.front(), allocator);
+                        endpoint["sfw"].SetString(source_data->SfwEndpoints.front(), allocator);
                         save = true;
                         config->Write();
-                        endpointValue = source_data.SfwEndpoints.front();
+                        endpointValue = source_data->SfwEndpoints.front();
                     }
                 }
             }
@@ -115,31 +115,31 @@ namespace EndpointConfig {
             // Value
             endpoints.AddMember(fieldname, rapidjson::Value(rapidjson::kObjectType), allocator);
             if (
-                source_data.Mode == DataMode::Json &&
-                (source_data.NsfwEndpoints.size() > 0 || source_data.SfwEndpoints.size() > 0)
+                source_data->Mode == DataMode::Json &&
+                (source_data->NsfwEndpoints.size() > 0 || source_data->SfwEndpoints.size() > 0)
             ) {
                 // Get the endpoint
                 auto endpoint = endpoints[name].GetObject();
 
                 // Init sfw
-                if (source_data.SfwEndpoints.size() > 0) {
+                if (source_data->SfwEndpoints.size() > 0) {
                     // Process sfw default
                     endpoint.AddMember("sfw", rapidjson::Value(rapidjson::kStringType), allocator);
-                    endpoint["sfw"].SetString(source_data.SfwEndpoints.front(), allocator);
+                    endpoint["sfw"].SetString(source_data->SfwEndpoints.front(), allocator);
                     // Set endpoint value if it matches
                     if (!nsfw) {
-                        endpointValue = source_data.SfwEndpoints.front();
+                        endpointValue = source_data->SfwEndpoints.front();
                     }
                 }
 
                 // Init nsfw
-                if (source_data.NsfwEndpoints.size() > 0) {
+                if (source_data->NsfwEndpoints.size() > 0) {
                     // Process nsfw default
                     endpoint.AddMember("nsfw", rapidjson::Value(rapidjson::kStringType), allocator);
-                    endpoint["nsfw"].SetString(source_data.NsfwEndpoints.front(), allocator);
+                    endpoint["nsfw"].SetString(source_data->NsfwEndpoints.front(), allocator);
                     // Set endpoint value if it matches
                     if (nsfw) {
-                        endpointValue = source_data.NsfwEndpoints.front();
+                        endpointValue = source_data->NsfwEndpoints.front();
                     }
                 }
             }
