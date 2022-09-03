@@ -10,7 +10,7 @@
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
 #include "API.hpp"
-
+#include "Utils/Utils.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
