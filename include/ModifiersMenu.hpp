@@ -34,10 +34,10 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
     DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
 
-    #ifdef NSFW
-        DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
-        DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
-    #endif
+  
+    DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
+    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
+    
 
     DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
     DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);

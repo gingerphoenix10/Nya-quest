@@ -32,10 +32,18 @@ namespace BSML {
             case AnimationType::GIF:
                 sharedStarter->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
                     GifDecoder::Process(data, 
-                    [sharedStarter, onProcessed](auto animationInfo){ 
+                    [sharedStarter, onProcessed](AnimationInfo* animationInfo){ 
                         DEBUG("Processed Data, processing animation info");
                         if (animationInfo == nullptr) {
-                            DEBUG("animation info null");
+                            onProcessed(nullptr, ArrayW<UnityEngine::Rect>(), ArrayW<float>());
+                            ERROR("animation info null");
+                            return;
+                        }
+
+                        if (animationInfo->isInitialized == false) {
+                            onProcessed(nullptr, ArrayW<UnityEngine::Rect>(), ArrayW<float>());
+                            ERROR("animation is not initialized");
+                            return;
                         }
 
                         sharedStarter->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(ProcessAnimationInfo(animationInfo, onProcessed)));

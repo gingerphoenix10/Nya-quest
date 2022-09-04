@@ -144,6 +144,8 @@ namespace BSML::Utilities {
 
         DEBUG("GetReq");
         auto www = UnityWebRequest::Get(uri);
+        // FIXME: Make dynamic
+        www->set_timeout(2000);
         DEBUG("SendReq");
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
         DEBUG("Got data, callback");
@@ -249,6 +251,11 @@ namespace BSML::Utilities {
                         isGif ? AnimationLoader::AnimationType::GIF : AnimationLoader::AnimationType::APNG,
                         data,
                         [onFinished, stateUpdater, animationController, path](auto tex, auto uvs, auto delays){
+                            // Handle deep errors
+                            if (tex == nullptr) {
+                                if (onFinished) onFinished();
+                                return;
+                            }
                             auto controllerData = animationController->Register(path, tex, uvs, delays);
                             stateUpdater->set_controllerData(controllerData);
                             if (onFinished) onFinished();

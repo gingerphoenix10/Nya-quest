@@ -98,6 +98,8 @@ namespace BSML {
                 animationInfo->frames.emplace_back(currentFrame);
             }
         } catch (EasyGifReader::Error gifError) {
+            animationInfo->isInitialized = false;
+            // TODO: Cleanup on gif errors
             ERROR("Gif error: {}", errToString(gifError));
         }
     }
