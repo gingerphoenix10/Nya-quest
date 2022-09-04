@@ -14,7 +14,6 @@
 
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
 #include "System/Func_1.hpp"
-
 DEFINE_TYPE(BSML, AnimationLoader);
 
 
@@ -60,7 +59,6 @@ namespace BSML {
         float lastThrottleTime = UnityEngine::Time::get_realtimeSinceStartup();
 
         for (int i = 0; i < animationInfo->frameCount; i++) {
-            DEBUG("Frame {}", i);
             if (animationInfo->frames.size() <= i) {
                 auto waitUntil = UnityEngine::WaitUntil::New_ctor(
                     MakeDelegate<System::Func_1<bool>*>(
@@ -71,18 +69,11 @@ namespace BSML {
                         )
                     )
                 );
+                co_yield reinterpret_cast<System::Collections::IEnumerator*>(waitUntil);
                 lastThrottleTime = UnityEngine::Time::get_realtimeSinceStartup();
             }
 
-            DEBUG("1");
-            if (animationInfo == nullptr) {
-                DEBUG("ANIM INFO IS NULL");
-            }
-            if (animationInfo->frames.at(i) ==  nullptr) {
-                DEBUG("ANIM INFO FRAME IS NULL");
-            }
             auto& currentFrameInfo = animationInfo->frames.at(i);
-            DEBUG("2");
             if (!texture) {
                 textureSize = GetTextureSize(animationInfo, i);
                 
@@ -90,34 +81,27 @@ namespace BSML {
                 height = currentFrameInfo->height;
                 texture = UnityEngine::Texture2D::New_ctor(width, height);
             }
-            DEBUG("3");
 
             delays[i] = currentFrameInfo->delay;
-            DEBUG("4");
             auto frameTexture = UnityEngine::Texture2D::New_ctor(currentFrameInfo->width, currentFrameInfo->height, UnityEngine::TextureFormat::RGBA32, false);
             frameTexture->set_wrapMode(UnityEngine::TextureWrapMode::Clamp);
             frameTexture->LoadRawTextureData(currentFrameInfo->colors.ptr());
-            DEBUG("5");
             textureList[i] = frameTexture;
 
             if (UnityEngine::Time::get_realtimeSinceStartup() > lastThrottleTime + 0.0005f) {
                 co_yield nullptr;
                 lastThrottleTime = UnityEngine::Time::get_realtimeSinceStartup();
             }
-            DEBUG("6");
 
             delete currentFrameInfo;
             currentFrameInfo = nullptr;
         }
-        DEBUG("7");
         // note to self, no longer readable = true means you can't encode the texture to png!
         auto atlas = texture->PackTextures(textureList, 2, textureSize, true);
-        DEBUG("8");
         // cleanup
         for (auto t : textureList) {
             UnityEngine::Object::DestroyImmediate(t);
         }
-        DEBUG("9");
         if (onProcessed)
             onProcessed(texture, atlas, delays);
 
