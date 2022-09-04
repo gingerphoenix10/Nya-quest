@@ -40,9 +40,9 @@ namespace BSML {
                             return;
                         }
 
-                        if (animationInfo->isInitialized == false) {
+                        if (animationInfo->isFailed == true) {
                             onProcessed(nullptr, ArrayW<UnityEngine::Rect>(), ArrayW<float>());
-                            ERROR("animation is not initialized");
+                            ERROR("animation failed");
                             return;
                         }
 

@@ -100,6 +100,7 @@ namespace BSML::Utilities {
         auto originalWidth = tex->get_width();
         auto originalHeight = tex->get_height();
 
+        // Skip if nothing is needed
         if (originalWidth + originalHeight <= options.width + options.height)
             return tex;
 
@@ -107,14 +108,14 @@ namespace BSML::Utilities {
         auto newHeight = options.height;
         if (options.maintainRatio) {
             auto ratio = (float)originalWidth / (float)originalHeight;
-            auto scale = originalWidth > originalHeight ? originalWidth : originalHeight;
+            auto scale = options.width > options.height ? options.width : options.height;
 
             if (scale * ratio <= originalWidth) {
-                originalWidth = scale * ratio;
-                originalHeight = scale;
+                newWidth = scale * ratio;
+                newHeight = scale;
             } else {
-                originalWidth = scale;
-                originalHeight = scale * ratio;
+                newWidth = scale;
+                newHeight = (int) (scale / ratio);
             }
         }
 
@@ -136,7 +137,11 @@ namespace BSML::Utilities {
         return LoadSpriteFromTexture(DownScaleTexture(sprite->get_texture(), options));
     }
 
-    custom_types::Helpers::Coroutine DownloadDataCoroutine(StringW uri, std::function<void(ArrayW<uint8_t>)> onFinished) {
+    /// @brief Downloads data and returns it. If it does not get the data, 
+    /// @param uri 
+    /// @param onFinished 
+    /// @return 
+    custom_types::Helpers::Coroutine DownloadDataCoroutine(StringW uri, std::function<void(bool success, ArrayW<uint8_t>)> onFinished) {
         if (!onFinished) {
             ERROR("Can't get data async without a callback to use it with");
             co_return;
@@ -144,17 +149,26 @@ namespace BSML::Utilities {
 
         DEBUG("GetReq");
         auto www = UnityWebRequest::Get(uri);
-        // FIXME: Make dynamic
-        www->set_timeout(2000);
+        // I suppose it's in seconds
+        www->set_timeout(10);
         DEBUG("SendReq");
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
-        DEBUG("Got data, callback");
-        if (onFinished) 
-            onFinished(www->get_downloadHandler()->GetData());
+        
+        
+        if (!www->get_isNetworkError()) {
+            DEBUG("Got data, callback");
+            if (onFinished)
+                onFinished(true, www->get_downloadHandler()->GetData());
+        } else {
+            DEBUG("Failed to get the data");
+            if (onFinished) 
+                onFinished(false, ArrayW<uint8_t>());
+        }
+        
         co_return;
     }
 
-    void DownloadData(StringW uri, std::function<void(ArrayW<uint8_t>)> onFinished) {
+    void DownloadData(StringW uri, std::function<void(bool success, ArrayW<uint8_t>)> onFinished) {
         INFO("Getting data from uri: {}", (std::string) uri);
         if (!onFinished) {
             ERROR("Can't get data async without a callback to use it with");
@@ -163,12 +177,13 @@ namespace BSML::Utilities {
         coro(DownloadDataCoroutine(uri, onFinished));
     }
 
-    void GetData(StringW key, std::function<void(ArrayW<uint8_t>)> onFinished) {
+    void GetData(StringW key, std::function<void(bool success, ArrayW<uint8_t>)> onFinished) {
         // INFO("Getting data from key: {}", key);
         auto entry = DataCache::Get(key);
         if (entry) {
-            onFinished(entry->get_data());
+            onFinished(true, entry->get_data());
         } else {
+            onFinished(false, ArrayW<uint8_t>());
             // ERROR("Could not find entry for key: {}", key);
         }
     }
@@ -245,7 +260,11 @@ namespace BSML::Utilities {
                 bool isGif = path->EndsWith("gif", System::StringComparison::OrdinalIgnoreCase) || (isUri && uri->get_LocalPath()->EndsWith("gif", System::StringComparison::OrdinalIgnoreCase));
 
                 DEBUG("Creating callback");
-                auto onDataFinished = [stateUpdater, path, onFinished, animationController, isGif](ArrayW<uint8_t> data){
+                auto onDataFinished = [stateUpdater, path, onFinished, animationController, isGif](bool success, ArrayW<uint8_t> data){
+                    if (success == false) {
+                        if (onFinished) onFinished();
+                        return;
+                    }
                     DEBUG("Got data: {}", data.size());
                     AnimationLoader::Process(
                         isGif ? AnimationLoader::AnimationType::GIF : AnimationLoader::AnimationType::APNG,
@@ -271,7 +290,11 @@ namespace BSML::Utilities {
                 }
             }
         } else { // not animated
-            auto onDataFinished = [path, onFinished, image, scaleOptions](ArrayW<uint8_t> data) {
+            auto onDataFinished = [path, onFinished, image, scaleOptions](bool success, ArrayW<uint8_t> data) {
+                if (success == false ) {
+                    if (onFinished) onFinished();
+                    return;
+                }
                 DEBUG("Data was gotten");
                 if (data.Length() > 0) {
                     auto texture = LoadTextureRaw(data);

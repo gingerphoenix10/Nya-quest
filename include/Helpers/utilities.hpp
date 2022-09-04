@@ -58,12 +58,12 @@ namespace BSML::Utilities {
     /// @brief function to get data at a URI, this is not blocking as it dispatches a coroutine
     /// @param uri the URI to get data from
     /// @param onFinished what to do with the downloaded bytes
-    void DownloadData(StringW uri, std::function<void(ArrayW<uint8_t>)> onFinished = nullptr);
+    void DownloadData(StringW uri, std::function<void(bool success, ArrayW<uint8_t>)> onFinished = nullptr);
 
     /// @brief function to get data from the key to data cache, this is blocking due to the data being available immediately
     /// @param key the key to get the data with
     /// @param onFinished what to do with the downloaded bytes
-    void GetData(StringW key, std::function<void(ArrayW<uint8_t>)> onFinished = nullptr);
+    void GetData(StringW key, std::function<void(bool success, ArrayW<uint8_t>)> onFinished = nullptr);
 
     /// @brief Function to load a sprite from a data array
     /// @param data the data to load the sprite from
