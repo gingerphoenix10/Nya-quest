@@ -69,8 +69,15 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "Gamep
 
 }
 
+// Soft restart in settings
 MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::RestartGame, void, MenuTransitionsHelper* self, System::Action_1<Zenject::DiContainer*>* finishCallback)
 {
+    // Destroy the floating UI on soft restart
+    if (Main::NyaFloatingUI != nullptr){
+        GameObject::Destroy(Main::NyaFloatingUI->UIScreen->get_gameObject());
+        GameObject::Destroy(Main::NyaFloatingUI);
+        Main::NyaFloatingUI = nullptr;
+    }
     MenuTransitionsHelper_RestartGame(self, finishCallback);
 }
 
