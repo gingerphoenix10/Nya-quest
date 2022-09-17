@@ -37,11 +37,12 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onResultsScreenDeactivate();
             void updateCoordinates(UnityEngine::Transform* transform);
             void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
-            void onSceneChange(Nya::FloatingUIScene scene);
+            void onSceneChange(Nya::FloatingUIScene scene, bool reinitialize = false);
 
             Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Unknown;
             bool isInitialized = false;
-        
+
+            DECLARE_INSTANCE_METHOD(void, SetDefaultPos);
             DECLARE_CTOR(ctor);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);

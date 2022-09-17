@@ -194,4 +194,34 @@ namespace EndpointConfig {
             config->Write();
         }
     }
+
+    void ResetPositions() {
+        INFO("Resetting configs");
+        NyaConfig_t & config = getNyaConfig();
+        // Positions
+        config.pausePositionX.SetValue(config.pausePositionX.GetDefaultValue());
+        config.pausePositionY.SetValue(config.pausePositionY.GetDefaultValue());
+        config.pausePositionZ.SetValue(config.pausePositionZ.GetDefaultValue());
+
+        config.menuPositionX.SetValue(config.menuPositionX.GetDefaultValue());
+        config.menuPositionY.SetValue(config.menuPositionY.GetDefaultValue());
+        config.menuPositionZ.SetValue(config.menuPositionZ.GetDefaultValue());
+
+        config.resultPositionX.SetValue(config.resultPositionX.GetDefaultValue());
+        config.resultPositionY.SetValue(config.resultPositionY.GetDefaultValue());
+        config.resultPositionZ.SetValue(config.resultPositionZ.GetDefaultValue());
+
+        // Rotations
+        config.pauseRotationX.SetValue(config.pauseRotationX.GetDefaultValue());
+        config.pauseRotationY.SetValue(config.pauseRotationY.GetDefaultValue());
+        config.pauseRotationZ.SetValue(config.pauseRotationZ.GetDefaultValue());
+
+        config.menuRotationX.SetValue(config.menuRotationX.GetDefaultValue());
+        config.menuRotationY.SetValue(config.menuRotationY.GetDefaultValue());
+        config.menuRotationZ.SetValue(config.menuRotationZ.GetDefaultValue());
+
+        config.resultRotationX.SetValue(config.resultRotationX.GetDefaultValue());
+        config.resultRotationY.SetValue(config.resultRotationY.GetDefaultValue());
+        config.resultRotationZ.SetValue(config.resultRotationZ.GetDefaultValue());
+    }
 }

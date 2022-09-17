@@ -28,8 +28,13 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
         DECLARE_INSTANCE_METHOD(void, Show );
         DECLARE_INSTANCE_METHOD(bool, isShown );
 
+        DECLARE_INSTANCE_METHOD(void, SwitchTab, int idx );
+
         // Settings buttons and modal
         DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
+        DECLARE_INSTANCE_FIELD(QuestUI::CustomTextSegmentedControlData *, tabsSwitch);
+        
+
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);

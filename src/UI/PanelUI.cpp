@@ -22,7 +22,7 @@ namespace Nya {
         text->set_alignment(TMPro::TextAlignmentOptions::Center);
 
         auto* collider = mainCanvas->AddComponent<UnityEngine::BoxCollider*>();
-        hoverHint = QuestUI::BeatSaberUI::AddHoverHint(collider->get_gameObject(), "knob knob fat cunt");
+        hoverHint = QuestUI::BeatSaberUI::AddHoverHint(collider->get_gameObject(), "hewoo");
         collider->set_size({13.0f, 13.0f, 0.0f});
         collider->set_name("gridcollider " + std::to_string(index));
         hoverHint->hoverHintController = nullptr;

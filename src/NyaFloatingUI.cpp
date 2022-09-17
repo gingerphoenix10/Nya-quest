@@ -81,12 +81,60 @@ namespace Nya {
         hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
         this->isInitialized = true;
     }
-  
-    void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene) {
+    
+    void NyaFloatingUI::SetDefaultPos () {
+        if (this->currentScene == Nya::FloatingUIScene::Pause || this->currentScene == Nya::FloatingUIScene::InGame ) {
+            this->hoverClickHelper->SetPosition(
+                UnityEngine::Vector3(
+                    getNyaConfig().pausePositionX.GetDefaultValue(), 
+                    getNyaConfig().pausePositionY.GetDefaultValue(),
+                    getNyaConfig().pausePositionZ.GetDefaultValue()
+                ),
+                UnityEngine::Quaternion::Euler(
+                    getNyaConfig().pauseRotationX.GetDefaultValue(), 
+                    getNyaConfig().pauseRotationY.GetDefaultValue(), 
+                    getNyaConfig().pauseRotationZ.GetDefaultValue()
+                )
+            );
+        }
+
+        if (this->currentScene == Nya::FloatingUIScene::Results) {
+            this->hoverClickHelper->SetPosition(
+                UnityEngine::Vector3(
+                    getNyaConfig().resultPositionX.GetDefaultValue(), 
+                    getNyaConfig().resultPositionY.GetDefaultValue(),
+                    getNyaConfig().resultPositionZ.GetDefaultValue()
+                ),
+                UnityEngine::Quaternion::Euler(
+                    getNyaConfig().resultRotationX.GetDefaultValue(), 
+                    getNyaConfig().resultRotationY.GetDefaultValue(), 
+                    getNyaConfig().resultRotationZ.GetDefaultValue()
+                )
+            );
+        }
+        if (this->currentScene == Nya::FloatingUIScene::MainMenu) {
+            this->hoverClickHelper->SetPosition(
+                UnityEngine::Vector3(
+                    getNyaConfig().menuPositionX.GetDefaultValue(), 
+                    getNyaConfig().menuPositionY.GetDefaultValue(),
+                    getNyaConfig().menuPositionZ.GetDefaultValue()
+                ),
+                UnityEngine::Quaternion::Euler(
+                    getNyaConfig().menuRotationX.GetDefaultValue(), 
+                    getNyaConfig().menuRotationY.GetDefaultValue(), 
+                    getNyaConfig().menuRotationZ.GetDefaultValue()
+                )
+            );
+        }
+
+        this->updateCoordinates(this->hoverClickHelper->handleTransform->get_transform());
+    }
+
+    void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene, bool reinitialize) {
         INFO("Switched from {} to {} ", this->currentScene, scene);
         
         // Do nothing if the scene did not change
-        if (this->currentScene == scene) {
+        if (!reinitialize && this->currentScene == scene) {
             return;
         }
 

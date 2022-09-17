@@ -4,6 +4,7 @@
 
 namespace EndpointConfig {
     void migrate(Configuration* config);
+    void ResetPositions();
     void updateEndpointValue(Configuration* config, std::string name, bool nsfw, std::string value);
     std::string getEndpointValue(Configuration* config, std::string name, bool nsfw);
 }

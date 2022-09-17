@@ -9,6 +9,7 @@
 #include "UnityEngine/RaycastHit.hpp"
 #include "UnityEngine/Collider.hpp"
 #include "UnityEngine/Time.hpp"
+#include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "UnityEngine/Resources.hpp"
 #include "UI/PanelUI.hpp"
@@ -41,6 +42,11 @@ DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_METHOD(void, Update);
     DECLARE_INSTANCE_METHOD(void, LateUpdate);
     DECLARE_INSTANCE_METHOD(void, resetBools);
+
+    DECLARE_INSTANCE_METHOD(void, LookAtCamera);
+    DECLARE_INSTANCE_METHOD(void, SetUpRight);
+    DECLARE_INSTANCE_METHOD(void, SetPosition, UnityEngine::Vector3 position,UnityEngine::Quaternion rotation);
+    
 
     public:
         Nya::PanelUI* panelUI;

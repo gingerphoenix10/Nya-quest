@@ -3,6 +3,8 @@
 #include "UnityEngine/RaycastHit.hpp"
 #include "UnityEngine/Collider.hpp"
 #include "UnityEngine/Time.hpp"
+#include "UnityEngine/Camera.hpp"
+#include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "UI/HoverClickHelper.hpp"
 #include "GlobalNamespace/VRController.hpp"
@@ -95,8 +97,9 @@ namespace Nya {
 
     void HoverClickHelper::LateUpdate(){
         if(!triggerPressed && !isHit && vrPointer->get_vrController()->get_triggerValue() > 0.9f && !(hoveringHandle || grabbingHandle)){
-    //        Main::NyaFloatingUI->settingsModal->Hide(true, nullptr);
-    //        justClosedModal = true;
+            // TODO: Fix modal hiding
+            //    Main::NyaFloatingUI->settingsMenu->Hide();
+            //    justClosedModal = true;
         }
         if (vrPointer->get_vrController()->get_triggerValue() > 0.9f && !triggerPressed){
             grabbingController = vrPointer->get_vrController();
@@ -140,5 +143,28 @@ namespace Nya {
         helper->Init(pointer, handle);
         return helper;
     }
-}
 
+
+    void HoverClickHelper::LookAtCamera(){
+        auto mainCamera = UnityEngine::Camera::get_main();
+        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+        auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
+        screenTransform->set_rotation(newRotation);
+        Main::NyaFloatingUI->updateCoordinates(screenTransform);
+    }
+
+    void HoverClickHelper::SetUpRight (){
+        auto mainCamera = UnityEngine::Camera::get_main();
+        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+        auto newRotation = UnityEngine::Quaternion::Euler(0.0, screenTransform->get_rotation().get_eulerAngles().y, 0.0);
+        screenTransform->set_rotation(newRotation);
+        Main::NyaFloatingUI->updateCoordinates(screenTransform);
+    }
+
+    void HoverClickHelper::SetPosition(UnityEngine::Vector3 position, UnityEngine::Quaternion rotation){
+        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+
+        screenTransform->set_position(position);
+        screenTransform->set_rotation(rotation);
+    }
+}
