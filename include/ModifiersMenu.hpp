@@ -11,6 +11,7 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "API.hpp"
 #include "Utils/Utils.hpp"
+#include "SettingsMenu.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
@@ -31,15 +32,6 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     // Settings buttons and modal
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
     DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
-    DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
-    DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
-
-  
-    DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
-    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
+    DECLARE_INSTANCE_FIELD(Nya::SettingsMenu*, settingsMenu);
     
-
-    DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
-    DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);
-    DECLARE_INSTANCE_FIELD(List<StringW>*, api_list);
 )

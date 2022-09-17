@@ -65,7 +65,7 @@ namespace Nya {
             }
         }
         else {
-            if (isHit && !Main::NyaFloatingUI->settingsModal->isShown){
+            if (isHit && !Main::NyaFloatingUI->settingsMenu->isShown()){
                 panelUI->image->GetComponent<UnityEngine::UI::Image*>()->set_color(UnityEngine::Color::get_gray());
                 hintController->hoverHintPanel->Hide();
                 panelUI = nullptr;
@@ -82,13 +82,13 @@ namespace Nya {
             notClickedModal = false;
             panelUI->image->set_color(UnityEngine::Color::get_gray());
             // Main::NyaFloatingUI->updateGridNotesInfo(panelUI->index);
-            Main::NyaFloatingUI->settingsModal->Show(true, true, nullptr);
+            Main::NyaFloatingUI->settingsMenu->Show();
             hintController->hoverHintPanel->Hide();
             panelUI = nullptr;
             isHit = false;
             modalLocked = true;
         }
-        if (!Main::NyaFloatingUI->settingsModal->isShown && !modalLocked && !notClickedModal) notClickedModal = true;
+        if (!Main::NyaFloatingUI->settingsMenu->isShown() && !modalLocked && !notClickedModal) notClickedModal = true;
         if (justClosedModal) modalLocked = false;
         if (grabbingController) outOfRange = true;
     }
@@ -122,7 +122,7 @@ namespace Nya {
             outOfRange = false;
             grabbingHandle = false;
         } 
-        if (isHit && Main::NyaFloatingUI->settingsModal->isShown) isHit = false;
+        if (isHit && Main::NyaFloatingUI->settingsMenu->isShown()) isHit = false;
         
     }
 

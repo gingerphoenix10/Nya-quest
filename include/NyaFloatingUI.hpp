@@ -17,6 +17,7 @@
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
+#include "SettingsMenu.hpp"
 
 using namespace UnityEngine::UI;
 
@@ -55,17 +56,8 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
 
             DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
             // Settings buttons and modal
-            DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
             DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
-            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
-            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
-           
-            DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
-            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
-          
-            DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
-            DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);
-            DECLARE_INSTANCE_FIELD(List<StringW>*, api_list);
+            DECLARE_INSTANCE_FIELD(Nya::SettingsMenu*, settingsMenu);
 
             static NyaFloatingUI* get_instance();
             static bool isEnabled();
