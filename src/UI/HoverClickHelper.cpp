@@ -37,10 +37,30 @@ namespace Nya {
         vrPointer = pointer;
         handleTransform = handle;
         origHandleMat = handle->GetComponent<UnityEngine::MeshRenderer*>()->get_material();
+        this->targetPosition = UnityEngine::Vector3::get_zero();
+        this->targetRotation = UnityEngine::Quaternion::_get_identityQuaternion();
     }
 
     void HoverClickHelper::Update(){
+        // Lerping
+        auto dt = UnityEngine::Time::get_deltaTime();
+
+        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+        auto previousRotation = screenTransform->get_rotation();
+        auto previousPosition = screenTransform->get_position();
+        
+        if(!grabbingHandle) {
+            screenTransform->set_rotation(UnityEngine::Quaternion::Slerp(previousRotation, this->targetRotation, dt*7));
+            screenTransform->set_position(UnityEngine::Vector3::Lerp(previousPosition, this->targetPosition, dt*7));
+        } else {
+            targetPosition = previousPosition;
+            targetRotation = previousRotation;
+        }
+        
+
+        // Ray cast from the controller forward
         if(UnityEngine::Physics::Raycast(vrPointer->get_vrController()->get_position(), vrPointer->get_vrController()->get_forward(), hit, 100)){
+            // If the needed collider is found and not grabbing handle
             if(static_cast<std::string>(hit.get_collider()->get_name()).substr(0, 12).compare("gridcollider") == 0 && !grabbingHandle){
                 if (isHit && currentCollider && currentCollider != hit.get_collider()->get_transform()) {
                     panelUI->image->GetComponent<UnityEngine::UI::Image *>()->set_color(UnityEngine::Color::get_gray());
@@ -118,7 +138,11 @@ namespace Nya {
     //
     //        }
             auto* screenTransform = handleTransform->get_transform()->get_parent();
+            // Save coordinates to config
             Main::NyaFloatingUI->updateCoordinates(screenTransform);
+
+            this->targetPosition = screenTransform->get_position();
+            this->targetRotation =  screenTransform->get_rotation();
             grabbingController = nullptr;
             triggerPressed = false;
             justClosedModal = false;
@@ -149,7 +173,7 @@ namespace Nya {
         auto mainCamera = UnityEngine::Camera::get_main();
         auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
         auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
-        screenTransform->set_rotation(newRotation);
+        this->targetRotation = newRotation;
         Main::NyaFloatingUI->updateCoordinates(screenTransform);
     }
 
@@ -157,14 +181,19 @@ namespace Nya {
         auto mainCamera = UnityEngine::Camera::get_main();
         auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
         auto newRotation = UnityEngine::Quaternion::Euler(0.0, screenTransform->get_rotation().get_eulerAngles().y, 0.0);
-        screenTransform->set_rotation(newRotation);
+       
+        this->targetRotation = newRotation;
         Main::NyaFloatingUI->updateCoordinates(screenTransform);
     }
 
-    void HoverClickHelper::SetPosition(UnityEngine::Vector3 position, UnityEngine::Quaternion rotation){
+    void HoverClickHelper::SetPosition(UnityEngine::Vector3 position, UnityEngine::Quaternion rotation, bool lerp){
         auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+        if (!lerp) {
+            screenTransform->set_rotation(rotation);
+            screenTransform->set_position(position);
+        }
 
-        screenTransform->set_position(position);
-        screenTransform->set_rotation(rotation);
+        this->targetRotation = rotation;
+        this->targetPosition = position;
     }
 }

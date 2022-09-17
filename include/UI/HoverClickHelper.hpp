@@ -20,6 +20,8 @@
 
 DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
 
+    DECLARE_INSTANCE_FIELD(UnityEngine::Vector3 , targetPosition);
+    DECLARE_INSTANCE_FIELD(UnityEngine::Quaternion , targetRotation);
     DECLARE_INSTANCE_FIELD(VRUIControls::VRPointer*, vrPointer);
     DECLARE_INSTANCE_FIELD(UnityEngine::RaycastHit, hit);
     DECLARE_INSTANCE_FIELD(HMUI::HoverHintController*, hintController);
@@ -45,7 +47,7 @@ DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
 
     DECLARE_INSTANCE_METHOD(void, LookAtCamera);
     DECLARE_INSTANCE_METHOD(void, SetUpRight);
-    DECLARE_INSTANCE_METHOD(void, SetPosition, UnityEngine::Vector3 position,UnityEngine::Quaternion rotation);
+    DECLARE_INSTANCE_METHOD(void, SetPosition, UnityEngine::Vector3 position,UnityEngine::Quaternion rotation, bool lerp = true);
     
 
     public:

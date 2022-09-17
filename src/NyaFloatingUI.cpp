@@ -38,10 +38,13 @@ namespace Nya {
         UIScreen->set_active(false);
         UIScreen->GetComponent<UnityEngine::Canvas*>()->set_sortingOrder(31);
         UnityEngine::GameObject::DontDestroyOnLoad(UIScreen);
+
+        // Handle creation
         screenhandle = UIScreen->GetComponent<QuestUI::FloatingScreen*>()->handle;
         UIScreen->GetComponent<QuestUI::FloatingScreen*>()->bgGo->GetComponentInChildren<QuestUI::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 0.0f);
         screenhandle->get_transform()->set_localPosition(UnityEngine::Vector3(0.0f, -23.0f, 0.0f));
         screenhandle->get_transform()->set_localScale(UnityEngine::Vector3(5.3f, 3.3f, 5.3f));
+
         QuestUI::FloatingScreen* thing = UIScreen->GetComponent<QuestUI::FloatingScreen*>();
 
         auto* vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(UIScreen->get_transform());
@@ -146,20 +149,18 @@ namespace Nya {
                     return;
                 };
                 this->initScreen();
-            
-                UIScreen->get_transform()->set_position(
+                this->hoverClickHelper->SetPosition(
                     UnityEngine::Vector3(
                         getNyaConfig().pausePositionX.GetValue(), 
                         getNyaConfig().pausePositionY.GetValue(),
                         getNyaConfig().pausePositionZ.GetValue()
-                    )
-                );
-                UIScreen->get_transform()->set_rotation(
-                    UnityEngine::Quaternion::Euler(
+                    ),
+                    Quaternion::Euler(
                         getNyaConfig().pauseRotationX.GetValue(), 
                         getNyaConfig().pauseRotationY.GetValue(), 
                         getNyaConfig().pauseRotationZ.GetValue()
-                    )
+                    ),
+                    false
                 );
                 UIScreen->set_active(true);
                 hoverClickHelper->resetBools();
@@ -181,19 +182,18 @@ namespace Nya {
             hoverClickHelper->vrPointer = pointer;
 
             hoverClickHelper->resetBools();
-            UIScreen->get_transform()->set_position(
+            this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
                     getNyaConfig().resultPositionX.GetValue(), 
                     getNyaConfig().resultPositionY.GetValue(),
                     getNyaConfig().resultPositionZ.GetValue()
-                )
-            );
-            UIScreen->get_transform()->set_rotation(
-                UnityEngine::Quaternion::Euler(
+                ),
+                Quaternion::Euler(
                     getNyaConfig().resultRotationX.GetValue(), 
                     getNyaConfig().resultRotationY.GetValue(), 
                     getNyaConfig().resultRotationZ.GetValue()
-                )
+                ),
+                false
             );
             UIScreen->set_active(true);
 
@@ -210,21 +210,19 @@ namespace Nya {
             hoverClickHelper->vrPointer = pointer;
             hoverClickHelper->resetBools();
 
-            UIScreen->get_transform()->set_position(
+            this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
                     getNyaConfig().menuPositionX.GetValue(), 
                     getNyaConfig().menuPositionY.GetValue(),
                     getNyaConfig().menuPositionZ.GetValue()
-                )
-            );
-            UIScreen->get_transform()->set_rotation(
-                UnityEngine::Quaternion::Euler(
+                ),
+                Quaternion::Euler(
                     getNyaConfig().menuRotationX.GetValue(), 
                     getNyaConfig().menuRotationY.GetValue(), 
                     getNyaConfig().menuRotationZ.GetValue()
-                )
+                ),
+                false
             );
-            
             UIScreen->set_active(true);
             hoverClickHelper->resetBools();
         }
@@ -238,19 +236,18 @@ namespace Nya {
 
                 this->initScreen();
 
-                UIScreen->get_transform()->set_position(
+                this->hoverClickHelper->SetPosition(
                     UnityEngine::Vector3(
                         getNyaConfig().pausePositionX.GetValue(), 
                         getNyaConfig().pausePositionY.GetValue(),
                         getNyaConfig().pausePositionZ.GetValue()
-                    )
-                );
-                UIScreen->get_transform()->set_rotation(
-                    UnityEngine::Quaternion::Euler(
+                    ),
+                    Quaternion::Euler(
                         getNyaConfig().pauseRotationX.GetValue(), 
                         getNyaConfig().pauseRotationY.GetValue(), 
                         getNyaConfig().pauseRotationZ.GetValue()
-                    )
+                    ),
+                    false
                 );
                 UIScreen->set_active(true);
             }
