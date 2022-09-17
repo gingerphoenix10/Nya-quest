@@ -189,8 +189,12 @@ namespace Nya {
     }
   
     void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene) {
-        // Do nothing if the scene did not change
         INFO("Switched from {} to {} ", this->currentScene, scene);
+        
+        // Do nothing if the scene did not change
+        if (this->currentScene == scene) {
+            return;
+        }
 
         this->currentScene = scene;
         if (scene == Nya::FloatingUIScene::Pause) {
@@ -340,7 +344,7 @@ namespace Nya {
             getNyaConfig().resultRotationZ.SetValue(rotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
-            // INFO("Saved to MainMenu");
+            INFO("Saved to MainMenu");
             getNyaConfig().menuPositionX.SetValue(position.x);
             getNyaConfig().menuPositionY.SetValue(position.y);
             getNyaConfig().menuPositionZ.SetValue(position.z);
@@ -349,10 +353,6 @@ namespace Nya {
             getNyaConfig().menuRotationY.SetValue(rotation.y);
             getNyaConfig().menuRotationZ.SetValue(rotation.z);
         }
-        // if (this->currentScene == Nya::FloatingUIScene::InGame){
-        //     getNyaConfig().gamePosition.SetValue(transform->get_position());
-        //     getNyaConfig().gameRotation.SetValue(transform->get_rotation().get_eulerAngles());
-        // }
     }
 
     NyaFloatingUI* NyaFloatingUI::instance = nullptr;
