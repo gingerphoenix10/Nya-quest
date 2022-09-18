@@ -87,7 +87,7 @@ namespace Nya {
             }
         }
         else {
-            if (isHit && !Main::NyaFloatingUI->settingsMenu->isShown()){
+            if (isHit && Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->settingsMenu != nullptr && !Main::NyaFloatingUI->settingsMenu->isShown()){
                 panelUI->image->GetComponent<UnityEngine::UI::Image*>()->set_color(UnityEngine::Color::get_gray());
                 hintController->hoverHintPanel->Hide();
                 panelUI = nullptr;
@@ -130,25 +130,28 @@ namespace Nya {
                 hoveringHandle = true;
             }
         }
-        if (triggerPressed && grabbingController->get_triggerValue() < 0.1f){
-    //        if (grabbingHandle){
-    //            auto* screenTransform = handleTransform->get_transform()->get_parent();
-    ////            if ((float)(screenTransform->get_position().y) < 0.5) screenTransform->Translate(0.0f, (0.5 - screenTransform->get_position().y), 0.0f, UnityEngine::Space::World);
-    //            getLogger().debug("Saved coords");
-    //
-    //        }
-            auto* screenTransform = handleTransform->get_transform()->get_parent();
-            // Save coordinates to config
-            Main::NyaFloatingUI->updateCoordinates(screenTransform);
 
-            this->targetPosition = screenTransform->get_position();
-            this->targetRotation =  screenTransform->get_rotation();
+        // If trigger is released
+        if (triggerPressed && grabbingController->get_triggerValue() < 0.1f){
+            
+            // If we were dragging the handle, release and save
+            if (grabbingHandle){
+                auto* screenTransform = handleTransform->get_transform()->get_parent();
+                // Save coordinates to config
+                Main::NyaFloatingUI->updateCoordinates(screenTransform);
+
+                this->targetPosition = screenTransform->get_position();
+                this->targetRotation = screenTransform->get_rotation();
+            }
+            
             grabbingController = nullptr;
             triggerPressed = false;
             justClosedModal = false;
             outOfRange = false;
             grabbingHandle = false;
         } 
+
+        // If is hit and the thing is not shown then not hit
         if (isHit && Main::NyaFloatingUI->settingsMenu->isShown()) isHit = false;
         
     }

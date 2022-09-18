@@ -40,33 +40,42 @@ Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
-    if (getNyaConfig().inPause.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
+    if (Main::NyaFloatingUI != nullptr){
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
+    }
+    
 }
 
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
-    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);;
+    if (Main::NyaFloatingUI != nullptr){
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+    }
+    
 }
 
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
-    if (!getNyaConfig().inGame.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::InGame);
+    if (Main::NyaFloatingUI != nullptr){
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+    }
 }
 
 MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
     Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
-    // if (getNyaConfig().inResults.GetValue()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-    if (Nya::NyaFloatingUI::isEnabled()) Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Results);
+    if (Main::NyaFloatingUI != nullptr){
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+    }
+    
 }
 
 MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(GameplayCoreSceneSetupData_ctor, "", "GameplayCoreSceneSetupData", ".ctor", void, GameplayCoreSceneSetupData* self, IDifficultyBeatmap* difficultyBeatmap, IPreviewBeatmapLevel* previewBeatmapLevel, GameplayModifiers* gameplayModifiers, PlayerSpecificSettings* playerSpecificSettings, PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects, EnvironmentInfoSO* environmentInfo, ColorScheme* colorScheme, MainSettingsModelSO* mainSettingsModel)
 {
     GameplayCoreSceneSetupData_ctor(self, difficultyBeatmap, previewBeatmapLevel, gameplayModifiers, playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects, environmentInfo, colorScheme, mainSettingsModel);
-
 }
 
 // Soft restart in settings
@@ -75,7 +84,8 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
     // Destroy the floating UI on soft restart
     if (Main::NyaFloatingUI != nullptr){
         GameObject::Destroy(Main::NyaFloatingUI->UIScreen->get_gameObject());
-        GameObject::Destroy(Main::NyaFloatingUI);
+        
+        Nya::NyaFloatingUI::delete_instance();
         Main::NyaFloatingUI = nullptr;
     }
     MenuTransitionsHelper_RestartGame(self, finishCallback);
@@ -84,11 +94,10 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoordinator::DidActivate, void, GlobalNamespace::MainFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     
-    static bool hasInited = false;
-    Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
-    Nya::Main::NyaFloatingUI->initScreen();
-    Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
-    hasInited = true;
+    if (Nya::Main::NyaFloatingUI == nullptr) {
+        Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
+    }
 }
 
 // On scene change
@@ -99,10 +108,12 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
     if(prevScene.IsValid() && nextScene.IsValid()) {
         std::string prevSceneName(prevScene.get_name());
         std::string nextSceneName(nextScene.get_name());
-        INFO("scene changed from {} to {}", prevSceneName, nextSceneName);
 
-        if (Nya::Main::NyaFloatingUI != nullptr && Nya::Main::NyaFloatingUI->isInitialized ) {
-            Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
+        if (Nya::Main::NyaFloatingUI != nullptr) {
+            QuestUI::MainThreadScheduler::Schedule([prevScene, nextScene]
+            {
+                Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
+            });
         }
     }   
 }

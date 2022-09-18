@@ -23,7 +23,7 @@ using namespace UnityEngine::UI;
 
 namespace Nya {
     enum FloatingUIScene {
-        Unknown, Pause, Results, MainMenu, InGame
+        Disabled, Pause, MainMenu
     };
 };
 
@@ -39,15 +39,18 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
             void onSceneChange(Nya::FloatingUIScene scene, bool reinitialize = false);
 
-            Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Unknown;
+            Nya::FloatingUIScene currentScene = Nya::FloatingUIScene::Disabled;
             bool isInitialized = false;
 
             DECLARE_INSTANCE_METHOD(void, SetDefaultPos);
             DECLARE_CTOR(ctor);
+            // DECLARE_DTOR(dtor);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);
             DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, UIScreen);
             DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
+            DECLARE_INSTANCE_FIELD(QuestUI::FloatingScreenMoverPointer*, pauseMover);
+            DECLARE_INSTANCE_FIELD(QuestUI::FloatingScreenMoverPointer*, menuMover);
             
             DECLARE_INSTANCE_FIELD(Nya::HoverClickHelper*, hoverClickHelper);
 
@@ -61,7 +64,8 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_FIELD(Nya::SettingsMenu*, settingsMenu);
 
             static NyaFloatingUI* get_instance();
+            static void delete_instance();
             static bool isEnabled();
         private:
-            static NyaFloatingUI* instance;
+            static NyaFloatingUI* instance;       
 )

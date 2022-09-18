@@ -113,7 +113,6 @@ namespace Nya {
 
 
             // SFW endpoint switch
-            std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
             this->sfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"),  "Loading..", {"Loading.."}, [](StringW value){
                 std::string API = getNyaConfig().API.GetValue();
                 EndpointConfig::updateEndpointValue(getNyaConfig().config, API, false, value);
@@ -121,7 +120,6 @@ namespace Nya {
 
             #ifdef NSFW
                 // NSFW endpoint selector
-                std::string NSFWEndpoint = getNyaConfig().NSFWEndpoint.GetValue();
                 this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value){
                     // Get current endpoint
                     std::string API = getNyaConfig().API.GetValue();
@@ -183,6 +181,7 @@ namespace Nya {
     }
 
     bool SettingsMenu::isShown() {
+        if (this->settingsModal == nullptr) return false;
         return this->settingsModal->isShown;
     }
 
@@ -202,7 +201,6 @@ namespace Nya {
         {
             this->tabsSwitch->segmentedControl->SelectCellWithNumber(0);
             std::string API = getNyaConfig().API.GetValue();
-            std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
             SourceData* source = nullptr;
 
             // Catch for invalid apis

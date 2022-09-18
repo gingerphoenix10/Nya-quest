@@ -217,7 +217,7 @@ namespace Nya::Utils {
                 settingsModal->Show(true, true, nullptr);
 
                 std::string API = getNyaConfig().API.GetValue();
-                std::string SFWEndpoint = getNyaConfig().SFWEndpoint.GetValue();
+              
 
                 // Get current api or set the default one
                 SourceData* source =  NyaAPI::get_data_source(API);

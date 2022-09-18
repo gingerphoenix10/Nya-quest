@@ -26,6 +26,8 @@ namespace Nya {
         UIScreen = nullptr;
         UINoGlow = nullptr;
         hoverClickHelper = nullptr;
+        pauseMover = nullptr;
+        menuMover = nullptr;
         INFO("Created NyaFloatingUI instance");
     }
 
@@ -86,7 +88,7 @@ namespace Nya {
     }
     
     void NyaFloatingUI::SetDefaultPos () {
-        if (this->currentScene == Nya::FloatingUIScene::Pause || this->currentScene == Nya::FloatingUIScene::InGame ) {
+        if (this->currentScene == Nya::FloatingUIScene::Pause) {
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
                     getNyaConfig().pausePositionX.GetDefaultValue(), 
@@ -101,20 +103,6 @@ namespace Nya {
             );
         }
 
-        if (this->currentScene == Nya::FloatingUIScene::Results) {
-            this->hoverClickHelper->SetPosition(
-                UnityEngine::Vector3(
-                    getNyaConfig().resultPositionX.GetDefaultValue(), 
-                    getNyaConfig().resultPositionY.GetDefaultValue(),
-                    getNyaConfig().resultPositionZ.GetDefaultValue()
-                ),
-                UnityEngine::Quaternion::Euler(
-                    getNyaConfig().resultRotationX.GetDefaultValue(), 
-                    getNyaConfig().resultRotationY.GetDefaultValue(), 
-                    getNyaConfig().resultRotationZ.GetDefaultValue()
-                )
-            );
-        }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu) {
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
@@ -136,80 +124,68 @@ namespace Nya {
     void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene, bool reinitialize) {
         INFO("Switched from {} to {} ", this->currentScene, scene);
         
-        // Do nothing if the scene did not change
+        // Do nothing if the scene did not change unless reinitialize is active
         if (!reinitialize && this->currentScene == scene) {
             return;
         }
-
+        
         this->currentScene = scene;
-        if (scene == Nya::FloatingUIScene::Pause) {
-            if (this->UIScreen != nullptr) {
-                if (!getNyaConfig().inPause.GetValue()) {
-                    UIScreen->set_active(false);
-                    return;
-                };
-                this->initScreen();
-                this->hoverClickHelper->SetPosition(
-                    UnityEngine::Vector3(
-                        getNyaConfig().pausePositionX.GetValue(), 
-                        getNyaConfig().pausePositionY.GetValue(),
-                        getNyaConfig().pausePositionZ.GetValue()
-                    ),
-                    Quaternion::Euler(
-                        getNyaConfig().pauseRotationX.GetValue(), 
-                        getNyaConfig().pauseRotationY.GetValue(), 
-                        getNyaConfig().pauseRotationZ.GetValue()
-                    ),
-                    false
-                );
-                UIScreen->set_active(true);
-                hoverClickHelper->resetBools();
-                auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
-                // Mover to move the ui component
-                auto* mover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
-                mover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
-            }
+
+        // Disable everything if config does not need it and return
+        if (
+            (
+                scene == Nya::FloatingUIScene::Disabled
+            ) || (
+                scene == Nya::FloatingUIScene::Pause && !getNyaConfig().inPause.GetValue()
+            ) || (
+                scene == Nya::FloatingUIScene::MainMenu && !getNyaConfig().inMenu.GetValue()
+            )) {
+                INFO("DISABLING THE SCREEN");
+                if (this->UIScreen != nullptr) UIScreen->set_active(false);
+                // if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_active(false);
+                return;
+        };
+        
+        // If screen does not exist, initialize the first time
+        if (this->UIScreen == nullptr) {
+            this->initScreen();
         }
 
-        if (scene == Nya::FloatingUIScene::Results) {
-            if (!getNyaConfig().inResults.GetValue()) {
-                UIScreen->set_active(false);
-                return;
-            };
-            this->initScreen();
-
-            auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
-            hoverClickHelper->vrPointer = pointer;
-
-            hoverClickHelper->resetBools();
+        if (scene == Nya::FloatingUIScene::Pause) {
+            INFO("Showing pause");
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
-                    getNyaConfig().resultPositionX.GetValue(), 
-                    getNyaConfig().resultPositionY.GetValue(),
-                    getNyaConfig().resultPositionZ.GetValue()
+                    getNyaConfig().pausePositionX.GetValue(), 
+                    getNyaConfig().pausePositionY.GetValue(),
+                    getNyaConfig().pausePositionZ.GetValue()
                 ),
                 Quaternion::Euler(
-                    getNyaConfig().resultRotationX.GetValue(), 
-                    getNyaConfig().resultRotationY.GetValue(), 
-                    getNyaConfig().resultRotationZ.GetValue()
+                    getNyaConfig().pauseRotationX.GetValue(), 
+                    getNyaConfig().pauseRotationY.GetValue(), 
+                    getNyaConfig().pauseRotationZ.GetValue()
                 ),
                 false
             );
-            UIScreen->set_active(true);
 
+            auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
+            this->hoverClickHelper->vrPointer = pausepointer;
+
+            if (this->pauseMover != nullptr ) {
+                UnityEngine::Object::Destroy(this->pauseMover);
+            }
+            // Mover to move the ui component
+            this->pauseMover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            this->pauseMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
+        
+             
+
+            
+            
+            
         }
+
         if (scene == Nya::FloatingUIScene::MainMenu) {
-            if (!getNyaConfig().inMenu.GetValue()) {
-                UIScreen->set_active(false);
-                return;
-            };
-
-            this->initScreen();
-
-            auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
-            hoverClickHelper->vrPointer = pointer;
-            hoverClickHelper->resetBools();
-
+            INFO("Showing main menu");
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
                     getNyaConfig().menuPositionX.GetValue(), 
@@ -223,35 +199,26 @@ namespace Nya {
                 ),
                 false
             );
-            UIScreen->set_active(true);
-            hoverClickHelper->resetBools();
-        }
+            static bool menuMoverInitialized = false;
 
-        if (scene == Nya::FloatingUIScene::InGame) {
-            if (this->UIScreen != nullptr) {
-                if (!getNyaConfig().inGame.GetValue()) {
-                    UIScreen->set_active(false);
-                    return;
-                };
+            auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
+            this->hoverClickHelper->vrPointer = pointer;
 
-                this->initScreen();
-
-                this->hoverClickHelper->SetPosition(
-                    UnityEngine::Vector3(
-                        getNyaConfig().pausePositionX.GetValue(), 
-                        getNyaConfig().pausePositionY.GetValue(),
-                        getNyaConfig().pausePositionZ.GetValue()
-                    ),
-                    Quaternion::Euler(
-                        getNyaConfig().pauseRotationX.GetValue(), 
-                        getNyaConfig().pauseRotationY.GetValue(), 
-                        getNyaConfig().pauseRotationZ.GetValue()
-                    ),
-                    false
-                );
-                UIScreen->set_active(true);
+         
+            // Get the last mover
+            if (this->menuMover != nullptr ) {
+                UnityEngine::Object::Destroy(this->menuMover);
             }
+            // Mover to move the ui component
+            this->menuMover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            this->menuMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pointer);
+           
         }
+
+        INFO("SETTING SCREEN TO ACTIVE");
+        // Set UIScreen active and reset click helper state
+        UIScreen->set_active(true);
+        hoverClickHelper->resetBools();
     }
 
     // Saves the coordinates to a config
@@ -271,17 +238,6 @@ namespace Nya {
             getNyaConfig().pauseRotationY.SetValue(rotation.y);
             getNyaConfig().pauseRotationZ.SetValue(rotation.z);
         }
-        if (this->currentScene == Nya::FloatingUIScene::Results){
-            INFO("Saved to Results");
-            getNyaConfig().resultPositionX.SetValue(position.x);
-            getNyaConfig().resultPositionY.SetValue(position.y);
-            getNyaConfig().resultPositionZ.SetValue(position.z);
-            
-            
-            getNyaConfig().resultRotationX.SetValue(rotation.x);
-            getNyaConfig().resultRotationY.SetValue(rotation.y);
-            getNyaConfig().resultRotationZ.SetValue(rotation.z);
-        }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
             INFO("Saved to MainMenu");
             getNyaConfig().menuPositionX.SetValue(position.x);
@@ -295,6 +251,8 @@ namespace Nya {
     }
 
     NyaFloatingUI* NyaFloatingUI::instance = nullptr;
+
+    // singleton?
     NyaFloatingUI* NyaFloatingUI::get_instance()
     {
         if (instance)
@@ -304,14 +262,20 @@ namespace Nya {
         return go->AddComponent<NyaFloatingUI*>();
     }
 
+    void NyaFloatingUI::delete_instance()
+    {
+        if (instance){
+            Object::DestroyImmediate(instance->get_gameObject());
+            instance = nullptr;
+        }
+    }
+
 //    Check if nya is enabled anywhere
     bool NyaFloatingUI::isEnabled (){
         return (
-                getNyaConfig().inGame.GetValue() ||
-                getNyaConfig().inMenu.GetValue() ||
-                getNyaConfig().inPause.GetValue() ||
-                getNyaConfig().inResults.GetValue()
-                );
+            getNyaConfig().inMenu.GetValue() ||
+            getNyaConfig().inPause.GetValue() 
+        );
     }
 
     void NyaFloatingUI::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
@@ -320,21 +284,22 @@ namespace Nya {
         INFO("scene changed from {} to {}", prevSceneName, nextSceneName);
         
    
-        if (nextSceneName.find("Menu")) {
+        if (nextSceneName.find("Menu") != std::string::npos ) {
              QuestUI::MainThreadScheduler::Schedule([this]
             {
                 this->onSceneChange(Nya::FloatingUIScene::MainMenu);
-           
             });
-             return;
-        }
-        if (nextSceneName.find("Pause")) {
-             QuestUI::MainThreadScheduler::Schedule([this]
+            
+        } else if (nextSceneName.find("Pause") != std::string::npos ) {
+            QuestUI::MainThreadScheduler::Schedule([this]
             {
                 this->onSceneChange(Nya::FloatingUIScene::Pause);
-           
             });
-            return;
+        } else {
+            QuestUI::MainThreadScheduler::Schedule([this]
+            {
+                this->onSceneChange(Nya::FloatingUIScene::Disabled);
+            });
         }
-};
+    };
 }

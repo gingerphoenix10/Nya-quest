@@ -207,10 +207,6 @@ namespace EndpointConfig {
         config.menuPositionY.SetValue(config.menuPositionY.GetDefaultValue());
         config.menuPositionZ.SetValue(config.menuPositionZ.GetDefaultValue());
 
-        config.resultPositionX.SetValue(config.resultPositionX.GetDefaultValue());
-        config.resultPositionY.SetValue(config.resultPositionY.GetDefaultValue());
-        config.resultPositionZ.SetValue(config.resultPositionZ.GetDefaultValue());
-
         // Rotations
         config.pauseRotationX.SetValue(config.pauseRotationX.GetDefaultValue());
         config.pauseRotationY.SetValue(config.pauseRotationY.GetDefaultValue());
@@ -219,9 +215,5 @@ namespace EndpointConfig {
         config.menuRotationX.SetValue(config.menuRotationX.GetDefaultValue());
         config.menuRotationY.SetValue(config.menuRotationY.GetDefaultValue());
         config.menuRotationZ.SetValue(config.menuRotationZ.GetDefaultValue());
-
-        config.resultRotationX.SetValue(config.resultRotationX.GetDefaultValue());
-        config.resultRotationY.SetValue(config.resultRotationY.GetDefaultValue());
-        config.resultRotationZ.SetValue(config.resultRotationZ.GetDefaultValue());
     }
 }

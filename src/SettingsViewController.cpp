@@ -7,31 +7,29 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
     if (firstActivation) {
         auto *container = QuestUI::BeatSaberUI::CreateScrollableSettingsContainer(get_transform());
 
-
         QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Floating in Pause Menu",
-                                           getNyaConfig().inPause.GetValue(), [](bool value) {
-                    getNyaConfig().inPause.SetValue(value);
-
-                });
-        QuestUI::BeatSaberUI::CreateToggle(
-                container->get_transform(),
-                "Floating on Results Screen", getNyaConfig().inResults.GetValue(), [](bool value) {
-                    getNyaConfig().inResults.SetValue(value);
-
-                });
+            getNyaConfig().inPause.GetValue(), [](bool value) {
+            getNyaConfig().inPause.SetValue(value);
+            if (
+                Main::NyaFloatingUI != nullptr && 
+                Main::NyaFloatingUI->UIScreen != nullptr &&
+                Main::NyaFloatingUI->UIScreen->get_active()
+            ) {
+                Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
+            }
+        });
         QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Floating on Menu Screen",
-                                           getNyaConfig().inMenu.GetValue(),
-                                           [](bool value) {
-                                               getNyaConfig().inMenu.SetValue(value);
-
-                                           });
-         QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Floating in Game",
-                        getNyaConfig().inGame.GetValue(),
-                        [](bool value) {
-                            getNyaConfig().inGame.SetValue(value);
-
-                        });
-
+            getNyaConfig().inMenu.GetValue(),
+            [](bool value) {
+                getNyaConfig().inMenu.SetValue(value);
+                if (
+                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI->UIScreen != nullptr &&
+                    Main::NyaFloatingUI->UIScreen->get_active()
+                ) {
+                    Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
+                }
+        });
         // Buttons for settings
         // TODO: Make it work with floating ui off
         UnityEngine::UI::Button* faceHeadset = QuestUI::BeatSaberUI::CreateUIButton(container->get_transform(), to_utf16("Face headset"), "PracticeButton",
@@ -58,8 +56,7 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
             EndpointConfig::ResetPositions();
             if (
                 Main::NyaFloatingUI != nullptr && 
-                Main::NyaFloatingUI->UIScreen != nullptr &&
-                Main::NyaFloatingUI->UIScreen->get_active()
+                Main::NyaFloatingUI->UIScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
