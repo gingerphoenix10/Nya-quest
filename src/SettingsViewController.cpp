@@ -12,8 +12,7 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
             getNyaConfig().inPause.SetValue(value);
             if (
                 Main::NyaFloatingUI != nullptr && 
-                Main::NyaFloatingUI->UIScreen != nullptr &&
-                Main::NyaFloatingUI->UIScreen->get_active()
+                Main::NyaFloatingUI->UIScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
@@ -24,8 +23,7 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
                 getNyaConfig().inMenu.SetValue(value);
                 if (
                     Main::NyaFloatingUI != nullptr && 
-                    Main::NyaFloatingUI->UIScreen != nullptr &&
-                    Main::NyaFloatingUI->UIScreen->get_active()
+                    Main::NyaFloatingUI->UIScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
                 }
