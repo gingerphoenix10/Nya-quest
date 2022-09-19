@@ -1,5 +1,10 @@
 # Nya Quest
 Beat Saber Quest mod for displaying nya-tastic images from various anime themed web APIs
+
+*It was not tested with Quest 1 if you have it, tell me if it works*
+
+*It may crash other mods based on BSML, if you find the mod it crashes, send me the mod*
+
 ## Usage
 Nya's settings can be accessed from either the Mod Settings panel or from within Nya's setting modal
 
@@ -18,7 +23,7 @@ In order for local files to work there must be compatible images in the sfw / ns
 The compatible file types are PNG, JPEG, GIF.
 Images which are downloaded via Nya will also be placed in the sfw / nsfw folders.
 ## Installation
-[Install](https://bsmg.wiki/quest-modding.html#installation) the latest version of [Nya](https://github.com/Sirspam/Nya/releases/latest).
+[Install](https://bsmg.wiki/quest-modding.html#installation) the latest version of [Nya Quest](https://github.com/FrozenAlex/Nya-quest/releases/latest).
 ## Contribution
 Feel free to point out any suggestions or improvements by submitting a PR or contacting me on Discord ([FrozenAlex#4028](https://discordapp.com/users/150649616772235264)).
 
