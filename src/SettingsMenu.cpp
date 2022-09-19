@@ -138,10 +138,12 @@ namespace Nya {
             horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
             horz->set_spacing(10);
 
-            QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton",
+            this->downloadButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton",
             [this]() {
                 auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
                 imageView->SaveImage();
+                this->downloadButton->set_interactable(false);
+                this->settingsModal->Hide(true, nullptr);
             });
 
             UnityEngine::UI::Button* closeButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
@@ -200,6 +202,8 @@ namespace Nya {
 
     void SettingsMenu::Show() {
         INFO("Settings button clicked");
+        auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+        this->downloadButton->set_interactable(imageView->HasImageToSave());
         
         // Run UI on the main thread
         QuestUI::MainThreadScheduler::Schedule([this]

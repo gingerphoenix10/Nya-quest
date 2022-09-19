@@ -43,6 +43,10 @@ void NyaUtils::ImageView::ctor()
     imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
 }
 
+bool NyaUtils::ImageView::HasImageToSave() {
+    return (this->lastImageURL != "" && this->tempName != "");
+}
+
 void NyaUtils::ImageView::SaveImage() {
     if (this->lastImageURL != "" && this->tempName != "") {
         INFO("MOVING FILE");

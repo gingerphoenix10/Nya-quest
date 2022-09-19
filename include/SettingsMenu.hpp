@@ -36,12 +36,12 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
         
 
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
+        DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, downloadButton);
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
         
         DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
-        
         DECLARE_INSTANCE_FIELD(List<StringW>*, sfw_endpoints);
         DECLARE_INSTANCE_FIELD(List<StringW>*, nsfw_endpoints);
 )
