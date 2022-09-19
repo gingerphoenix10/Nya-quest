@@ -187,14 +187,17 @@ namespace BSML::Utilities {
         DEBUG("SendReq");
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
         
-        // Saving files 
-        std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);
-        auto arr = www->get_downloadHandler()->GetData();
-        f.write((char*)arr.begin(), arr.size());
-        f.flush();
+        
         
         if (!www->get_isNetworkError()) {
             DEBUG("Got data, callback");
+            // Saving files 
+            std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);
+            auto arr = www->get_downloadHandler()->GetData();
+            f.write((char*)arr.begin(), arr.size());
+            f.flush();
+            f.close();
+
             if (onFinished)
                 onFinished(true, path);
         } else {

@@ -16,7 +16,7 @@ namespace Nya::Utils {
     ListWrapper<StringW> listStringToStringW(std::list<std::string> values);
 
     // Gets the next image
-    void onNyaClick(UnityEngine::UI::Button * button,NyaUtils::ImageView * imageView);
+    void onNyaClick(UnityEngine::UI::Button * button, NyaUtils::ImageView * imageView);
     void onSettingsClick(
         HMUI::ModalView* settingsModal,
         HMUI::SimpleTextDropdown* api_switch,
@@ -27,5 +27,6 @@ namespace Nya::Utils {
     bool IsAnimated(StringW str);
 
     bool IsImage(StringW str);
+    std::string RandomString(const int len);
 }
 

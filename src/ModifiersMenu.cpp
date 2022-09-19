@@ -26,12 +26,10 @@ DEFINE_TYPE(Nya, ModifiersMenu);
 namespace Nya {
     // Disable
     void ModifiersMenu::OnDisable() {
-        // getLogger().debug("Disabled");
     }
 
     // Enable (runs when the component appears)
     void ModifiersMenu::OnEnable() {
-        // getLogger().debug("Enabled");
     }
 
     void ModifiersMenu::ctor() {
@@ -73,22 +71,10 @@ namespace Nya {
     {
         if(firstActivation)
         {
-    //        auto view = NYA->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
-    //
-    //        NyaAPI::get_path_from_api(NyaAPI::get_api_path(), 10.0f, [this, view](bool success, std::string url) {
-    //            if (success) {
-    //                view->DownloadImage(url, 10.0f, [this](bool success, long code) {
-    //                    this->nyaButton->set_interactable(true);
-    //                });
-    //            } else {
-    //                this->nyaButton->set_interactable(true);
-    //            }
-    //        });
         }
     }
 
     void ModifiersMenu::dtor(){
-        INFO("Modifiers menu destroyed");
     }
 }
 

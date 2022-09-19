@@ -14,6 +14,9 @@
 namespace NyaGlobals {
     static std::string nyaPath = string_format(NYA_PATH_FORMAT, Modloader::getApplicationId().c_str());;
     static std::string imagesPath = nyaPath + "Images/";
+    static std::string imagesPathSFW = nyaPath + "Images/sfw/";
+    static std::string imagesPathNSFW = nyaPath + "Images/nsfw/";
+    static std::string tempPath = nyaPath + "Temp/";
 }
 
 DECLARE_CONFIG(NyaConfig,

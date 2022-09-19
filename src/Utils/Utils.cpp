@@ -20,6 +20,23 @@ namespace Nya::Utils {
         return list;
     }
 
+    
+    
+    std::string RandomString(const int len) {
+        static const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+        std::string tmp_s;
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i) {
+            tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+        }
+        
+        return tmp_s;
+    }
+
     ListWrapper<StringW> listStringToStringW(std::list<std::string> values) {
         // TODO: Fix
         int count = values.size();
@@ -100,97 +117,18 @@ namespace Nya::Utils {
 
     // Download new picture
     void onNyaClick(UnityEngine::UI::Button* button, NyaUtils::ImageView* imageView) {
-        // Disable the button
-        button->set_interactable(false);
-        
-        
-
         try
         {   
-            // Get value
-            std::string currentAPI = getNyaConfig().API.GetValue();
-            // TODO: Make dynamic
-            SourceData* source =  NyaAPI::get_data_source(currentAPI);
-
-            // Local files
-            if (source->Mode == DataMode::Local) {
-                auto fileList = FileUtils::getAllFilesInFolder(NyaGlobals::imagesPath);
-                int randomIndex = Utils::random(0, fileList.size()-1);
-
-                // imageView->LoadFile(fileList[randomIndex], [button](bool success) {
-                //     button->set_interactable(true);
-                // });
-
-                auto path = fileList[randomIndex];
-                QuestUI::MainThreadScheduler::Schedule([button, imageView, path]{
-                    BSML::Utilities::SetImage(imageView->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[button, imageView]() {
-                        button->set_interactable(true);
-                    });
-                //     // Use coroutine to get download image
-                //     GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(imageView->DownloadImage(url, 10.0f, [button](bool success, long code) {
-                //         button->set_interactable(true);
-                //     })));
-                });
-            } else 
-            if (source->Mode == DataMode::Json) {
-                bool NSFWEnabled = false;
-                
-                #ifdef NSFW
-                    NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-                #endif
-                
-                // Construct the url
-                // TODO: check if endpoint from the setting exists and make it dynamic
-
-                std::string endpointValue = EndpointConfig::getEndpointValue(getNyaConfig().config, currentAPI, NSFWEnabled);
-
-                // If we found no nsfw, show sfw
-                if (endpointValue == "" && NSFWEnabled) {
-                    endpointValue = EndpointConfig::getEndpointValue(getNyaConfig().config, currentAPI, false);
-                }
-
-                std::string endpointURL = "";
-                if (NSFWEnabled) {
-                    endpointURL = source->BaseEndpoint + endpointValue;  
-                } else {
-                    endpointURL = source->BaseEndpoint + endpointValue;  
-                }
-                
-
-                INFO("Endpoint URL: {}", endpointURL);
-                NyaAPI::get_path_from_api(endpointURL, 10.0f, [button, imageView](bool success, std::string url) {
-                    INFO("Image URL: {}", url);
-                    if (success) {
-                        
-                        QuestUI::MainThreadScheduler::Schedule([button, imageView, url]{
-                            BSML::Utilities::SetImage(imageView->imageView, url ,  true, BSML::Utilities::ScaleOptions(),[button, imageView]() {
-                                button->set_interactable(true);
-
-
-                            });
-                        //     // Use coroutine to get download image
-                        //     GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(imageView->DownloadImage(url, 10.0f, [button](bool success, long code) {
-                        //         button->set_interactable(true);
-                        //     })));
-                        });
-                    } else {
-                        // Error getting things
-                        ERROR("Failed to load image from api");
-                        getLogger().Backtrace(20);
-                        button->set_interactable(true);
-                    }
-                });
-            }
-
-            
-        
+            button->set_interactable(false);
+            imageView->GetImage([button](bool success){
+                button->set_interactable(true);
+            });
         }
         // TODO: If the source is not set up, set up the default
         catch(const std::exception& e)
         {
             ERROR("Custom fail");
             getLogger().Backtrace(20);
-          
         }  
     }
 
@@ -297,6 +235,8 @@ namespace Nya::Utils {
                 str->EndsWith("_webp", System::StringComparison::OrdinalIgnoreCase)||
                 str->EndsWith(".tiff", System::StringComparison::OrdinalIgnoreCase)||
                 str->EndsWith("_tiff", System::StringComparison::OrdinalIgnoreCase) ||
+                str->EndsWith(".jpg", System::StringComparison::OrdinalIgnoreCase)||
+                str->EndsWith("_jpg", System::StringComparison::OrdinalIgnoreCase) ||
                 str->EndsWith(".bmp", System::StringComparison::OrdinalIgnoreCase)||
                 str->EndsWith("_bmp", System::StringComparison::OrdinalIgnoreCase);
   

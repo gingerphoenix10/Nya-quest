@@ -134,7 +134,32 @@ void makeFolder()
         int makePath = mkpath(NyaGlobals::imagesPath.c_str());
         if (makePath == -1)
         {
-            ERROR("Failed to make Images Folder path!");
+            ERROR("Failed to make Images folder!");
+        }
+    }
+    if (!direxists(NyaGlobals::tempPath.c_str()))
+    {
+        int makePath = mkpath(NyaGlobals::tempPath.c_str());
+        if (makePath == -1)
+        {
+            ERROR("Failed to make Temp folder!");
+        }
+    }
+
+    if (!direxists(NyaGlobals::imagesPathSFW.c_str()))
+    {
+        int makePath = mkpath(NyaGlobals::imagesPathSFW.c_str());
+        if (makePath == -1)
+        {
+            ERROR("Failed to make SFW folder!");
+        }
+    }
+    if (!direxists(NyaGlobals::imagesPathNSFW.c_str()))
+    {
+        int makePath = mkpath(NyaGlobals::imagesPathNSFW.c_str());
+        if (makePath == -1)
+        {
+            ERROR("Failed to make NSFW folder!");
         }
     }
 }

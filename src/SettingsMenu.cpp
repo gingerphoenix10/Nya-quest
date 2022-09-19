@@ -138,6 +138,11 @@ namespace Nya {
             horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
             horz->set_spacing(10);
 
+            QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton",
+            [this]() {
+                auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+                imageView->SaveImage();
+            });
 
             UnityEngine::UI::Button* closeButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
                 [this]() {

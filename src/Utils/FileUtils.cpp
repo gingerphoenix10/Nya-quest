@@ -5,7 +5,10 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include "codegen/include/System/IO/Path.hpp"
 #include "beatsaber-hook/shared/utils/typedefs.h"
+namespace fs = std::filesystem;
+
 namespace FileUtils {
 
     std::string FixIlegalName(std::string_view path) {
@@ -20,7 +23,7 @@ namespace FileUtils {
         return newPath;
     }
 
-     std::vector<std::string> getAllFoldersInFolder(const std::string& path) {
+    std::vector<std::string> getAllFoldersInFolder(const std::string& path) {
         std::vector<std::string> strings;
         for (const auto & entry : std::filesystem::directory_iterator(path)) {
             if (entry.is_directory()) {
@@ -49,13 +52,29 @@ namespace FileUtils {
          std::vector<std::string> strings;
         for (const auto & entry : std::filesystem::directory_iterator(path)) {
             if (entry.is_regular_file()) {
+                INFO("Found file {} ", entry.path().c_str());
                 StringW path = StringW(entry.path().c_str());
                 if (Nya::Utils::IsImage(path)) {
                     strings.push_back(entry.path());
                 }            
             }
         }
+        INFO("Found {} files", strings.size());
         return strings;
+    }
+
+    // Gets all supported files
+    bool deleteFile(StringW path){
+        return fs::remove((std::string) path);
+    }
+
+    // Gets all supported files
+    void moveFile(StringW oldPath,StringW newPath){
+        return fs::rename((std::string) oldPath, (std::string) newPath);
+    }
+
+    StringW GetFileFormat(StringW path) {
+        return System::IO::Path::GetExtension(path);
     }
 
 }
