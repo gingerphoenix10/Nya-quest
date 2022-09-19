@@ -200,7 +200,6 @@ namespace BSML::Utilities {
         SetImage(image, path, true, ScaleOptions());
     }
 
-    SafePtr<Dictionary<StringW, UnityEngine::Sprite*>> imageCache;
     void SetImage(UnityEngine::UI::Image* image, StringW path, bool loadingAnimation, ScaleOptions scaleOptions, std::function<void()> onFinished) {
         if (!image) {
             ERROR("Can't set null image!");
@@ -222,18 +221,10 @@ namespace BSML::Utilities {
             return;
         }
 
-        // if (!imageCache) imageCache.emplace(Dictionary<StringW, UnityEngine::Sprite*>::New_ctor());
+        
         
         // Do not use image cache
-        // UnityEngine::Sprite* sprite = nullptr;
-        // if (imageCache->TryGetValue(path, byref(sprite)) && sprite && sprite->m_CachedPtr.m_value) {
-        //     // we got a sprite, use it
-        //     image->set_sprite(sprite);
-        //     if (onFinished) onFinished();
-        //     return;
-        // } else {
-        //     imageCache->Remove(path);
-        // }
+       
 
         auto animationController = AnimationController::get_instance();
 
@@ -309,7 +300,6 @@ namespace BSML::Utilities {
                     auto sprite = LoadSpriteFromTexture(texture);
                     sprite->get_texture()->set_wrapMode(TextureWrapMode::Clamp);
                     image->set_sprite(sprite);
-                    imageCache->Add(path, sprite);
                 }
 
                 if (onFinished)
