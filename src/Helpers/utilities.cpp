@@ -26,7 +26,7 @@
 #include "BSML/Animations/AnimationControllerData.hpp"
 #include "BSML/Animations/AnimationLoader.hpp"
 
-
+#include <fstream>
 #include "System/Uri.hpp"
 #include "System/StringComparison.hpp"
 
@@ -154,6 +154,11 @@ namespace BSML::Utilities {
         DEBUG("SendReq");
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
         
+        // Saving files 
+        // std::ofstream f(NyaGlobals::imagesPath + "lol.jpg",  std::ios_base::binary | std::ios_base::trunc);
+        // auto arr = www->get_downloadHandler()->GetData();
+        // f.write((char*)arr.begin(), arr.size());
+        // f.flush();
         
         if (!www->get_isNetworkError()) {
             DEBUG("Got data, callback");
@@ -166,6 +171,48 @@ namespace BSML::Utilities {
         }
         
         co_return;
+    }
+
+    /// @brief Downloads data and returns it. If it does not get the data, 
+    /// @param uri File url
+    /// @param path Path to a new file on local storage
+    /// @param onFinished 
+    /// @return 
+    custom_types::Helpers::Coroutine DownloadFileCoroutine(StringW uri, StringW path, std::function<void(bool success, StringW path)> onFinished) {
+
+        DEBUG("GetReq");
+        auto www = UnityWebRequest::Get(uri);
+        // I suppose it's in seconds
+        www->set_timeout(10);
+        DEBUG("SendReq");
+        co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
+        
+        // Saving files 
+        std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);
+        auto arr = www->get_downloadHandler()->GetData();
+        f.write((char*)arr.begin(), arr.size());
+        f.flush();
+        
+        if (!www->get_isNetworkError()) {
+            DEBUG("Got data, callback");
+            if (onFinished)
+                onFinished(true, path);
+        } else {
+            DEBUG("Failed to get the data");
+            if (onFinished) 
+                onFinished(false, path);
+        }
+
+        co_return;
+    }
+
+    void DownloadFile(StringW uri, StringW path, std::function<void(bool success, StringW path)> onFinished) {
+        INFO("Getting data from uri: {}", (std::string) uri);
+        if (!onFinished) {
+            ERROR("Can't get data async without a callback to use it with");
+            return;
+        }
+        coro(DownloadFileCoroutine(uri, path, onFinished));
     }
 
     void DownloadData(StringW uri, std::function<void(bool success, ArrayW<uint8_t>)> onFinished) {
