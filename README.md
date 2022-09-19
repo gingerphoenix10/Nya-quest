@@ -1,4 +1,4 @@
-# Nya Quest
+# Nya Quest  <img src="assets\Vanilla_Mini_Sitting.png" align="right" width="150">
 Beat Saber Quest mod for displaying nya-tastic images from various anime themed web APIs
 
 *It was not tested with Quest 1 if you have it, tell me if it works*
@@ -29,6 +29,9 @@ Feel free to point out any suggestions or improvements by submitting a PR or con
 
 ## Credits
 
+* [Sirspam](https://github.com/Sirspam) - the creator of the original [Nya](https://github.com/Sirspam/Nya) 
+* [RedBrumbler](https://github.com/RedBrumbler) - for making a lot of tools I use, including a better gif implementation
+* [Futuremappermydud](https://github.com/Futuremappermydud) - for the original code of the port
 * [zoller27osu](https://github.com/zoller27osu), [Sc2ad](https://github.com/Sc2ad) and [jakibaki](https://github.com/jakibaki) - [beatsaber-hook](https://github.com/sc2ad/beatsaber-hook)
 * [raftario](https://github.com/raftario)
 * [Lauriethefish](https://github.com/Lauriethefish), [danrouse](https://github.com/danrouse) and [Bobby Shmurner](https://github.com/BobbyShmurner) for [this template](https://github.com/Lauriethefish/quest-mod-template)
