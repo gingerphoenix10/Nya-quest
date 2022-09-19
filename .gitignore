@@ -10,3 +10,4 @@ binary_cache/
 perf.data
 report.html
 *.qmod
+mod.json
