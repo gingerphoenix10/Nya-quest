@@ -222,17 +222,18 @@ namespace BSML::Utilities {
             return;
         }
 
-        if (!imageCache) imageCache.emplace(Dictionary<StringW, UnityEngine::Sprite*>::New_ctor());
+        // if (!imageCache) imageCache.emplace(Dictionary<StringW, UnityEngine::Sprite*>::New_ctor());
         
-        UnityEngine::Sprite* sprite = nullptr;
-        if (imageCache->TryGetValue(path, byref(sprite)) && sprite && sprite->m_CachedPtr.m_value) {
-            // we got a sprite, use it
-            image->set_sprite(sprite);
-            if (onFinished) onFinished();
-            return;
-        } else {
-            imageCache->Remove(path);
-        }
+        // Do not use image cache
+        // UnityEngine::Sprite* sprite = nullptr;
+        // if (imageCache->TryGetValue(path, byref(sprite)) && sprite && sprite->m_CachedPtr.m_value) {
+        //     // we got a sprite, use it
+        //     image->set_sprite(sprite);
+        //     if (onFinished) onFinished();
+        //     return;
+        // } else {
+        //     imageCache->Remove(path);
+        // }
 
         auto animationController = AnimationController::get_instance();
 
