@@ -217,15 +217,13 @@ namespace BSML::Utilities {
             image->set_sprite(FindSpriteCached(imgName));
 
             if (image->get_sprite() == nullptr)
-                // ERROR("Could not find base game Sprite with image name {}", imgName);
+                ERROR("Could not find base game Sprite with image name {}", (std::string) imgName);
             return;
         }
 
         
         
         // Do not use image cache
-       
-
         auto animationController = AnimationController::get_instance();
 
         System::Uri* uri;
