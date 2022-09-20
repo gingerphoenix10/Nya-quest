@@ -116,6 +116,8 @@ namespace BSML::Utilities {
         return GetCopyOf<T>(gameObject->AddComponent<T>(), original);
     }
 
+    void RemoveAnimationUpdater(UnityEngine::UI::Image* image);
+    
     namespace ImageResources {
         /// @brief method that gets a blank sprite
         /// @return black texture to sprite

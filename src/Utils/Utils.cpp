@@ -120,7 +120,12 @@ namespace Nya::Utils {
         try
         {   
             button->set_interactable(false);
-            imageView->GetImage([button](bool success){
+            imageView->GetImage([button, imageView](bool success){
+                if (!success) {
+                    QuestUI::MainThreadScheduler::Schedule([imageView]{
+                        imageView->SetErrorImage();
+                    });
+                }
                 button->set_interactable(true);
             });
         }
@@ -129,6 +134,9 @@ namespace Nya::Utils {
         {
             ERROR("Custom fail");
             getLogger().Backtrace(20);
+            QuestUI::MainThreadScheduler::Schedule([imageView]{
+                imageView->SetErrorImage();
+            });
         }  
     }
 

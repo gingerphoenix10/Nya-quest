@@ -22,6 +22,7 @@
 #include "UnityEngine/Networking/UnityWebRequestTexture.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
 #include "UnityEngine/Networking/DownloadHandlerTexture.hpp"
+#include "assets.hpp"
 
 #include "Helpers/utilities.hpp"
 #include "Utils/FileUtils.hpp"
@@ -68,6 +69,7 @@ void NyaUtils::ImageView::SaveImage() {
 }
 
 // Update
+// WARNING: Finished is not always on the main thread
 void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
 {
     // Delete the last downloaded image
@@ -145,7 +147,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
 
                 BSML::Utilities::DownloadFile(url, filePath, [this, finished, url, NSFWEnabled, fileFullName](bool success, StringW path) {
                     if (!success ) {
-                        if (finished != nullptr) finished(true);
+                        if (finished != nullptr) finished(false);
                     } else {
                         this->lastImageURL = url;
                         this->tempName = fileFullName;
@@ -170,6 +172,12 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
   }
 
            
+}
+
+void NyaUtils::ImageView::SetErrorImage()
+{
+    BSML::Utilities::RemoveAnimationUpdater(this->imageView);
+    this->imageView->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::Chocola_Dead_png));
 }
 
 void NyaUtils::ImageView::dtor()

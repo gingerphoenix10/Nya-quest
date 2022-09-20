@@ -250,6 +250,13 @@ namespace BSML::Utilities {
         SetImage(image, path, true, ScaleOptions());
     }
 
+    void RemoveAnimationUpdater(UnityEngine::UI::Image* image) {
+        auto oldStateUpdater = image->GetComponent<AnimationStateUpdater*>();
+        if (oldStateUpdater) {
+            Object::DestroyImmediate(oldStateUpdater);
+        }
+    }
+
     void SetImage(UnityEngine::UI::Image* image, StringW path, bool loadingAnimation, ScaleOptions scaleOptions, std::function<void()> onFinished) {
         if (!image) {
             ERROR("Can't set null image!");

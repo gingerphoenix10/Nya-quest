@@ -27,4 +27,5 @@ DECLARE_CLASS_CODEGEN(NyaUtils, ImageView, UnityEngine::MonoBehaviour,
     void GetImage(std::function<void(bool success)> finished);
     void SaveImage();
     bool HasImageToSave();
+    void SetErrorImage();
 )
