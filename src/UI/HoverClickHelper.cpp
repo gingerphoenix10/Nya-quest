@@ -57,9 +57,15 @@ namespace Nya {
             targetRotation = previousRotation;
         }
         
+        // VR conroller is sometimes null after leaving multiplayer?
+        auto vrController = vrPointer->get_vrController();
+        if (vrController == nullptr) {
+            DEBUG("VR controller is null");
+            return;
+        }
 
         // Ray cast from the controller forward
-        if(UnityEngine::Physics::Raycast(vrPointer->get_vrController()->get_position(), vrPointer->get_vrController()->get_forward(), hit, 100)){
+        if(UnityEngine::Physics::Raycast(vrController->get_position(), vrController->get_forward(), hit, 100)){
             // If the needed collider is found and not grabbing handle
             if(static_cast<std::string>(hit.get_collider()->get_name()).substr(0, 12).compare("gridcollider") == 0 && !grabbingHandle){
                 if (isHit && currentCollider && currentCollider != hit.get_collider()->get_transform()) {
@@ -99,7 +105,7 @@ namespace Nya {
             }
         }
         if (isHit && grabbingController && !modalLocked && notClickedModal && !justClosedModal && !outOfRange){
-            grabbingController = vrPointer->get_vrController();
+            grabbingController = vrController;
             triggerPressed = true;
             notClickedModal = false;
             panelUI->image->set_color(UnityEngine::Color::get_gray());
@@ -116,13 +122,24 @@ namespace Nya {
     }
 
     void HoverClickHelper::LateUpdate(){
-        if(!triggerPressed && !isHit && vrPointer->get_vrController()->get_triggerValue() > 0.9f && !(hoveringHandle || grabbingHandle)){
+        if (vrPointer == nullptr) {
+            return;
+        }
+
+        // VR conroller is sometimes null after leaving multiplayer?
+        auto vrController = vrPointer->get_vrController();
+        if (vrController == nullptr) {
+            DEBUG("VR controller is null");
+            return;
+        }
+        
+        if(!triggerPressed && !isHit && vrController->get_triggerValue() > 0.9f && !(hoveringHandle || grabbingHandle)){
             // TODO: Fix modal hiding
             //    Main::NyaFloatingUI->settingsMenu->Hide();
             //    justClosedModal = true;
         }
-        if (vrPointer->get_vrController()->get_triggerValue() > 0.9f && !triggerPressed){
-            grabbingController = vrPointer->get_vrController();
+        if (vrController->get_triggerValue() > 0.9f && !triggerPressed){
+            grabbingController = vrController;
             triggerPressed = true;
             if ((hit.get_collider() && hit.get_collider()->get_transform() == handleTransform->get_transform())){
                 handleTransform->GetComponent<UnityEngine::MeshRenderer*>()->set_material(hoverHandleMat);
@@ -132,8 +149,7 @@ namespace Nya {
         }
 
         // If trigger is released
-        if (triggerPressed && grabbingController->get_triggerValue() < 0.1f){
-            
+        if (triggerPressed && grabbingController != nullptr && grabbingController->get_triggerValue() < 0.1f){
             // If we were dragging the handle, release and save
             if (grabbingHandle){
                 auto* screenTransform = handleTransform->get_transform()->get_parent();
@@ -152,7 +168,7 @@ namespace Nya {
         } 
 
         // If is hit and the thing is not shown then not hit
-        if (isHit && Main::NyaFloatingUI->settingsMenu->isShown()) isHit = false;
+        if (isHit && Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->settingsMenu->isShown()) isHit = false;
         
     }
 
