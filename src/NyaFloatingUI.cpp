@@ -88,6 +88,11 @@ namespace Nya {
     }
     
     void NyaFloatingUI::SetDefaultPos () {
+        // Do nothing if hover click helper is not present
+        if (this->hoverClickHelper == nullptr) {
+            DEBUG("SetDefaultPos canceled");
+            return;
+        } 
         if (this->currentScene == Nya::FloatingUIScene::Pause) {
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
@@ -142,7 +147,7 @@ namespace Nya {
             )) {
                 INFO("DISABLING THE SCREEN");
                 if (this->UIScreen != nullptr) UIScreen->set_active(false);
-                // if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_active(false);
+                if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_enabled(false);
                 return;
         };
         
@@ -219,6 +224,7 @@ namespace Nya {
         INFO("SETTING SCREEN TO ACTIVE");
         // Set UIScreen active and reset click helper state
         UIScreen->set_active(true);
+        if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_enabled(true);
         INFO("RESETTING CLICK HELPER");
         hoverClickHelper->resetBools();
         INFO("Reset click helper");
