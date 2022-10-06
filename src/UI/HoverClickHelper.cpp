@@ -12,6 +12,7 @@
 #include "VRUIControls/VRPointer.hpp"
 #include "UnityEngine/Shader.hpp"
 #include "NyaFloatingUI.hpp"
+#include "Utils/Utils.hpp"
 #include "UnityEngine/Space.hpp"
 #include "main.hpp"
 
@@ -60,7 +61,6 @@ namespace Nya {
         // VR conroller is sometimes null after leaving multiplayer?
         auto vrController = vrPointer->get_vrController();
         if (!vrController  || !vrController->m_CachedPtr.m_value) {
-            DEBUG("VR controller is null");
             return;
         }
 
@@ -129,7 +129,10 @@ namespace Nya {
         // VR conroller is sometimes null after leaving multiplayer?
         auto vrController = vrPointer->get_vrController();
         if (!vrController || !vrController->m_CachedPtr.m_value) {
-            DEBUG("VR controller is null");
+            DEBUG("VR controller is null, trying to get a new one");
+            // Check if the pointer is null here and get a new one if available
+            auto* pointer = Utils::getAnyPointerWithController();
+            vrPointer = pointer;
             return;
         }
         

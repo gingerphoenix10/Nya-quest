@@ -250,5 +250,28 @@ namespace Nya::Utils {
   
     }
 
+    // Got tired of pointers. If we can get a controller from a pointer, it means it's valid
+    VRUIControls::VRPointer* getAnyPointerWithController(){
+        // Get all pointers
+        auto pointers = UnityEngine::Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>();
+
+        int count = pointers.Length();
+        DEBUG("Total number of pointers: {}", count );
+
+        for (int i = 0; i < count; i++)
+        {
+            auto pointer = pointers.get(i);
+            
+            // VR conroller is sometimes null after leaving multiplayer?
+            auto vrController = pointer->get_vrController();
+            if (vrController  && vrController->m_CachedPtr.m_value) {
+                DEBUG("Found vr conroller on {}", i );
+                return pointer;
+            }
+        }   
+
+        return nullptr;
+    }
+
 }
 

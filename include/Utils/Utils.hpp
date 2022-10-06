@@ -28,5 +28,6 @@ namespace Nya::Utils {
 
     bool IsImage(StringW str);
     std::string RandomString(const int len);
+    VRUIControls::VRPointer* getAnyPointerWithController();
 }
 

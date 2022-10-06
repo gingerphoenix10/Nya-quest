@@ -212,18 +212,18 @@ namespace Nya {
                 false
             );
 
-            auto* pausepointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(1);
-            if (pausepointer == nullptr) {
+            auto* pointer = Utils::getAnyPointerWithController();
+            if (pointer == nullptr) {
                 DEBUG("Pointer is null in the transition, setting vrPointer to null");
             }
-            this->hoverClickHelper->vrPointer = pausepointer;
+            this->hoverClickHelper->vrPointer = pointer;
 
             if (this->pauseMover != nullptr ) {
                 UnityEngine::Object::Destroy(this->pauseMover);
             }
             // Mover to move the ui component
-            this->pauseMover = pausepointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
-            this->pauseMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pausepointer);
+            this->pauseMover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            this->pauseMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pointer);
         }
 
         if (scene == Nya::FloatingUIScene::MainMenu) {
@@ -244,7 +244,8 @@ namespace Nya {
             static bool menuMoverInitialized = false;
 
             // Check if the pointer is null here
-            auto* pointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
+            auto* pointer = Utils::getAnyPointerWithController();
+
             if (pointer == nullptr) {
                 DEBUG("Pointer is null in the transition, setting vrPointer to null");
             }

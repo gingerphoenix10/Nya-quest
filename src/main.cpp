@@ -73,7 +73,7 @@ MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, vo
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MultiResults");
     if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
-        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
     
 }
@@ -103,6 +103,9 @@ MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoord
     DEBUG("MainFlowCoordinator_DidActivate");
     if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr.m_value) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
+    } else {
+        // It runs after going to main menu from multi to show the window if it's needed
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
 }
