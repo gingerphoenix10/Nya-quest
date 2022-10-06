@@ -89,7 +89,7 @@ namespace Nya {
     
     void NyaFloatingUI::SetDefaultPos () {
         // Do nothing if hover click helper is not present
-        if (this->hoverClickHelper == nullptr) {
+        if ( !this->hoverClickHelper || !this->hoverClickHelper->m_CachedPtr.m_value) {
             DEBUG("SetDefaultPos canceled");
             return;
         } 
@@ -146,13 +146,19 @@ namespace Nya {
                 scene == Nya::FloatingUIScene::MainMenu && !getNyaConfig().inMenu.GetValue()
             )) {
                 INFO("DISABLING THE SCREEN");
-                if (this->UIScreen != nullptr) UIScreen->set_active(false);
-                if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_enabled(false);
+                if (
+                    this->UIScreen &&
+                    this->UIScreen->m_CachedPtr.m_value
+                ) UIScreen->set_active(false);
+                if (
+                    this->hoverClickHelper &&
+                    this->hoverClickHelper->m_CachedPtr.m_value
+                ) this->hoverClickHelper->set_enabled(false);
                 return;
         };
         
         // If screen does not exist, initialize the first time
-        if (this->UIScreen == nullptr) {
+        if (!this->UIScreen || !this->UIScreen->m_CachedPtr.m_value) {
             this->initScreen();
         }
 
@@ -224,10 +230,12 @@ namespace Nya {
         INFO("SETTING SCREEN TO ACTIVE");
         // Set UIScreen active and reset click helper state
         UIScreen->set_active(true);
-        if (this->hoverClickHelper != nullptr) this->hoverClickHelper->set_enabled(true);
-        INFO("RESETTING CLICK HELPER");
-        hoverClickHelper->resetBools();
-        INFO("Reset click helper");
+        if (this->hoverClickHelper && this->hoverClickHelper->m_CachedPtr.m_value) {
+            this->hoverClickHelper->set_enabled(true);
+            INFO("RESETTING CLICK HELPER");
+            hoverClickHelper->resetBools();
+            INFO("Reset click helper");
+        }
     }
 
     // Saves the coordinates to a config

@@ -59,7 +59,7 @@ namespace Nya {
         
         // VR conroller is sometimes null after leaving multiplayer?
         auto vrController = vrPointer->get_vrController();
-        if (vrController == nullptr) {
+        if (!vrController  || !vrController->m_CachedPtr.m_value) {
             DEBUG("VR controller is null");
             return;
         }
@@ -128,7 +128,7 @@ namespace Nya {
 
         // VR conroller is sometimes null after leaving multiplayer?
         auto vrController = vrPointer->get_vrController();
-        if (vrController == nullptr) {
+        if (!vrController || !vrController->m_CachedPtr.m_value) {
             DEBUG("VR controller is null");
             return;
         }

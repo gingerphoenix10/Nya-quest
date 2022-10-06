@@ -41,7 +41,7 @@ Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
     DEBUG("Pause");
-    if (Main::NyaFloatingUI != nullptr){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
     }
     
@@ -50,7 +50,7 @@ MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
     DEBUG("Unpause");
-    if (Main::NyaFloatingUI != nullptr){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
     
@@ -59,7 +59,7 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
     DEBUG("Restartbutton");
-    if (Main::NyaFloatingUI != nullptr){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
 }
@@ -72,7 +72,7 @@ MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewControll
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MultiResults");
-    if (Main::NyaFloatingUI != nullptr){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
     
@@ -89,7 +89,7 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 {
     DEBUG("MenuTransitionsHelper_RestartGame");
     // Destroy the floating UI on soft restart
-    if (Main::NyaFloatingUI != nullptr){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
         GameObject::DestroyImmediate(Main::NyaFloatingUI->UIScreen->get_gameObject());
 
         Nya::NyaFloatingUI::delete_instance();
@@ -101,7 +101,7 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoordinator::DidActivate, void, GlobalNamespace::MainFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MainFlowCoordinator_DidActivate");
-    if (Nya::Main::NyaFloatingUI == nullptr) {
+    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr.m_value) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
