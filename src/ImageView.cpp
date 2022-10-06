@@ -134,7 +134,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
       
 
     INFO("Endpoint URL: {}", endpointURL);
-    NyaAPI::get_path_from_api(endpointURL, 10.0f, [this, finished, NSFWEnabled](bool success, std::string url) {
+    NyaAPI::get_path_from_json_api(source, endpointURL, 10.0f, [this, finished, NSFWEnabled](bool success, std::string url) {
         INFO("Image URL: {}", url);
         if (success) {
             QuestUI::MainThreadScheduler::Schedule([this, url, finished, NSFWEnabled]{
