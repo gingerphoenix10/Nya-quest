@@ -31,6 +31,7 @@ namespace Nya {
         currentCollider = nullptr;
         grabbingHandle = false;
         hoveringHandle = false;
+        mover = nullptr;
         hoverHandleMat = UnityEngine::Material::New_ctor(UnityEngine::Shader::Find("Hidden/Internal-DepthNormalsTexture"));
     }
 
@@ -123,6 +124,7 @@ namespace Nya {
 
     void HoverClickHelper::LateUpdate(){
         if (vrPointer == nullptr) {
+            this->UpdatePointer();
             return;
         }
 
@@ -130,9 +132,7 @@ namespace Nya {
         auto vrController = vrPointer->get_vrController();
         if (!vrController || !vrController->m_CachedPtr.m_value) {
             DEBUG("VR controller is null, trying to get a new one");
-            // Check if the pointer is null here and get a new one if available
-            auto* pointer = Utils::getAnyPointerWithController();
-            vrPointer = pointer;
+            this->UpdatePointer();
             return;
         }
         
@@ -190,6 +190,19 @@ namespace Nya {
         return helper;
     }
 
+    void HoverClickHelper::UpdatePointer(){
+        auto* pointer = Utils::getAnyPointerWithController();
+        vrPointer = pointer;
+        // Get the last mover
+        if (this->mover && this->mover->m_CachedPtr.m_value) {
+            UnityEngine::Object::DestroyImmediate(this->mover);
+        }
+        if (vrPointer != nullptr) {
+            this->mover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            // UIScreen
+            this->mover->Init(this->get_gameObject()->GetComponent<QuestUI::FloatingScreen*>(), pointer);
+        }
+    }
 
     void HoverClickHelper::LookAtCamera(){
         auto mainCamera = UnityEngine::Camera::get_main();

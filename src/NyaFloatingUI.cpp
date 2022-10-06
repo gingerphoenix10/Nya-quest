@@ -26,8 +26,6 @@ namespace Nya {
         UIScreen = nullptr;
         UINoGlow = nullptr;
         hoverClickHelper = nullptr;
-        pauseMover = nullptr;
-        menuMover = nullptr;
         INFO("Created NyaFloatingUI instance");
     }
 
@@ -212,18 +210,7 @@ namespace Nya {
                 false
             );
 
-            auto* pointer = Utils::getAnyPointerWithController();
-            if (pointer == nullptr) {
-                DEBUG("Pointer is null in the transition, setting vrPointer to null");
-            }
-            this->hoverClickHelper->vrPointer = pointer;
-
-            if (this->pauseMover != nullptr ) {
-                UnityEngine::Object::Destroy(this->pauseMover);
-            }
-            // Mover to move the ui component
-            this->pauseMover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
-            this->pauseMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pointer);
+            this->hoverClickHelper->UpdatePointer();
         }
 
         if (scene == Nya::FloatingUIScene::MainMenu) {
@@ -241,25 +228,8 @@ namespace Nya {
                 ),
                 false
             );
-            static bool menuMoverInitialized = false;
-
-            // Check if the pointer is null here
-            auto* pointer = Utils::getAnyPointerWithController();
-
-            if (pointer == nullptr) {
-                DEBUG("Pointer is null in the transition, setting vrPointer to null");
-            }
-            this->hoverClickHelper->vrPointer = pointer;
-
-         
-            // Get the last mover
-            if (this->menuMover != nullptr ) {
-                UnityEngine::Object::Destroy(this->menuMover);
-            }
-            // Mover to move the ui component
-            this->menuMover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
-            this->menuMover->Init(UIScreen->GetComponent<QuestUI::FloatingScreen*>(), pointer);
-           
+          
+            this->hoverClickHelper->UpdatePointer();
         }
 
         INFO("SETTING SCREEN TO ACTIVE");
