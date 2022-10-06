@@ -66,19 +66,27 @@ namespace Nya {
 
                 auto source = NyaAPI::get_data_source(value);
 
-                auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
+                if (source->SfwEndpoints.size() == 0) {
+                    this->sfw_endpoint->button->set_interactable(false);
+                    // Reset the view
+                    this->sfw_endpoint->SetTexts(List<StringW>::New_ctor()->i_IReadOnlyList_1_T());
+                    this->sfw_endpoint->SelectCellWithIdx(0); 
+                } else {
+                    this->sfw_endpoint->button->set_interactable(true);
+                    auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
 
-                // SFW endpoints
-                this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
+                    // SFW endpoints
+                    this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
+                    
+                    std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, value, false);
+                    int sfw_index = -1;
+                    if (endpoint_sfw != "") {
+                        sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
+                    }
 
-                std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, value, false);
-                int sfw_index = -1;
-                if (endpoint_sfw != "") {
-                    sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
-                }
-
-                if (sfw_index >= 0) {
-                    this->sfw_endpoint->SelectCellWithIdx(sfw_index); 
+                    if (sfw_index >= 0) {
+                        this->sfw_endpoint->SelectCellWithIdx(sfw_index); 
+                    }
                 }
                 
 
@@ -225,7 +233,6 @@ namespace Nya {
             }
 
             auto sources = Nya::Utils::vectorToList(NyaAPI::get_source_list());
-            auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
 
             this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(sources));
         
@@ -234,19 +241,30 @@ namespace Nya {
                 this->api_switch->SelectCellWithIdx(index);
             }
             
-    
-            // SFW endpoints
-            this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
-            std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, API, false);
-            int sfw_index = -1;
-            if (endpoint_sfw != "") {
-                sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
-            }
+            // Set SFW picker
+            if (source->SfwEndpoints.size() == 0) {
+                this->sfw_endpoint->button->set_interactable(false);
+                // Reset the view
+                this->sfw_endpoint->SetTexts(List<StringW>::New_ctor()->i_IReadOnlyList_1_T());
+                this->sfw_endpoint->SelectCellWithIdx(0); 
+            } else {
+                this->sfw_endpoint->button->set_interactable(true);
+                auto sfwList = Nya::Utils::listStringToStringW(source->SfwEndpoints);
 
-            if (sfw_index != -1) {
-                this->sfw_endpoint->SelectCellWithIdx(sfw_index); 
-            }
+                // SFW endpoints
+                this->sfw_endpoint->SetTexts(sfwList->i_IReadOnlyList_1_T());
+                
+                std::string endpoint_sfw = EndpointConfig::getEndpointValue(getNyaConfig().config, API, false);
+                int sfw_index = -1;
+                if (endpoint_sfw != "") {
+                    sfw_index = Nya::Utils::findStrIndexInListC( source->SfwEndpoints ,endpoint_sfw);
+                }
 
+                if (sfw_index >= 0) {
+                    this->sfw_endpoint->SelectCellWithIdx(sfw_index); 
+                }
+            }
+            
 
             #ifdef NSFW
                 // Restore nsfw state
