@@ -89,10 +89,19 @@ namespace Nya {
     
     void NyaFloatingUI::SetDefaultPos () {
         // Do nothing if hover click helper is not present
+        
+        // If screen does not exist, initialize the first time to reset stuff
+        if (!this->UIScreen || !this->UIScreen->m_CachedPtr.m_value) {
+            DEBUG("LOL IT ACTUALLY HAPPENS");
+            // this->isInitialized = false;
+            this->initScreen();
+        }
+
         if ( !this->hoverClickHelper || !this->hoverClickHelper->m_CachedPtr.m_value) {
             DEBUG("SetDefaultPos canceled");
             return;
-        } 
+        }
+
         if (this->currentScene == Nya::FloatingUIScene::Pause) {
             this->hoverClickHelper->SetPosition(
                 UnityEngine::Vector3(
@@ -101,6 +110,20 @@ namespace Nya {
                     getNyaConfig().pausePositionZ.GetDefaultValue()
                 ),
                 UnityEngine::Quaternion::Euler(
+                    getNyaConfig().pauseRotationX.GetDefaultValue(), 
+                    getNyaConfig().pauseRotationY.GetDefaultValue(), 
+                    getNyaConfig().pauseRotationZ.GetDefaultValue()
+                )
+            );
+
+            // Save target 
+            this->updateCoordinates(
+                UnityEngine::Vector3(
+                    getNyaConfig().pausePositionX.GetDefaultValue(), 
+                    getNyaConfig().pausePositionY.GetDefaultValue(),
+                    getNyaConfig().pausePositionZ.GetDefaultValue()
+                ),
+                UnityEngine::Vector3(
                     getNyaConfig().pauseRotationX.GetDefaultValue(), 
                     getNyaConfig().pauseRotationY.GetDefaultValue(), 
                     getNyaConfig().pauseRotationZ.GetDefaultValue()
@@ -121,9 +144,20 @@ namespace Nya {
                     getNyaConfig().menuRotationZ.GetDefaultValue()
                 )
             );
-        }
 
-        this->updateCoordinates(this->hoverClickHelper->handleTransform->get_transform());
+            this->updateCoordinates(
+                UnityEngine::Vector3(
+                    getNyaConfig().menuPositionX.GetDefaultValue(), 
+                    getNyaConfig().menuPositionY.GetDefaultValue(),
+                    getNyaConfig().menuPositionZ.GetDefaultValue()
+                ),
+                UnityEngine::Vector3(
+                    getNyaConfig().menuRotationX.GetDefaultValue(), 
+                    getNyaConfig().menuRotationY.GetDefaultValue(), 
+                    getNyaConfig().menuRotationZ.GetDefaultValue()
+                )
+            );
+        }
     }
 
     void NyaFloatingUI::onSceneChange(Nya::FloatingUIScene scene, bool reinitialize) {
@@ -243,6 +277,11 @@ namespace Nya {
         auto position = transform->get_position();
         auto rotation = transform->get_rotation().get_eulerAngles();
 
+        this->updateCoordinates(position, rotation);
+    }
+
+    void NyaFloatingUI::updateCoordinates(UnityEngine::Vector3 position, UnityEngine::Vector3 eulerRotation) {
+
         // INFO("Position: %.02f, %.02f, %.02f", position.x, position.y, position.z);
         // INFO("Rotation: %.02f, %.02f, %.02f", rotation.x, rotation.y, rotation.z);
         if (this->currentScene == Nya::FloatingUIScene::Pause){
@@ -251,9 +290,9 @@ namespace Nya {
             getNyaConfig().pausePositionY.SetValue(position.y);
             getNyaConfig().pausePositionZ.SetValue(position.z);
         
-            getNyaConfig().pauseRotationX.SetValue(rotation.x);
-            getNyaConfig().pauseRotationY.SetValue(rotation.y);
-            getNyaConfig().pauseRotationZ.SetValue(rotation.z);
+            getNyaConfig().pauseRotationX.SetValue(eulerRotation.x);
+            getNyaConfig().pauseRotationY.SetValue(eulerRotation.y);
+            getNyaConfig().pauseRotationZ.SetValue(eulerRotation.z);
         }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
             INFO("Saved to MainMenu");
@@ -261,9 +300,9 @@ namespace Nya {
             getNyaConfig().menuPositionY.SetValue(position.y);
             getNyaConfig().menuPositionZ.SetValue(position.z);
             
-            getNyaConfig().menuRotationX.SetValue(rotation.x);
-            getNyaConfig().menuRotationY.SetValue(rotation.y);
-            getNyaConfig().menuRotationZ.SetValue(rotation.z);
+            getNyaConfig().menuRotationX.SetValue(eulerRotation.x);
+            getNyaConfig().menuRotationY.SetValue(eulerRotation.y);
+            getNyaConfig().menuRotationZ.SetValue(eulerRotation.z);
         }
     }
 

@@ -193,7 +193,7 @@ namespace Nya {
         auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
         auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
         this->targetRotation = newRotation;
-        Main::NyaFloatingUI->updateCoordinates(screenTransform);
+        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
     }
 
     void HoverClickHelper::SetUpRight (){
@@ -202,7 +202,7 @@ namespace Nya {
         auto newRotation = UnityEngine::Quaternion::Euler(0.0, screenTransform->get_rotation().get_eulerAngles().y, 0.0);
        
         this->targetRotation = newRotation;
-        Main::NyaFloatingUI->updateCoordinates(screenTransform);
+        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
     }
 
     void HoverClickHelper::SetPosition(UnityEngine::Vector3 position, UnityEngine::Quaternion rotation, bool lerp){
