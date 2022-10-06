@@ -17,6 +17,7 @@ Nya features a floating screen, allowing Nya to be accessed outside of the gamep
 * [xSky API](https://api.nekos.cc/)
 * [Anime-Images API](https://anime-api.hisoka17.repl.co/)
 * [Catboys](https://catboys.com/)
+* [Animals (some-random-api.ml)](https://some-random-api.ml/)
 * [Local Files](#local-files)
 ### Local Files
 In order for local files to work there must be compatible images in the sfw / nsfw files found in Nya's folder in `ModData\com.beatgames.beatsaber\Mods\Nya\Images`.
@@ -74,5 +75,5 @@ This script has multiple options:
 ## Debug recommendations
 
 ### Oculus developer tool
-It's an extension for VSCode that helps with debugging. It's kinda whack but it works
+It's an extension for VSCode that helps with debugging. It's kinda whack but it works (Only on Windows)
 [VS Marketplace Link](https://github.com/Lauriethefish/quest-mod-template)

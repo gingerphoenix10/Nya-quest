@@ -4,9 +4,9 @@
   "info": {
     "name": "Nya",
     "id": "Nya",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "author": "FrozenAlex",
-    "url": null,
+    "url": "https://github.com/FrozenAlex/Nya-quest",
     "additionalData": {
       "overrideSoName": "libNya.so"
     }
