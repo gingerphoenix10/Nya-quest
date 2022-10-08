@@ -44,6 +44,9 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             bool isInitialized = false;
 
             DECLARE_INSTANCE_METHOD(void, SetDefaultPos);
+            DECLARE_INSTANCE_METHOD(void, ScaleFloatingScreen, float scale);
+            DECLARE_INSTANCE_METHOD(void, UpdateScale);
+            
             DECLARE_CTOR(ctor);
             // DECLARE_DTOR(dtor);
 

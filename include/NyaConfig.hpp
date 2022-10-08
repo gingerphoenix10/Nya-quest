@@ -28,10 +28,12 @@ DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(AutoNya, bool, "Auto Nya", false);
     CONFIG_VALUE(AutoNyaInGame, bool, "Auto Nya in game", false);
     CONFIG_VALUE(AutoNyaDelay, int, "Auto Nya delay", 10);
+    CONFIG_VALUE(FloatingScreenScale, float, "Scale", 1.0f);
 
     CONFIG_VALUE(NSFWEnabled, bool, "NSFW Enabled", false);
     CONFIG_VALUE(SkipNSFWWarning, bool, "Skip NSFW warning", false);
-    
+    CONFIG_VALUE(RememberNSFW, bool, "Remember NSFW", false);    
+
     CONFIG_VALUE(pausePositionX, float, "Pause PositionX", -2.12f);
     CONFIG_VALUE(pausePositionY, float, "Pause PositionY", 1.52f);
     CONFIG_VALUE(pausePositionZ, float, "Pause PositionZ", 1.65f);
@@ -57,9 +59,11 @@ DECLARE_CONFIG(NyaConfig,
         CONFIG_INIT_VALUE(AutoNya);
         CONFIG_INIT_VALUE(AutoNyaInGame);
         CONFIG_INIT_VALUE(AutoNyaDelay);
+        CONFIG_INIT_VALUE(FloatingScreenScale);
+        
         CONFIG_INIT_VALUE(NSFWEnabled);
         CONFIG_INIT_VALUE(SkipNSFWWarning);
-
+        CONFIG_INIT_VALUE(RememberNSFW);
 
         // Positions because vectors crash
         CONFIG_INIT_VALUE(pausePositionX);

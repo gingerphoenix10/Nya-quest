@@ -83,6 +83,8 @@ namespace Nya {
         auto* normalpointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
         hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, thing);
         this->isInitialized = true;
+
+        this->UpdateScale();
     }
     
     void NyaFloatingUI::SetDefaultPos () {
@@ -329,4 +331,21 @@ namespace Nya {
             });
         }
     };
+
+    void NyaFloatingUI::ScaleFloatingScreen(float scale) {
+        if (this->UIScreen && this->UIScreen->m_CachedPtr.m_value) {
+            this->UIScreen->get_gameObject()->get_transform()->set_localScale(
+                UnityEngine::Vector3(
+                    0.03f * scale,
+                    0.03f * scale,
+                    0.03f * scale
+                )
+            );
+        }
+    }
+
+    void NyaFloatingUI::UpdateScale() {
+        float scale = getNyaConfig().FloatingScreenScale.GetValue();
+        this->ScaleFloatingScreen(scale);
+    }
 }

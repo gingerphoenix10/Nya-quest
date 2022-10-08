@@ -28,6 +28,27 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
                 }
         });
+
+        auto slider = QuestUI::BeatSaberUI::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f, 
+            getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
+                getNyaConfig().FloatingScreenScale.SetValue(value);
+                if (Main::NyaFloatingUI != nullptr) {
+                    Main::NyaFloatingUI->UpdateScale();
+                }
+            }
+            
+        );
+
+
+
+        #ifdef NSFW
+            QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Remember NSFW",
+                getNyaConfig().RememberNSFW.GetValue(), [](bool value) {
+                    getNyaConfig().RememberNSFW.SetValue(value);
+                }
+            );
+        #endif
+
         // Buttons for settings
         // TODO: Make it work with floating ui off
         UnityEngine::UI::Button* faceHeadset = QuestUI::BeatSaberUI::CreateUIButton(container->get_transform(), to_utf16("Face headset"), "PracticeButton",
