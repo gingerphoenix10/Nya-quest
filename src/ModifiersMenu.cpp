@@ -17,7 +17,7 @@
 #include <dirent.h>
 #include <string>
 #include <iostream>
-
+#include "assets.hpp"
 using namespace UnityEngine;
 using namespace Nya;
 
@@ -30,9 +30,15 @@ namespace Nya {
 
     // Enable (runs when the component appears)
     void ModifiersMenu::OnEnable() {
+        if (!this->initialized) {
+            // Get image when the component appears the first time
+            this->imageView->GetImage(nullptr);
+            this->initialized = true;
+        }
     }
 
     void ModifiersMenu::ctor() {
+        this->initialized = false;
         DEBUG("Creator runs");
 
         auto vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
@@ -40,9 +46,11 @@ namespace Nya {
 
         NYA = QuestUI::BeatSaberUI::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
+        // Set blank sprite to avoid white screens
+        NYA->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::placeholder_png));
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
         DEBUG("Adds component");
-        auto view = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
+        this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
         ele->set_preferredHeight(50);
         ele->set_preferredWidth(50);
 
@@ -52,8 +60,8 @@ namespace Nya {
         horz->set_spacing(10);
 
         this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
-            [this, view]() {
-                 Nya::Utils::onNyaClick(this->nyaButton, view);
+            [this]() {
+                Nya::Utils::onNyaClick(this->nyaButton, this->imageView);
             });
 
         this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();

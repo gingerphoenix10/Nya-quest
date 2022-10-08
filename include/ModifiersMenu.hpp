@@ -11,12 +11,15 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "API.hpp"
 #include "Utils/Utils.hpp"
+#include "ImageView.hpp"
 #include "SettingsMenu.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
     // DECLARE_INSTANCE_FIELD(bool, );
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
+    DECLARE_INSTANCE_FIELD(NyaUtils::ImageView*, imageView);
+    DECLARE_INSTANCE_FIELD(bool, initialized);
 
 
     

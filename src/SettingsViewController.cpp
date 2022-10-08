@@ -29,6 +29,18 @@ void Nya::SettingsViewController::DidActivate(bool firstActivation, bool addedTo
                 }
         });
 
+        QuestUI::BeatSaberUI::CreateToggle(container->get_transform(), "Show handle",
+            getNyaConfig().ShowHandle.GetValue(),
+            [](bool value) {
+                getNyaConfig().ShowHandle.SetValue(value);
+                if (
+                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI->UIScreen != nullptr
+                ) {
+                    Main::NyaFloatingUI->UpdateHandleVisibility();
+                }
+        });
+
         auto slider = QuestUI::BeatSaberUI::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f, 
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);

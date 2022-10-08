@@ -19,6 +19,8 @@ namespace NyaGlobals {
     static std::string tempPath = nyaPath + "Temp/";
 }
 
+
+
 DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(inPause, bool, "Show in pause", true);
     CONFIG_VALUE(inMenu, bool, "Show in menu", true);
@@ -29,6 +31,7 @@ DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(AutoNyaInGame, bool, "Auto Nya in game", false);
     CONFIG_VALUE(AutoNyaDelay, int, "Auto Nya delay", 10);
     CONFIG_VALUE(FloatingScreenScale, float, "Scale", 1.0f);
+    CONFIG_VALUE(ShowHandle, bool, "Show handle", true);
 
     CONFIG_VALUE(NSFWEnabled, bool, "NSFW Enabled", false);
     CONFIG_VALUE(SkipNSFWWarning, bool, "Skip NSFW warning", false);
@@ -60,6 +63,7 @@ DECLARE_CONFIG(NyaConfig,
         CONFIG_INIT_VALUE(AutoNyaInGame);
         CONFIG_INIT_VALUE(AutoNyaDelay);
         CONFIG_INIT_VALUE(FloatingScreenScale);
+        CONFIG_INIT_VALUE(ShowHandle);
         
         CONFIG_INIT_VALUE(NSFWEnabled);
         CONFIG_INIT_VALUE(SkipNSFWWarning);

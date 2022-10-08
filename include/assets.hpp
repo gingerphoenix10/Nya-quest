@@ -51,5 +51,6 @@ namespace IncludedAssets {
 	DECLARE_FILE(Vanilla_Horny_Pastry_Puffer_png)
 	DECLARE_FILE(Vanilla_Mini_Sitting_png)
 	DECLARE_FILE(Vanilla_Stare_png)
+	DECLARE_FILE(placeholder_png)
 
 }

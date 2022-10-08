@@ -69,7 +69,6 @@ void NyaUtils::ImageView::SaveImage() {
 }
 
 // Update
-// WARNING: Finished is not always on the main thread
 void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
 {
     // Delete the last downloaded image
@@ -104,15 +103,24 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
       }
 
       auto fileList = FileUtils::getAllFilesInFolder(imageFolderPath);
-      int randomIndex = Nya::Utils::random(0, fileList.size()-1);
 
-      auto path = fileList[randomIndex];
-      BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
-          if (finished != nullptr) finished(true);
-      });
-      
-  } else 
-  if (source->Mode == DataMode::Json) {
+      // No files found
+      if (fileList.size() == 0) {
+        ERROR("Selected local folder is empty");
+        this->SetErrorImage();
+        if (finished != nullptr) finished(false);
+        
+      } else {
+        int randomIndex = Nya::Utils::random(0, fileList.size()-1);
+
+        auto path = fileList[randomIndex];
+        BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
+            if (finished != nullptr) finished(true);
+        });
+      }
+
+     
+  } else if (source->Mode == DataMode::Json) {
     
       
     // Construct the url
@@ -125,13 +133,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
         endpointValue = EndpointConfig::getEndpointValue(getNyaConfig().config, currentAPI, false);
     }
 
-    std::string endpointURL = "";
-    if (NSFWEnabled) {
-        endpointURL = source->BaseEndpoint + endpointValue;  
-    } else {
-        endpointURL = source->BaseEndpoint + endpointValue;  
-    }
-      
+    std::string endpointURL = source->BaseEndpoint + endpointValue;
 
     INFO("Endpoint URL: {}", endpointURL);
     NyaAPI::get_path_from_json_api(source, endpointURL, 10.0f, [this, finished, NSFWEnabled](bool success, std::string url) {
@@ -147,6 +149,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
 
                 BSML::Utilities::DownloadFile(url, filePath, [this, finished, url, NSFWEnabled, fileFullName](bool success, StringW path) {
                     if (!success ) {
+                        this->SetErrorImage();
                         if (finished != nullptr) finished(false);
                     } else {
                         this->lastImageURL = url;
@@ -166,7 +169,10 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished)
             // Error getting things
             ERROR("Failed to load image from api");
             // getLogger().Backtrace(20);
-            if (finished != nullptr) finished(false);
+            QuestUI::MainThreadScheduler::Schedule([this, finished]{
+                this->SetErrorImage();
+                if (finished != nullptr) finished(false);
+            });
         }
     });
   }

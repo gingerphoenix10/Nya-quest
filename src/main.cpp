@@ -101,6 +101,7 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoordinator::DidActivate, void, GlobalNamespace::MainFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MainFlowCoordinator_DidActivate");
+    
     if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr.m_value) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
@@ -197,6 +198,15 @@ extern "C" void setup(ModInfo& info) {
     INFO("Completed setup!");
 }
 
+ // Config manipulations on start
+void InitConfigOnStart(){
+    // No ui is present, we do some preflight things
+    bool rememberNSFW = getNyaConfig().RememberNSFW.GetValue();
+    if (!rememberNSFW) {
+        getNyaConfig().NSFWEnabled.SetValue(false);
+    }
+}
+
 // Called later on in the game loading - a good time to install function hooks
 extern "C" void load() {
     il2cpp_functions::Init();
@@ -206,6 +216,9 @@ extern "C" void load() {
 
     // Init our custom config branch
     EndpointConfig::migrate(getNyaConfig().config);
+
+    // Do config validation and modifications on start
+    InitConfigOnStart();
 
     // Make local folders if they do not exist
     makeFolder();

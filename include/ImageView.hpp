@@ -19,11 +19,11 @@ DECLARE_CLASS_CODEGEN(NyaUtils, ImageView, UnityEngine::MonoBehaviour,
     DECLARE_DTOR(dtor);
 
 
-
     DECLARE_INSTANCE_FIELD(HMUI::ImageView*, imageView);
     DECLARE_INSTANCE_FIELD(StringW, lastImageURL);
     DECLARE_INSTANCE_FIELD(StringW, tempName);
     DECLARE_INSTANCE_FIELD(bool, isNSFW);
+    
     void GetImage(std::function<void(bool success)> finished);
     void SaveImage();
     bool HasImageToSave();

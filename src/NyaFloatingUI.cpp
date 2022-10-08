@@ -10,7 +10,7 @@
 #include "custom-types/shared/macros.hpp"
 #include "Utils/FileUtils.hpp"
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
-
+#include "assets.hpp"
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
 
@@ -26,6 +26,7 @@ namespace Nya {
         UIScreen = nullptr;
         UINoGlow = nullptr;
         hoverClickHelper = nullptr;
+        imageView = nullptr;
         INFO("Created NyaFloatingUI instance");
     }
 
@@ -53,8 +54,10 @@ namespace Nya {
 
         NYA = QuestUI::BeatSaberUI::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
+        // Set blank sprite to avoid white screens
+        NYA->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::placeholder_png));
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
-        auto view = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
+        imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
         ele->set_preferredHeight(50);
         ele->set_preferredWidth(50);
 
@@ -66,8 +69,8 @@ namespace Nya {
 
         // Get new picture
         this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
-        [this, view]() {
-            Nya::Utils::onNyaClick(this->nyaButton, view);
+        [this]() {
+            Nya::Utils::onNyaClick(this->nyaButton, this->imageView);
         });
 
         this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
@@ -85,6 +88,7 @@ namespace Nya {
         this->isInitialized = true;
 
         this->UpdateScale();
+        this->UpdateHandleVisibility();
     }
     
     void NyaFloatingUI::SetDefaultPos () {
@@ -194,6 +198,8 @@ namespace Nya {
         // If screen does not exist, initialize the first time
         if (!this->UIScreen || !this->UIScreen->m_CachedPtr.m_value) {
             this->initScreen();
+            // If the screen is created, get the first image
+            this->imageView->GetImage(nullptr);
         }
 
         if (scene == Nya::FloatingUIScene::Pause) {
@@ -347,5 +353,12 @@ namespace Nya {
     void NyaFloatingUI::UpdateScale() {
         float scale = getNyaConfig().FloatingScreenScale.GetValue();
         this->ScaleFloatingScreen(scale);
+    }
+
+    void NyaFloatingUI::UpdateHandleVisibility(){
+        bool visibility = getNyaConfig().ShowHandle.GetValue();
+        if (this->screenhandle && this->screenhandle->m_CachedPtr.m_value) {
+            this->screenhandle->set_active(visibility);
+        }
     }
 }

@@ -18,6 +18,8 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "SettingsMenu.hpp"
+#include "ImageView.hpp"
+
 
 using namespace UnityEngine::UI;
 
@@ -46,6 +48,8 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_METHOD(void, SetDefaultPos);
             DECLARE_INSTANCE_METHOD(void, ScaleFloatingScreen, float scale);
             DECLARE_INSTANCE_METHOD(void, UpdateScale);
+
+            DECLARE_INSTANCE_METHOD(void, UpdateHandleVisibility);
             
             DECLARE_CTOR(ctor);
             // DECLARE_DTOR(dtor);
@@ -58,6 +62,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
 
             // NYA
             DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
+            DECLARE_INSTANCE_FIELD(NyaUtils::ImageView*, imageView);
             DECLARE_INSTANCE_FIELD(UnityEngine::Plane*, plane);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);

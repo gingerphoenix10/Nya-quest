@@ -12,7 +12,7 @@ namespace Nya {
     {
     
         // Init modal
-        this->settingsModal = QuestUI::BeatSaberUI::CreateModal(get_transform(), { 65, 50 }, nullptr);
+        this->settingsModal = QuestUI::BeatSaberUI::CreateModal(get_transform(), { 65, 60 }, nullptr);
         this->settingsModal->get_gameObject()->set_name(SettingsMenuWrapper);
 
         auto sourcesView = UnityEngine::GameObject::New_ctor()->AddComponent<UnityEngine::RectTransform*>();
@@ -191,6 +191,28 @@ namespace Nya {
                 [this]() {
                     this->settingsModal->Hide(true, nullptr);
                 }
+            );
+
+            QuestUI::BeatSaberUI::CreateToggle(floatingViewLayout->get_transform(), "Show handle",
+            getNyaConfig().ShowHandle.GetValue(),
+            [](bool value) {
+                getNyaConfig().ShowHandle.SetValue(value);
+                if (
+                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI->UIScreen != nullptr
+                ) {
+                    Main::NyaFloatingUI->UpdateHandleVisibility();
+                }
+            });
+
+            auto slider = QuestUI::BeatSaberUI::CreateSliderSetting(floatingViewLayout->get_transform(), "Floating Screen Scale", 0.1f, 
+                getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
+                    getNyaConfig().FloatingScreenScale.SetValue(value);
+                    if (Main::NyaFloatingUI != nullptr) {
+                        Main::NyaFloatingUI->UpdateScale();
+                    }
+                }
+                
             );
         }
     }
