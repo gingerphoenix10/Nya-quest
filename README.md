@@ -77,3 +77,5 @@ This script has multiple options:
 ### Oculus developer tool
 It's an extension for VSCode that helps with debugging. It's kinda whack but it works (Only on Windows)
 [VS Marketplace Link](https://github.com/Lauriethefish/quest-mod-template)
+
+<img src="cover.jpg"  style="max-width: 300px" />
