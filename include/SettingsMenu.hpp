@@ -10,6 +10,7 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "HMUI/ModalView.hpp"
 #include "UI/PanelUI.hpp"
+#include "Utils/CustomSegmentedControl.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "questui/shared/CustomTypes/Components/FloatingScreen/FloatingScreenMoverPointer.hpp"
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
@@ -32,7 +33,7 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
 
         // Settings buttons and modal
         DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
-        DECLARE_INSTANCE_FIELD(QuestUI::CustomTextSegmentedControlData *, tabsSwitch);
+        DECLARE_INSTANCE_FIELD(NyaUI::CustomTextSegmentedControlData *, tabsSwitch);
         
 
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
