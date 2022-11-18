@@ -101,6 +101,7 @@ namespace Nya
                                                                         }
 
 #ifdef NSFW
+                                                                    if (getNyaConfig().NSFWUI.GetValue()) {
                                                                         // Restore nsfw state
                                                                         if (source->NsfwEndpoints.size() == 0)
                                                                         {
@@ -130,7 +131,7 @@ namespace Nya
                                                                         }
 
                                                                         this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
-
+                                                                    }
 #endif
                                                                     });
 
@@ -141,17 +142,19 @@ namespace Nya
                 EndpointConfig::updateEndpointValue(getNyaConfig().config, API, false, value); });
 
 #ifdef NSFW
-            // NSFW endpoint selector
-            this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value)
-                                                                       {
-                    // Get current endpoint
-                    std::string API = getNyaConfig().API.GetValue();
-                    EndpointConfig::updateEndpointValue(getNyaConfig().config, API, true, value); });
+            if (getNyaConfig().NSFWUI.GetValue()) {
+                // NSFW endpoint selector
+                this->nsfw_endpoint = QuestUI::BeatSaberUI::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..", {"Loading.."}, [](StringW value)
+                                                                        {
+                        // Get current endpoint
+                        std::string API = getNyaConfig().API.GetValue();
+                        EndpointConfig::updateEndpointValue(getNyaConfig().config, API, true, value); });
 
-            // NSFW toggle
-            bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-            this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled, [](bool isChecked)
-                                                                   { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
+                // NSFW toggle
+                bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
+                this->nsfw_toggle = QuestUI::BeatSaberUI::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled, [](bool isChecked)
+                                                                    { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
+            }
 #endif
 
             UnityEngine::UI::HorizontalLayoutGroup *horz = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
@@ -309,6 +312,7 @@ namespace Nya
             }
 
 #ifdef NSFW
+            if (getNyaConfig().NSFWUI.GetValue()) {
                 // Restore nsfw state
                 if (source->NsfwEndpoints.size() == 0) {
                     this->nsfw_endpoint->button->set_interactable(false);
@@ -333,6 +337,7 @@ namespace Nya
                 }
 
                 this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
+            }
 #endif
             
             this->SwitchTab(0);
