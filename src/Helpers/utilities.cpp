@@ -265,7 +265,7 @@ namespace BSML::Utilities {
                 bool isGif = path->EndsWith("gif", System::StringComparison::OrdinalIgnoreCase) || (isUri && uri->get_LocalPath()->EndsWith("gif", System::StringComparison::OrdinalIgnoreCase));
 
                 DEBUG("Creating callback");
-                auto onDataFinished = [stateUpdater, path, onFinished, animationController, isGif](bool success, ArrayW<uint8_t> data){
+                auto onDataFinished = [stateUpdater, oldSprite, path, onFinished, animationController, isGif](bool success, ArrayW<uint8_t> data){
                     if (success == false) {
                         if (onFinished) onFinished();
                         return;
@@ -274,7 +274,7 @@ namespace BSML::Utilities {
                     AnimationLoader::Process(
                         isGif ? AnimationLoader::AnimationType::GIF : AnimationLoader::AnimationType::APNG,
                         data,
-                        [onFinished, stateUpdater, animationController, path](auto tex, auto uvs, auto delays){
+                        [onFinished, oldSprite, stateUpdater, animationController, path](auto tex, auto uvs, auto delays){
                             // Handle deep errors
                             if (tex == nullptr) {
                                 if (onFinished) onFinished();
@@ -282,6 +282,21 @@ namespace BSML::Utilities {
                             }
                             auto controllerData = animationController->Register(path, tex, uvs, delays);
                             stateUpdater->set_controllerData(controllerData);
+                            // Force update to be able to remove old sprites
+                            controllerData->ForceDrawFrame();
+
+                            // Cleanup old animation data
+                            animationController->RemoveUnusedAnimationData();
+
+                            // Remove old sprite, it is supposed to remove the normal image that was here before
+                            if (oldSprite &&  oldSprite->m_CachedPtr.m_value) {
+                                UnityEngine::Texture2D *oldTexture =  oldSprite->get_texture();    
+                                if (oldTexture && oldSprite->m_CachedPtr.m_value)
+                                {
+                                    UnityEngine::Object::Destroy(oldTexture);
+                                }
+                                UnityEngine::Object::Destroy(oldSprite);
+                            }
                             if (onFinished) onFinished();
                         }
                     );
@@ -295,7 +310,7 @@ namespace BSML::Utilities {
                 }
             }
         } else { // not animated
-            auto onDataFinished = [path, onFinished, image, scaleOptions, oldSprite](bool success, ArrayW<uint8_t> data) {
+            auto onDataFinished = [path, animationController, onFinished, image, scaleOptions, oldSprite](bool success, ArrayW<uint8_t> data) {
                 if (success == false ) {
                     if (onFinished) onFinished();
                     return;
@@ -314,6 +329,9 @@ namespace BSML::Utilities {
                     auto sprite = LoadSpriteFromTexture(texture);
                     sprite->get_texture()->set_wrapMode(TextureWrapMode::Clamp);
                     image->set_sprite(sprite);
+
+                    // Cleanup old animation data
+                    animationController->RemoveUnusedAnimationData();
 
                     // Remove old sprite (should clean the memory at least for simple images)
                     if (oldSprite &&  oldSprite->m_CachedPtr.m_value) {
