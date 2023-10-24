@@ -5,7 +5,7 @@
 
 #include "questui/shared/BeatSaberUI.hpp"
 #include "main.hpp"
-#include "EndpointConfig.hpp"
+#include "EndpointConfigUtils.hpp"
 #include "assets.hpp"
 
 struct ModalContent {

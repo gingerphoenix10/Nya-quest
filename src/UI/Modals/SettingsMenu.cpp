@@ -101,7 +101,7 @@ void SettingsMenu::ctor() {
                                int index = this->sfw_endpoint->selectedIndex;
                                StringW url = this->sfw_endpoint_urls->get_Item(index);
 
-                               EndpointConfig::updateEndpointValue(getNyaConfig().config, API, false, url);
+                               EndpointConfigUtils::updateEndpointValue(API, false, url);
                            });
 
         // Add scrolling
@@ -122,7 +122,7 @@ void SettingsMenu::ctor() {
                                    StringW url = this->nsfw_endpoint_urls->get_Item(index);
 
                                    // Change the endpoint in the config
-                                   EndpointConfig::updateEndpointValue(getNyaConfig().config, API, true, url);
+                                   EndpointConfigUtils::updateEndpointValue(API, true, url);
                                });
 
             // NSFW toggle
@@ -268,7 +268,7 @@ void SettingsMenu::UpdateEndpointLists() {
         } else {
             // Get the selected endpoint from the config
             string selected_url =
-                EndpointConfig::getEndpointValue(getNyaConfig().config, selectedDataSourceName, false);
+                EndpointConfigUtils::getEndpointValue(selectedDataSourceName, false);
 
             // Find the index of the selected endpoint
             int index = sfw_endpoint_urls->IndexOf(to_utf16(selected_url));
@@ -290,7 +290,7 @@ void SettingsMenu::UpdateEndpointLists() {
             this->nsfw_endpoint->SelectCellWithIdx(0);
         } else {
             // Get the selected endpoint from the config
-            string selected_url = EndpointConfig::getEndpointValue(getNyaConfig().config, selectedDataSourceName, true);
+            string selected_url = EndpointConfigUtils::getEndpointValue(selectedDataSourceName, true);
 
             // Find the index of the selected endpoint
             int index = nsfw_endpoint_urls->IndexOf(to_utf16(selected_url));

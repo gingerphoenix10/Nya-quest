@@ -13,7 +13,7 @@
 #include "HMUI/ModalView.hpp"
 #include "System/Action.hpp"
 #include "ImageView.hpp"
-#include "EndpointConfig.hpp"
+#include "EndpointConfigUtils.hpp"
 #include <dirent.h>
 #include <string>
 #include <iostream>

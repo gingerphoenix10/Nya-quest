@@ -171,11 +171,11 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
     // Construct the url
     // TODO: check if endpoint from the setting exists and make it dynamic
 
-    std::string endpointValue = EndpointConfig::getEndpointValue(getNyaConfig().config, currentAPI, NSFWEnabled);
+    std::string endpointValue = EndpointConfigUtils::getEndpointValue(currentAPI, NSFWEnabled);
     
     // Fallback to sfw if nsfw is enabled and no nsfw endpoint is found
     if (endpointValue == "" && NSFWEnabled) {
-        endpointValue = EndpointConfig::getEndpointValue(getNyaConfig().config, currentAPI, false);
+        endpointValue = EndpointConfigUtils::getEndpointValue(currentAPI, false);
     }
 
     bool nsfwEmpty = source->NsfwEndpoints.empty();

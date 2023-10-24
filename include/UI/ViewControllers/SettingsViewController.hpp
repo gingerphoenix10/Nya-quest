@@ -2,7 +2,7 @@
 
 #include "custom-types/shared/macros.hpp"
 #include "questui/shared/BeatSaberUI.hpp"
-#include "EndpointConfig.hpp"
+#include "EndpointConfigUtils.hpp"
 #include "UI/Modals/NSFWConsent.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya::UI::ViewControllers, SettingsViewController, HMUI::ViewController,

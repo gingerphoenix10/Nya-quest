@@ -1,7 +1,7 @@
 #include "NyaFloatingUI.hpp"
 #include "NyaConfig.hpp"
 #include "main.hpp"
-#include "EndpointConfig.hpp"
+#include "EndpointConfigUtils.hpp"
 
 #include "Utils/Utils.hpp"
 #include "ImageView.hpp"
@@ -23,7 +23,6 @@ namespace Nya {
 
     void NyaFloatingUI::ctor()
     {
-        instance = this;
         screenhandle = nullptr;
         UIScreen = nullptr;
         UINoGlow = nullptr;
@@ -114,58 +113,31 @@ namespace Nya {
 
         if (this->currentScene == Nya::FloatingUIScene::Pause) {
             this->hoverClickHelper->SetPosition(
-                UnityEngine::Vector3(
-                    getNyaConfig().pausePositionX.GetDefaultValue(), 
-                    getNyaConfig().pausePositionY.GetDefaultValue(),
-                    getNyaConfig().pausePositionZ.GetDefaultValue()
-                ),
+                getNyaConfig().pausePosition.GetDefaultValue(),
                 UnityEngine::Quaternion::Euler(
-                    getNyaConfig().pauseRotationX.GetDefaultValue(), 
-                    getNyaConfig().pauseRotationY.GetDefaultValue(), 
-                    getNyaConfig().pauseRotationZ.GetDefaultValue()
+                    getNyaConfig().pauseRotation.GetDefaultValue()
                 )
             );
 
             // Save target 
             this->updateCoordinates(
-                UnityEngine::Vector3(
-                    getNyaConfig().pausePositionX.GetDefaultValue(), 
-                    getNyaConfig().pausePositionY.GetDefaultValue(),
-                    getNyaConfig().pausePositionZ.GetDefaultValue()
-                ),
-                UnityEngine::Vector3(
-                    getNyaConfig().pauseRotationX.GetDefaultValue(), 
-                    getNyaConfig().pauseRotationY.GetDefaultValue(), 
-                    getNyaConfig().pauseRotationZ.GetDefaultValue()
-                )
-            );
+                getNyaConfig().pausePosition.GetDefaultValue(),
+                getNyaConfig().pauseRotation.GetDefaultValue()
+            );                
         }
 
         if (this->currentScene == Nya::FloatingUIScene::MainMenu) {
             this->hoverClickHelper->SetPosition(
-                UnityEngine::Vector3(
-                    getNyaConfig().menuPositionX.GetDefaultValue(), 
-                    getNyaConfig().menuPositionY.GetDefaultValue(),
-                    getNyaConfig().menuPositionZ.GetDefaultValue()
-                ),
+                getNyaConfig().menuPosition.GetDefaultValue(),
                 UnityEngine::Quaternion::Euler(
-                    getNyaConfig().menuRotationX.GetDefaultValue(), 
-                    getNyaConfig().menuRotationY.GetDefaultValue(), 
-                    getNyaConfig().menuRotationZ.GetDefaultValue()
+                    getNyaConfig().menuRotation.GetDefaultValue()
                 )
             );
 
+            // Save coordinates
             this->updateCoordinates(
-                UnityEngine::Vector3(
-                    getNyaConfig().menuPositionX.GetDefaultValue(), 
-                    getNyaConfig().menuPositionY.GetDefaultValue(),
-                    getNyaConfig().menuPositionZ.GetDefaultValue()
-                ),
-                UnityEngine::Vector3(
-                    getNyaConfig().menuRotationX.GetDefaultValue(), 
-                    getNyaConfig().menuRotationY.GetDefaultValue(), 
-                    getNyaConfig().menuRotationZ.GetDefaultValue()
-                )
+                getNyaConfig().menuPosition.GetDefaultValue(),
+                getNyaConfig().menuRotation.GetDefaultValue()
             );
         }
     }
@@ -211,15 +183,9 @@ namespace Nya {
         if (scene == Nya::FloatingUIScene::Pause) {
             INFO("Showing pause");
             this->hoverClickHelper->SetPosition(
-                UnityEngine::Vector3(
-                    getNyaConfig().pausePositionX.GetValue(), 
-                    getNyaConfig().pausePositionY.GetValue(),
-                    getNyaConfig().pausePositionZ.GetValue()
-                ),
+                getNyaConfig().pausePosition.GetValue(),
                 Quaternion::Euler(
-                    getNyaConfig().pauseRotationX.GetValue(), 
-                    getNyaConfig().pauseRotationY.GetValue(), 
-                    getNyaConfig().pauseRotationZ.GetValue()
+                    getNyaConfig().pauseRotation.GetValue()
                 ),
                 false
             );
@@ -230,15 +196,9 @@ namespace Nya {
         if (scene == Nya::FloatingUIScene::MainMenu) {
             INFO("Showing main menu");
             this->hoverClickHelper->SetPosition(
-                UnityEngine::Vector3(
-                    getNyaConfig().menuPositionX.GetValue(), 
-                    getNyaConfig().menuPositionY.GetValue(),
-                    getNyaConfig().menuPositionZ.GetValue()
-                ),
+                getNyaConfig().menuPosition.GetValue(),
                 Quaternion::Euler(
-                    getNyaConfig().menuRotationX.GetValue(), 
-                    getNyaConfig().menuRotationY.GetValue(), 
-                    getNyaConfig().menuRotationZ.GetValue()
+                    getNyaConfig().menuRotation.GetValue()
                 ),
                 false
             );
@@ -271,23 +231,13 @@ namespace Nya {
         // INFO("Rotation: %.02f, %.02f, %.02f", rotation.x, rotation.y, rotation.z);
         if (this->currentScene == Nya::FloatingUIScene::Pause){
             INFO("Saved to Pause");
-            getNyaConfig().pausePositionX.SetValue(position.x);
-            getNyaConfig().pausePositionY.SetValue(position.y);
-            getNyaConfig().pausePositionZ.SetValue(position.z);
-        
-            getNyaConfig().pauseRotationX.SetValue(eulerRotation.x);
-            getNyaConfig().pauseRotationY.SetValue(eulerRotation.y);
-            getNyaConfig().pauseRotationZ.SetValue(eulerRotation.z);
+            getNyaConfig().pausePosition.SetValue(position);
+            getNyaConfig().pauseRotation.SetValue(eulerRotation);
         }
         if (this->currentScene == Nya::FloatingUIScene::MainMenu){
             INFO("Saved to MainMenu");
-            getNyaConfig().menuPositionX.SetValue(position.x);
-            getNyaConfig().menuPositionY.SetValue(position.y);
-            getNyaConfig().menuPositionZ.SetValue(position.z);
-            
-            getNyaConfig().menuRotationX.SetValue(eulerRotation.x);
-            getNyaConfig().menuRotationY.SetValue(eulerRotation.y);
-            getNyaConfig().menuRotationZ.SetValue(eulerRotation.z);
+            getNyaConfig().menuPosition.SetValue(position);
+            getNyaConfig().menuRotation.SetValue(eulerRotation);
         }
     }
 
@@ -298,9 +248,11 @@ namespace Nya {
     {
         if (instance)
             return instance;
+
         auto go = GameObject::New_ctor(StringW(___TypeRegistration::get()->name()));
         Object::DontDestroyOnLoad(go);
-        return go->AddComponent<NyaFloatingUI*>();
+        instance = go->AddComponent<NyaFloatingUI*>();
+        return instance;
     }
 
     void NyaFloatingUI::delete_instance()

@@ -4,17 +4,18 @@
   "info": {
     "name": "Nya",
     "id": "Nya",
-    "version": "0.2.6",
+    "version": "0.3.0",
     "author": "FrozenAlex",
     "url": "https://github.com/FrozenAlex/Nya-quest",
     "additionalData": {
-      "overrideSoName": "libNya.so"
+      "overrideSoName": "libNya.so",
+      "cmake": true
     }
   },
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "=3.14.0",
+      "versionRange": "^4.0.1",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -22,24 +23,29 @@
       }
     },
     {
-      "id": "modloader",
-      "versionRange": "=1.2.3",
-      "additionalData": {}
+      "id": "scotland2",
+      "versionRange": "^0.1.2",
+      "additionalData": {
+        "includeQmod": false,
+        "private": true
+      }
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.21",
+      "versionRange": "^0.15.27",
       "additionalData": {}
     },
     {
       "id": "codegen",
-      "versionRange": "^0.33.0",
+      "versionRange": "^0.34.1",
       "additionalData": {}
     },
     {
       "id": "questui",
-      "versionRange": "^0.17.11",
-      "additionalData": {}
+      "versionRange": "^0.17.13",
+      "additionalData": {
+        "includeQmod": false
+      }
     },
     {
       "id": "libcurl",
@@ -50,7 +56,7 @@
     },
     {
       "id": "config-utils",
-      "versionRange": "^0.8.0",
+      "versionRange": "^1.1.1",
       "additionalData": {}
     },
     {

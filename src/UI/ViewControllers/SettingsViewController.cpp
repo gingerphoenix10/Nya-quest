@@ -157,7 +157,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
         
         CreateUIButton(container->get_transform(), to_utf16("Reset all positions"), "PracticeButton",
         [this]() {
-            EndpointConfig::ResetPositions();
+            EndpointConfigUtils::ResetPositions();
             if (
                 Main::NyaFloatingUI != nullptr && 
                 Main::NyaFloatingUI->UIScreen != nullptr

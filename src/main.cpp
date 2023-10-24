@@ -40,7 +40,6 @@ using namespace UnityEngine;
 using namespace GlobalNamespace;
 using namespace Nya;
 
-DEFINE_CONFIG(NyaConfig);
 
 Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 
@@ -264,10 +263,10 @@ Paper::ConstLoggerContext<4UL> Nya::getLogger() {
 }
 
 // Called at the early stages of game loading
-extern "C" void setup(ModInfo& info) {
+extern "C" void setup(CModInfo& info) {
     info.id = MOD_ID;
     info.version = VERSION;
-    modInfo = info;
+    info.version_long = GIT_COMMIT;
 
     INFO("Completed setup!");
 }
@@ -320,9 +319,6 @@ extern "C" void load() {
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
-
-    // Init our custom config branch
-    EndpointConfig::migrate(getNyaConfig().config);
 
     // Do config validation and modifications on start
     InitConfigOnStart();

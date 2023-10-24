@@ -10,4 +10,7 @@ binary_cache/
 perf.data
 report.html
 *.qmod
-mod.json
+
+
+# Since qpm fails to generate good .mod.json files, we have to include them
+# mod.json
