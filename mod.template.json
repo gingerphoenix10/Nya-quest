@@ -10,7 +10,9 @@
   "description": "Beat Saber mod for displaying nya-tastic images from various anime themed web APIs!",
   "dependencies": [],
   "coverImage": "cover.jpg",
-  "modFiles": [],
+  "modFiles": [
+    "${binary}"
+  ],
   "libraryFiles": [],
   "fileCopies": [],
   "copyExtensions": []
