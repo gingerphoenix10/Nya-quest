@@ -12,7 +12,7 @@ namespace Nya::Utils
         static SafePtrUnity<HMUI::TextSegmentedControl> segmentedControlTemplate;
         if (!segmentedControlTemplate)
         {
-            segmentedControlTemplate = Resources::FindObjectsOfTypeAll<HMUI::TextSegmentedControl *>().First([](auto x)
+            segmentedControlTemplate = Resources::FindObjectsOfTypeAll<HMUI::TextSegmentedControl *>()->First([](auto x)
                                                                                                        {
                 // INFO: This selector could break in any new update. If you came here, try to modify the selection
                 if (x->get_name() != "TextSegmentedControl") return false;
@@ -35,13 +35,13 @@ namespace Nya::Utils
         auto control = segmentedControlObj->AddComponent<HMUI::SegmentedControl *>();
         auto result = segmentedControlObj->AddComponent<NyaUI::CustomTextSegmentedControlData *>();
 
-        result->firstCellPrefab = segmentedControlTemplate->firstCellPrefab;
-        result->lastCellPrefab = segmentedControlTemplate->lastCellPrefab;
-        result->middleCellPrefab = segmentedControlTemplate->middleCellPrefab;
-        result->singleCellPrefab = segmentedControlTemplate->singleCellPrefab;
+        result->firstCellPrefab = segmentedControlTemplate->_firstCellPrefab;
+        result->lastCellPrefab = segmentedControlTemplate->_lastCellPrefab;
+        result->middleCellPrefab = segmentedControlTemplate->_middleCellPrefab;
+        result->singleCellPrefab = segmentedControlTemplate->_singleCellPrefab;
 
         result->segmentedControl = control;
-        control->dataSource = reinterpret_cast<HMUI::SegmentedControl::IDataSource *>(result);
+        control->dataSource = result.cast<HMUI::SegmentedControl::IDataSource>();
 
         if (onCellWithIdxClicked)
         {

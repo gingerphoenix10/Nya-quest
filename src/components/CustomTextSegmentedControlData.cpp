@@ -31,13 +31,13 @@ namespace NyaUI
 
     int CustomTextSegmentedControlData::NumberOfCells()
     {
-        return texts.Length();
+        return texts.size();
     }
 
     HMUI::SegmentedControlCell* CustomTextSegmentedControlData::CellForCellNumber(int idx)
     {
         HMUI::TextSegmentedControlCell* result = nullptr;
-        if (texts.Length() == 1)
+        if (texts.size() == 1)
         {
             result = reinterpret_cast<HMUI::TextSegmentedControlCell*>(InstantiateCell(singleCellPrefab->get_gameObject()));
         }
@@ -45,7 +45,7 @@ namespace NyaUI
         {
             result = reinterpret_cast<HMUI::TextSegmentedControlCell*>(InstantiateCell(firstCellPrefab->get_gameObject()));
         } 
-        else if (idx == texts.Length() - 1)
+        else if (idx == texts.size() - 1)
         {
             result = reinterpret_cast<HMUI::TextSegmentedControlCell*>(InstantiateCell(lastCellPrefab->get_gameObject()));
         }
@@ -60,7 +60,7 @@ namespace NyaUI
 
         if (overrideCellSize)
         {
-            reinterpret_cast<RectTransform*>(result->get_transform())->set_sizeDelta({result->get_preferredWidth() + 2.0f * padding, 1.0f});
+            (result->get_transform().cast<RectTransform>())->set_sizeDelta({result->get_preferredWidth() + 2.0f * padding, 1.0f});
         }
         return result;
     }
@@ -73,7 +73,7 @@ namespace NyaUI
 
     void CustomTextSegmentedControlData::add_text(StringW addedText)
     {
-        int len = texts.Length();
+        int len = texts.size();
         ArrayW<StringW> newtexts(len);
         texts = newtexts;
         texts[len] = addedText;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "custom-types/shared/macros.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
 #include "EndpointConfigUtils.hpp"
 #include "UI/Modals/NSFWConsent.hpp"
 

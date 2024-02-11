@@ -1,6 +1,4 @@
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
-#include "HMUI/ViewController_AnimationDirection.hpp"
-#include "HMUI/ViewController_AnimationType.hpp"
 
 DEFINE_TYPE(Nya::UI::FlowCoordinators, NyaSettingsFlowCoordinator);
 

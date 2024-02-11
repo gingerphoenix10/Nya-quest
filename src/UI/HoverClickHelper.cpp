@@ -60,11 +60,11 @@ namespace Nya {
         }
         
         // VR conroller is sometimes null after leaving multiplayer?
-        if (!vrPointer  || !vrPointer->m_CachedPtr.m_value) {
+        if (!vrPointer  || !vrPointer->m_CachedPtr) {
             return;
         }
         auto vrController = vrPointer->get_vrController();
-        if (!vrController  || !vrController->m_CachedPtr.m_value) {
+        if (!vrController  || !vrController->m_CachedPtr) {
             return;
         }
 
@@ -72,16 +72,16 @@ namespace Nya {
         if(UnityEngine::Physics::Raycast(vrController->get_position(), vrController->get_forward(), hit, 100)){
             // If the needed collider is found and not grabbing handle
             if(static_cast<std::string>(hit.get_collider()->get_name()).substr(0, 12).compare("gridcollider") == 0 && !grabbingHandle){
-                if (isHit && currentCollider && currentCollider != hit.get_collider()->get_transform()) {
+                if (isHit && currentCollider && currentCollider.ptr() != hit.get_collider()->get_transform()) {
                     panelUI->image->GetComponent<UnityEngine::UI::Image *>()->set_color(UnityEngine::Color::get_gray());
-                    hintController->hoverHintPanel->Hide();
+                    hintController->_hoverHintPanel->Hide();
                     panelUI = nullptr;
                     isHit = false;
                 }
             }
             else if (isHit){
                 panelUI->image->set_color(UnityEngine::Color::get_gray());
-                hintController->hoverHintPanel->Hide();
+                hintController->_hoverHintPanel->Hide();
                 panelUI = nullptr;
                 isHit = false;
             }
@@ -99,7 +99,7 @@ namespace Nya {
         else {
             if (isHit && Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->settingsMenu != nullptr && !Main::NyaFloatingUI->settingsMenu->isShown()){
                 panelUI->image->GetComponent<UnityEngine::UI::Image*>()->set_color(UnityEngine::Color::get_gray());
-                hintController->hoverHintPanel->Hide();
+                hintController->_hoverHintPanel->Hide();
                 panelUI = nullptr;
                 isHit = false;
             }
@@ -197,13 +197,13 @@ namespace Nya {
         auto* pointer = Utils::getAnyPointerWithController();
         vrPointer = pointer;
         // Get the last mover
-        if (this->mover && this->mover->m_CachedPtr.m_value) {
+        if (this->mover && this->mover->m_CachedPtr) {
             UnityEngine::Object::DestroyImmediate(this->mover);
         }
         if (vrPointer != nullptr) {
-            this->mover = pointer->get_gameObject()->AddComponent<QuestUI::FloatingScreenMoverPointer*>();
+            this->mover = pointer->get_gameObject()->AddComponent<BSML::FloatingScreenMoverPointer*>();
             // UIScreen
-            this->mover->Init(this->get_gameObject()->GetComponent<QuestUI::FloatingScreen*>(), pointer);
+            this->mover->Init(this->get_gameObject()->GetComponent<BSML::FloatingScreen*>(), pointer);
         }
     }
 

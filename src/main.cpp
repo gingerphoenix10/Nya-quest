@@ -2,7 +2,7 @@
 #include "ModifiersMenu.hpp"
 
 #include "UI/ViewControllers/SettingsViewController.hpp"
-#include "questui/shared/QuestUI.hpp"
+#include "bsml/shared/BSML.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/LevelCompletionResults.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
@@ -28,10 +28,10 @@
 #include "GlobalNamespace/MainMenuViewController.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "NyaConfig.hpp"
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 #include "GlobalNamespace/OVRInput.hpp"
-#include "GlobalNamespace/OVRInput_Button.hpp"
 #include "GlobalNamespace/OculusVRHelper.hpp"
+#include "GlobalNamespace/MainFlowCoordinator.hpp"
 #include "Events.hpp"
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
 #include <fstream>
@@ -46,7 +46,7 @@ Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
     DEBUG("Pause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
     }
     
@@ -55,7 +55,7 @@ MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
     DEBUG("Unpause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
     
@@ -64,7 +64,7 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
     DEBUG("Restartbutton");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
 }
@@ -77,7 +77,7 @@ MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewControll
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MultiResults");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
     
@@ -88,7 +88,7 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 {
     DEBUG("MenuTransitionsHelper_RestartGame");
     // Destroy the floating UI on soft restart
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         GameObject::DestroyImmediate(Main::NyaFloatingUI->UIScreen->get_gameObject());
 
         Nya::NyaFloatingUI::delete_instance();
@@ -101,7 +101,7 @@ MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoord
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MainFlowCoordinator_DidActivate");
     
-    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr.m_value) {
+    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     } else {
@@ -120,7 +120,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
         std::string nextSceneName(nextScene.get_name());
 
         if (Nya::Main::NyaFloatingUI != nullptr) {
-            QuestUI::MainThreadScheduler::Schedule([prevScene, nextScene]
+            BSML::MainThreadScheduler::Schedule([prevScene, nextScene]
             {
                 Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
             });
@@ -328,11 +328,9 @@ extern "C" void load() {
     // Sometimes when crashing, the temp folder is not deleted, so we do it here on start
     Nya::CleanTempFolder();
     Nya::ApplyIndexingRules();
-    QuestUI::Init();
 
-    QuestUI::Register::RegisterGameplaySetupMenu<Nya::ModifiersMenu*>(modInfo, "Nya");
-    // QuestUI::Register::RegisterModSettingsViewController<Nya::SettingsViewController*>(modInfo, "Nya");
-    QuestUI::Register::RegisterModSettingsFlowCoordinator<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>(modInfo, "Nya");
+    // BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
+    BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya", true);
 
     custom_types::Register::AutoRegister();
 

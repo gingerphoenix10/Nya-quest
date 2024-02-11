@@ -11,14 +11,14 @@ static ConstString FloatingSettingsWrapper("FloatingSettingsWrapper");
 
 using namespace UnityEngine;
 using namespace UnityEngine::UI;
-using namespace QuestUI::BeatSaberUI;
+using namespace BSML;
 using namespace std;
 
 namespace Nya {
 // Constructor
 void SettingsMenu::ctor() {
     // Init modal
-    this->settingsModal = CreateModal(get_transform(), {65, 60}, nullptr);
+    this->settingsModal = BSML::Lite::CreateModal(get_transform(), {65, 60}, nullptr);
     this->settingsModal->get_gameObject()->set_name(SettingsMenuWrapper);
 
     auto sourcesView = UnityEngine::GameObject::New_ctor()->AddComponent<UnityEngine::RectTransform*>();
@@ -30,7 +30,7 @@ void SettingsMenu::ctor() {
     floatingView->SetParent(this->settingsModal->get_transform(), false);
 
     // Setup canvas
-    auto canvas = CreateCanvas();
+    auto canvas = BSML::Lite::CreateCanvas();
     canvas->get_transform()->SetParent(this->settingsModal->get_transform(), false);
     auto controlRect = reinterpret_cast<UnityEngine::RectTransform*>(canvas->get_transform());
     controlRect->set_anchoredPosition({0, 0});
@@ -52,7 +52,7 @@ void SettingsMenu::ctor() {
                                                bind(&SettingsMenu::SwitchTab, this, placeholders::_1));
 
     // Create a text that says "Hello World!" and set the parent to the container.
-    VerticalLayoutGroup* sourcesViewLayout = CreateVerticalLayoutGroup(sourcesView);
+    VerticalLayoutGroup* sourcesViewLayout = BSML::Lite::CreateVerticalLayoutGroup(sourcesView);
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
@@ -63,15 +63,15 @@ void SettingsMenu::ctor() {
 
     // Get platform helper for scrolling
     auto platformHelper = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::LevelCollectionTableView*>()
-                              .First()
+                              ->First()
                               ->GetComponentInChildren<HMUI::ScrollView*>()
-                              ->platformHelper;
+                              ->_platformHelper;
 
     // Nya configuration
     {
         // API Selection (nothing to select for now)
         string API = getNyaConfig().API.GetValue();
-        this->api_switch = CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("API"), "Loading..",
+        this->api_switch = BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("API"), "Loading..",
                                           {"Loading.."}, [this](StringW value) {
                                               // Change the API in the config
                                               getNyaConfig().API.SetValue(value);
@@ -92,7 +92,7 @@ void SettingsMenu::ctor() {
 
         // SFW endpoint switch
         this->sfw_endpoint =
-            CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"), "Loading..", {"Loading.."},
+            BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"), "Loading..", {"Loading.."},
                            [this](StringW value) {
                                // Get current endpoint
                                string API = this->selectedDataSourceName;
@@ -106,13 +106,13 @@ void SettingsMenu::ctor() {
 
         // Add scrolling
         if (platformHelper != nullptr) {
-            this->sfw_endpoint->tableView->scrollView->platformHelper = platformHelper;
+            this->sfw_endpoint->_tableView->scrollView->platformHelper = platformHelper;
         }
 
         if (getNyaConfig().NSFWUI.GetValue()) {
             // NSFW endpoint selector
             this->nsfw_endpoint =
-                CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..",
+                BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..",
                                {"Loading.."}, [this](StringW value) {
                                    // Get current endpoint
                                    string API = this->selectedDataSourceName;
@@ -127,7 +127,7 @@ void SettingsMenu::ctor() {
 
             // NSFW toggle
             bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-            this->nsfw_toggle = CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
+            this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
                                              [](bool isChecked) { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
             // Add scrolling
             if (platformHelper != nullptr) {
@@ -135,29 +135,29 @@ void SettingsMenu::ctor() {
             }
         }
 
-        HorizontalLayoutGroup* horz = CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
+        HorizontalLayoutGroup* horz = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
         horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
         horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
         horz->set_spacing(10);
         {
             this->downloadButton =
-                CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton", [this]() {
+                BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton", [this]() {
                     auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
                     imageView->SaveImage();
                     this->downloadButton->set_interactable(false);
                     this->settingsModal->Hide(true, nullptr);
                 });
 
-            Button* closeButton = CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
+            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
                                                  [this]() { this->settingsModal->Hide(true, nullptr); });
         }
-        HorizontalLayoutGroup* horz2 = CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
+        HorizontalLayoutGroup* horz2 = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
         horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
         horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
         horz->set_spacing(10);
 
         {
-            autoNyaButton = CreateToggle(horz2, "AutoNya", getNyaConfig().AutoNya.GetValue(), [this](bool value) {
+            autoNyaButton = BSML::Lite::CreateToggle(horz2, "AutoNya", getNyaConfig().AutoNya.GetValue(), [this](bool value) {
                 getNyaConfig().AutoNya.SetValue(value);
                 if (value) {
                     NyaUtils::ImageView* imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
@@ -170,37 +170,37 @@ void SettingsMenu::ctor() {
     }
 
     {
-        VerticalLayoutGroup* floatingViewLayout = CreateVerticalLayoutGroup(floatingView);
+        VerticalLayoutGroup* floatingViewLayout = BSML::Lite::CreateVerticalLayoutGroup(floatingView);
         floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_verticalFit(
             ContentSizeFitter::FitMode::PreferredSize);
         floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(
             ContentSizeFitter::FitMode::PreferredSize);
         floatingViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
         {
-            auto* hor = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(floatingViewLayout->get_transform());
+            auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(floatingViewLayout->get_transform());
 
             Button* faceHeadset =
-            CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
+            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
                 }
             });
-            CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
+            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
                 }
             });
         }
-        CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Default position"), "PracticeButton", [this]() {
+        BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Default position"), "PracticeButton", [this]() {
             if (Main::NyaFloatingUI != nullptr) {
                 Main::NyaFloatingUI->SetDefaultPos();
             }
         });
 
-        Button* closeButton = CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Close"), "PracticeButton",
+        Button* closeButton = BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Close"), "PracticeButton",
                                              [this]() { this->settingsModal->Hide(true, nullptr); });
 
-        CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
+        BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
                      [](bool value) {
                          getNyaConfig().ShowHandle.SetValue(value);
                          if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->UIScreen != nullptr) {
@@ -322,7 +322,7 @@ void SettingsMenu::Show() {
     this->downloadButton->set_interactable(imageView->HasImageToSave());
 
     // Run UI on the main thread
-    QuestUI::MainThreadScheduler::Schedule([this] {
+    BSML::MainThreadScheduler::Schedule([this] {
         this->tabsSwitch->segmentedControl->SelectCellWithNumber(0);
         // Autonya
         autoNyaButton->set_isOn(getNyaConfig().AutoNya.GetValue());

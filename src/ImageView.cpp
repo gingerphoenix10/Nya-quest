@@ -16,15 +16,15 @@
 #include "WebUtils.hpp"
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 #include "UnityEngine/SpriteMeshType.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 #include "UnityEngine/Networking/UnityWebRequestTexture.hpp"
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
 #include "UnityEngine/Networking/DownloadHandlerTexture.hpp"
 #include "assets.hpp"
 
-#include "Helpers/utilities.hpp"
+#include "bsml/shared/Helpers/utilities.hpp"
 #include "Utils/FileUtils.hpp"
 #include "Utils/Utils.hpp"
 #include "UnityEngine/Coroutine.hpp"
@@ -36,7 +36,6 @@
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "Events.hpp"
 
-#define coro(coroutine) GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(coroutine))
 
 // Necessary
 DEFINE_TYPE(NyaUtils, ImageView);
@@ -153,7 +152,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
         int randomIndex = Nya::Utils::random(0, fileList.size()-1);
 
         auto path = fileList[randomIndex];
-        FSML::Utilities::SetImage(this->imageView, "file://" + path,  true, FSML::Utilities::ScaleOptions(),[finished, this]() {
+        BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
             // Set is loading status
             this->isLoading = false;
             if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
@@ -220,7 +219,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
             ERROR("Failed to load image from api");
 
             // getLogger().Backtrace(20);
-            QuestUI::MainThreadScheduler::Schedule([this, finished]{
+            BSML::MainThreadScheduler::Schedule([this, finished]{
                 this->SetErrorImage();
                 
                 // Set is loading status
@@ -232,7 +231,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
             return;
         }
           
-        QuestUI::MainThreadScheduler::Schedule([this, url, finished, NSFWEnabled]{
+        BSML::MainThreadScheduler::Schedule([this, url, finished, NSFWEnabled]{
             // Make temp file name
             std::string fileExtension = FileUtils::GetFileFormat(url);
             std::string fileName = Nya::Utils::RandomString(8);
@@ -254,7 +253,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
                     this->tempName = fileFullName;
                     this->isNSFW = NSFWEnabled;
 
-                    FSML::Utilities::SetImage(this->imageView, "file://" + path,  true, FSML::Utilities::ScaleOptions(),[finished, this]() {
+                    BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
                         // Set is loading status
                         this->isLoading = false;
                         if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
@@ -276,7 +275,7 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
 
 void NyaUtils::ImageView::SetErrorImage()
 {
-    FSML::Utilities::RemoveAnimationUpdater(this->imageView);
+    BSML::Utilities::RemoveAnimationUpdater(this->imageView);
     this->imageView->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::Chocola_Dead_png));
 }
 
@@ -298,7 +297,7 @@ void NyaUtils::ImageView::OnEnable()
     Nya::GlobalEvents::onControllerNya += {&NyaUtils::ImageView::OnNyaPhysicalClick ,this};
 
     if (getNyaConfig().AutoNya.GetValue() && this->autoNyaRunning == false) {
-        coro(this->AutoNyaCoro());
+        this->StartCoroutine(this->AutoNyaCoro());
     }
 }
 

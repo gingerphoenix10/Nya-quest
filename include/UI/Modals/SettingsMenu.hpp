@@ -1,6 +1,5 @@
 #pragma once
 // Settings menu popup for floating window and non floating window
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Plane.hpp"
 #include "HMUI/SimpleTextDropdown.hpp"
@@ -12,8 +11,6 @@
 #include "UI/PanelUI.hpp"
 #include "Utils/CustomSegmentedControl.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "questui/shared/CustomTypes/Components/FloatingScreen/FloatingScreenMoverPointer.hpp"
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "beatsaber-hook/shared/utils/typedefs.h"
 #include "API.hpp"
 

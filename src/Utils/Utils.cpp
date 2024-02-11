@@ -1,6 +1,6 @@
 #include "Utils/Utils.hpp"
 #include <random>
-#include "Helpers/utilities.hpp"
+#include "bsml/shared/Helpers/utilities.hpp"
 #include "System/StringComparison.hpp"
 #include "System/Uri.hpp"
 #include <fstream>
@@ -13,7 +13,6 @@
 #include "UnityEngine/Networking/UnityWebRequestAsyncOperation.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
-#define coro(coroutine) GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(coroutine))
 using namespace UnityEngine;
 using namespace UnityEngine::Networking;
 
@@ -260,7 +259,10 @@ namespace Nya::Utils {
             ERROR("Can't get data async without a callback to use it with");
             return;
         }
-        coro(DownloadFileCoroutine(uri, path, onFinished));
+        // TODO: Implement a global coro starter for Nya
+        // this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+        //     DownloadFileCoroutine(uri, path, onFinished)
+        // ));
     }
 
     

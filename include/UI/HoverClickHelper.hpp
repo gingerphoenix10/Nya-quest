@@ -15,10 +15,8 @@
 #include "UI/PanelUI.hpp"
 #include "GlobalNamespace/VRController.hpp"
 #include "HMUI/HoverHintController.hpp"
-#include "questui/shared/CustomTypes/Components/FloatingScreen/FloatingScreen.hpp"
 #include "VRUIControls/VRPointer.hpp"
-#include "questui/shared/CustomTypes/Components/FloatingScreen/FloatingScreenMoverPointer.hpp"
-
+#include "bsml/shared/BSML/FloatingScreen/FloatingScreen.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
 
@@ -41,7 +39,7 @@ DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(bool, triggerPressed);
     DECLARE_INSTANCE_FIELD(bool, modalLocked);
 
-    DECLARE_INSTANCE_FIELD(QuestUI::FloatingScreenMoverPointer*, mover);
+    DECLARE_INSTANCE_FIELD(BSML::FloatingScreenMoverPointer*, mover);
 
     DECLARE_INSTANCE_METHOD(void, Init, VRUIControls::VRPointer* pointer, UnityEngine::GameObject* handle);
     DECLARE_INSTANCE_METHOD(void, Awake);
@@ -60,5 +58,5 @@ DECLARE_CLASS_CODEGEN(Nya, HoverClickHelper, UnityEngine::MonoBehaviour,
 );
 
 namespace Nya{
-    Nya::HoverClickHelper* addHoverClickHelper(VRUIControls::VRPointer* pointer, UnityEngine::GameObject* handle, QuestUI::FloatingScreen* screen);
+    Nya::HoverClickHelper* addHoverClickHelper(VRUIControls::VRPointer* pointer, UnityEngine::GameObject* handle, BSML::FloatingScreen* screen);
 }

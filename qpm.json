@@ -15,16 +15,12 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^4.0.1",
-      "additionalData": {
-        "extraFiles": [
-          "src/inline-hook"
-        ]
-      }
+      "versionRange": "^5.0.0",
+      "additionalData": {}
     },
     {
       "id": "scotland2",
-      "versionRange": "^0.1.2",
+      "versionRange": "^0.1.3",
       "additionalData": {
         "includeQmod": false,
         "private": true
@@ -32,20 +28,13 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.27",
+      "versionRange": "^0.16.13",
       "additionalData": {}
     },
     {
-      "id": "codegen",
-      "versionRange": "^0.34.1",
+      "id": "bs-cordl",
+      "versionRange": "^3402.*",
       "additionalData": {}
-    },
-    {
-      "id": "questui",
-      "versionRange": "^0.17.13",
-      "additionalData": {
-        "includeQmod": false
-      }
     },
     {
       "id": "libcurl",
@@ -56,7 +45,7 @@
     },
     {
       "id": "config-utils",
-      "versionRange": "^1.1.1",
+      "versionRange": "^1.2.0",
       "additionalData": {}
     },
     {
@@ -66,8 +55,22 @@
     },
     {
       "id": "paper",
-      "versionRange": "^1.2.20",
+      "versionRange": "^3.0.0",
+      "additionalData": {
+        "private": true
+      }
+    },
+    {
+      "id": "bsml",
+      "versionRange": "^0.4.9",
       "additionalData": {}
+    },
+    {
+      "id": "kaleb",
+      "versionRange": "^0.1.6",
+      "additionalData": {
+        "private": true
+      }
     }
   ],
   "additionalData": {}

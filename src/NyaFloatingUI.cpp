@@ -5,7 +5,8 @@
 
 #include "Utils/Utils.hpp"
 #include "ImageView.hpp"
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+
 #include "custom-types/shared/coroutine.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "Utils/FileUtils.hpp"
@@ -36,7 +37,7 @@ namespace Nya {
             return;
         }
 
-        UIScreen = QuestUI::BeatSaberUI::CreateFloatingScreen({40.0f, 32.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, true, true, 0);
+        UIScreen = BSML::Lite::CreateFloatingScreen({40.0f, 32.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, true, true, 0);
         UIScreen->set_active(false);
         UIScreen->GetComponent<UnityEngine::Canvas*>()->set_sortingOrder(31);
         UnityEngine::GameObject::DontDestroyOnLoad(UIScreen);
@@ -272,7 +273,7 @@ namespace Nya {
     }
 
     void NyaFloatingUI::OnIsLoadingChange (bool isLoading) {
-        QuestUI::MainThreadScheduler::Schedule([this, isLoading]
+        BSML::MainThreadScheduler::Schedule([this, isLoading]
         {
             if (this->nyaButton && this->nyaButton->m_CachedPtr.m_value)
                 this->nyaButton->set_interactable(!isLoading);
@@ -286,18 +287,18 @@ namespace Nya {
         
    
         if (nextSceneName.find("Menu") != std::string::npos ) {
-             QuestUI::MainThreadScheduler::Schedule([this]
+             BSML::MainThreadScheduler::Schedule([this]
             {
                 this->onSceneChange(Nya::FloatingUIScene::MainMenu);
             });
             
         } else if (nextSceneName.find("Pause") != std::string::npos ) {
-            QuestUI::MainThreadScheduler::Schedule([this]
+            BSML::MainThreadScheduler::Schedule([this]
             {
                 this->onSceneChange(Nya::FloatingUIScene::Pause);
             });
         } else {
-            QuestUI::MainThreadScheduler::Schedule([this]
+            BSML::MainThreadScheduler::Schedule([this]
             {
                 this->onSceneChange(Nya::FloatingUIScene::Disabled);
             });

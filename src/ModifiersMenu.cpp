@@ -5,8 +5,7 @@
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/Texture2D.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 #include "System/IO/File.hpp"
 #include "UnityEngine/Sprite.hpp"
 #include "UnityEngine/SpriteMeshType.hpp"
@@ -41,32 +40,32 @@ namespace Nya {
         this->initialized = false;
         DEBUG("Creator runs");
 
-        auto vert = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_transform());
+        auto vert = BSML::Lite::CreateVerticalLayoutGroup(get_transform());
         vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
 
-        NYA = QuestUI::BeatSaberUI::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
+        NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         // Set blank sprite to avoid white screens
-        NYA->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::placeholder_png));
+        NYA->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::placeholder_png));
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
         DEBUG("Adds component");
         this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
         ele->set_preferredHeight(50);
         ele->set_preferredWidth(50);
 
-        auto horz = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(vert->get_transform());
+        auto horz = BSML::Lite::CreateHorizontalLayoutGroup(vert->get_transform());
         horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
         horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
         horz->set_spacing(10);
 
-        this->nyaButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
+        this->nyaButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
             [this]() {
                 this->imageView->GetImage(nullptr);
             });
 
         this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
         // Settings button
-        this->settingsButton = QuestUI::BeatSaberUI::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+        this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
         [this]() {
             this->settingsMenu->Show();
         });
@@ -84,7 +83,7 @@ namespace Nya {
     }
 
     void ModifiersMenu::OnIsLoadingChange (bool isLoading) {
-        QuestUI::MainThreadScheduler::Schedule([this, isLoading]
+        BSML::MainThreadScheduler::Schedule([this, isLoading]
         {
             if (this->nyaButton && this->nyaButton->m_CachedPtr.m_value)
                 this->nyaButton->set_interactable(!isLoading);
