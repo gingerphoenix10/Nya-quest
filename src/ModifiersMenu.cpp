@@ -9,6 +9,7 @@
 #include "System/IO/File.hpp"
 #include "UnityEngine/Sprite.hpp"
 #include "UnityEngine/SpriteMeshType.hpp"
+#include "UnityEngine/UI/ContentSizeFitter.hpp"
 #include "HMUI/ModalView.hpp"
 #include "System/Action.hpp"
 #include "ImageView.hpp"
@@ -46,7 +47,7 @@ namespace Nya {
         NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         // Set blank sprite to avoid white screens
-        NYA->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::placeholder_png));
+        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
         DEBUG("Adds component");
         this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
@@ -85,7 +86,7 @@ namespace Nya {
     void ModifiersMenu::OnIsLoadingChange (bool isLoading) {
         BSML::MainThreadScheduler::Schedule([this, isLoading]
         {
-            if (this->nyaButton && this->nyaButton->m_CachedPtr.m_value)
+            if (this->nyaButton && this->nyaButton->m_CachedPtr)
                 this->nyaButton->set_interactable(!isLoading);
         });
     }

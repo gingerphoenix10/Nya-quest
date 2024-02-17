@@ -11,7 +11,7 @@
 struct ModalContent {
     std::string TopText;
     std::string MidText;
-    Asset MidImage;
+    Kaleb::Asset MidImage;
     std::string NoButtonText;
     std::string YesButtonText;
     bool ButtonIntractabilityCooldown;

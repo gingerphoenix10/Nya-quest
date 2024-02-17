@@ -2,6 +2,7 @@
 
 #include "main.hpp"
 #include "string"
+#include "bsml/shared/Helpers/delegates.hpp"
 using namespace UnityEngine;
 
 namespace Nya::Utils
@@ -27,7 +28,7 @@ namespace Nya::Utils
         segmentedControlObj->SetActive(false);
         static ConstString NyaUITextSegmentedControl("NyaUITextSegmentedControl");
         segmentedControlObj->set_name(NyaUITextSegmentedControl);
-        auto rectTransform = reinterpret_cast<RectTransform *>(segmentedControlObj->get_transform());
+        auto rectTransform = segmentedControlObj->get_transform().cast<RectTransform>();
         rectTransform->set_sizeDelta(sizeDelta);
         rectTransform->set_anchoredPosition(anchoredPosition);
 
@@ -41,15 +42,14 @@ namespace Nya::Utils
         result->singleCellPrefab = segmentedControlTemplate->_singleCellPrefab;
 
         result->segmentedControl = control;
-        control->dataSource = result.cast<HMUI::SegmentedControl::IDataSource>();
+        control->dataSource = reinterpret_cast<HMUI::SegmentedControl::IDataSource*>(result);
 
         if (onCellWithIdxClicked)
         {
-            using DelegateType = System::Action_2<HMUI::SegmentedControl *, int> *;
-            std::function<void(HMUI::SegmentedControl *, int)> fun = [onCellWithIdxClicked](HMUI::SegmentedControl *cell, int idx)
+            using DelegateType = System::Action_2<UnityW<HMUI::SegmentedControl>, int> *;
+            std::function<void(HMUI::SegmentedControl *, int)> fun = [onCellWithIdxClicked](UnityW<HMUI::SegmentedControl> cell, int idx)
             { onCellWithIdxClicked(idx); };
-            auto delegate = custom_types::MakeDelegate<DelegateType>(fun);
-            // auto delegate = MakeDelegate(DelegateType, fun);
+            auto delegate = BSML::MakeDelegate<DelegateType>(fun);
             control->add_didSelectCellEvent(delegate);
         }
 

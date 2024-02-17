@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
-#include "codegen/include/System/IO/Path.hpp"
+#include "System/IO/Path.hpp"
 #include "beatsaber-hook/shared/utils/typedefs.h"
 namespace fs = std::filesystem;
 

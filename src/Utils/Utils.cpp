@@ -50,8 +50,8 @@ namespace Nya::Utils {
      * @param values 
      * @return List<StringW>* 
      */
-    List<StringW>* vectorToList(std::vector<StringW> values) {
-        List<StringW>* list = List<StringW>::New_ctor();
+    ListW<StringW> vectorToList(std::vector<StringW> values) {
+        ListW<StringW> list = ListW<StringW>::New();
         for (int i = 0; i < values.size(); i++){
             auto value = values[i];
             list->Add(value);
@@ -76,12 +76,12 @@ namespace Nya::Utils {
         return tmp_s;
     }
 
-    ListWrapper<StringW> listStringToStringW(std::list<std::string> values) {
+    ListW<StringW> listStringToStringW(std::list<std::string> values) {
         // TODO: Fix
         int count = values.size();
         
         // Convert stuff to list
-        ListWrapper<StringW> list(List<StringW>::New_ctor());
+        ListW<StringW> list = ListW<StringW>::New();
         if (count == 0) {
             return list;
         }
@@ -98,7 +98,7 @@ namespace Nya::Utils {
      * @return List<StringW> 
      */
     std::vector<StringW> listWToVector(List<StringW>* values) {
-        std::vector<StringW> vector = std::vector<StringW>(values->items);
+        std::vector<StringW> vector = std::vector<StringW>(values->_items);
         return vector;
     }
 
@@ -110,8 +110,8 @@ namespace Nya::Utils {
      * @return int -1 if not found anything or index of the element if the item is found
      */
     int findStrIndexInList(List<StringW>* values, StringW string ) {
-        for (int i = 0; i < values->size; i++){
-            auto value = values->get_Item(i);
+        for (int i = 0; i < values->_size; i++){
+            auto value = values->_items[i];
             if (value == string) {
                 return i;
             }
@@ -191,7 +191,7 @@ namespace Nya::Utils {
         // Get all pointers
         auto pointers = UnityEngine::Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>();
 
-        int count = pointers.Length();
+        int count = pointers.size();
         DEBUG("Total number of pointers: {}", count );
 
         for (int i = 0; i < count; i++)
@@ -201,8 +201,8 @@ namespace Nya::Utils {
             // Game clones the pointers all the time and disables the original pointer, so we need to only look at active pointers
             if (pointer->get_isActiveAndEnabled()) {
                 // VR conroller is sometimes null after leaving multiplayer?
-                auto vrController = pointer->get_vrController();
-                if (vrController  && vrController->m_CachedPtr.m_value) {
+                auto vrController = pointer->get_lastSelectedVrController();
+                if (vrController  && vrController->m_CachedPtr) {
                     DEBUG("Found vr conroller on {}", i );
                     return pointer;
                 }
@@ -229,8 +229,9 @@ namespace Nya::Utils {
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
         
         
-        
-        if (!www->get_isNetworkError()) {
+        auto error = www->GetError();
+        bool failed = error != UnityEngine::Networking::UnityWebRequest::UnityWebRequestError::OK;
+        if (failed) {
             DEBUG("Got data, callback");
             // Saving files 
             std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);

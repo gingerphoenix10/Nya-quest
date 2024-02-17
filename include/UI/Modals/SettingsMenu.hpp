@@ -2,7 +2,8 @@
 // Settings menu popup for floating window and non floating window
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Plane.hpp"
-#include "HMUI/SimpleTextDropdown.hpp"
+#include "bsml/shared/BSML/Settings/SettingsMenu.hpp"
+#include "bsml/shared/BSML/Components/Settings/DropdownListSetting.hpp"
 #include "HMUI/Screen.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
@@ -54,9 +55,9 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, downloadButton);
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, autoNyaButton);
-        DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, api_switch);
-        DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, sfw_endpoint);
+        DECLARE_INSTANCE_FIELD(BSML::DropdownListSetting*, api_switch);
+        DECLARE_INSTANCE_FIELD(BSML::DropdownListSetting*, sfw_endpoint);
         
-        DECLARE_INSTANCE_FIELD(HMUI::SimpleTextDropdown*, nsfw_endpoint);
+        DECLARE_INSTANCE_FIELD(BSML::DropdownListSetting*, nsfw_endpoint);
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, nsfw_toggle);
 )

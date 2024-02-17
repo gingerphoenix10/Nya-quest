@@ -275,8 +275,8 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
 
 void NyaUtils::ImageView::SetErrorImage()
 {
-    BSML::Utilities::RemoveAnimationUpdater(this->imageView);
-    this->imageView->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::Chocola_Dead_png));
+    // BSML::Utilities::RemoveAnimationUpdater(this->imageView);
+    this->imageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Chocola_Dead_png));
 }
 
 void NyaUtils::ImageView::dtor()
@@ -296,9 +296,9 @@ void NyaUtils::ImageView::OnEnable()
     // Subscribe to physical click
     Nya::GlobalEvents::onControllerNya += {&NyaUtils::ImageView::OnNyaPhysicalClick ,this};
 
-    if (getNyaConfig().AutoNya.GetValue() && this->autoNyaRunning == false) {
-        this->StartCoroutine(this->AutoNyaCoro());
-    }
+     if (getNyaConfig().AutoNya.GetValue() && this->autoNyaRunning == false) {
+         this->StartCoroutine(custom_types::Helpers::new_coro(this->AutoNyaCoro()));
+     }
 }
 
 void NyaUtils::ImageView::OnDisable()

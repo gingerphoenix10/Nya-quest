@@ -6,7 +6,7 @@
 #include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
 
-std::vector<std::string> buttonOptions = {
+std::vector<std::string_view> buttonOptions = {
     "None",
     "A",
     "B",
@@ -60,14 +60,14 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 }
         });
 
-        auto slider = BSML::Lite::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f, 
+        auto slider = BSML::Lite::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f,
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->UpdateScale();
                 }
             }
-            
+
         );
 
         BSML::Lite::CreateToggle(container->get_transform(), "AutoNya",
@@ -76,36 +76,33 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 getNyaConfig().AutoNya.SetValue(value);
                 if (
                     value &&
-                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI != nullptr &&
                     Main::NyaFloatingUI->imageView != nullptr
                 ) {
                     Main::NyaFloatingUI->imageView->OnEnable();
                 }
         });
 
-        BSML::Lite::CreateSliderSetting(container->get_transform(), "Nya Delay", 0.5f, 
+        BSML::Lite::CreateSliderSetting(container->get_transform(), "Nya Delay", 0.5f,
             getNyaConfig().AutoNyaDelay.GetValue(), 4.0f, 30.0f, [](float value) {
                 getNyaConfig().AutoNyaDelay.SetValue(value);
             }
         );
 
-        // Create StringWrapper Vector with Content of buttonOptions
-        // We cant create it directly, as StringW is not designed for static use
-        std::vector<StringW> buttonOptionsWrapper = {};
-        for (auto option : buttonOptions) {
-            buttonOptionsWrapper.emplace_back(option);
-        }
 
+
+
+        std::span<std::string_view> values(buttonOptions);
         // Create actual Dropdown
-        BSML::Lite::CreateDropdown(container->get_transform(), "Nya on controller button", buttonOptionsWrapper[getNyaConfig().UseButton.GetValue()], buttonOptionsWrapper, [](auto value) {
+        BSML::Lite::CreateDropdown(container->get_transform(), "Nya on controller button", values[getNyaConfig().UseButton.GetValue()], values, [](auto value) {
 
             // Find Index of selected Element
             int index = std::find(buttonOptions.begin(), buttonOptions.end(), value) - buttonOptions.begin();
 
             // And Save it
-            getNyaConfig().UseButton.SetValue(index); 
+            getNyaConfig().UseButton.SetValue(index);
         });
-        
+
         BSML::Lite::CreateToggle(container->get_transform(), "Index saved images",
             getNyaConfig().IndexSFW.GetValue(), [](bool value) {
                 getNyaConfig().IndexSFW.SetValue(value);
@@ -134,7 +131,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             }
         #endif
 
-        {   
+        {
             auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
             // Buttons for settings
             // TODO: Make it work with floating ui off
@@ -157,19 +154,19 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 }
             });
         }
-        
+
         BSML::Lite::CreateUIButton(container->get_transform(), to_utf16("Reset all positions"), "PracticeButton",
         [this]() {
             EndpointConfigUtils::ResetPositions();
             if (
-                Main::NyaFloatingUI != nullptr && 
+                Main::NyaFloatingUI != nullptr &&
                 Main::NyaFloatingUI->UIScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
         });
 
-        
+
 
         #ifdef NSFW
             BSML::Lite::CreateUIButton(container->get_transform(), to_utf16(getNyaConfig().NSFWUI.GetValue()?"Enable NSFW again":"Enable NSFW"), "PracticeButton",
@@ -179,7 +176,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 });
             });
             if (getNyaConfig().NSFWUI.GetValue()) {
-              
+
                 BSML::Lite::CreateUIButton(container->get_transform(), to_utf16("Disable NSFW"), "PracticeButton",
                 [this]() {
                     BSML::MainThreadScheduler::Schedule([this]{

@@ -9,7 +9,7 @@ namespace Nya {
     }
 
     PanelUI::PanelUI(UnityEngine::Transform* parent, UnityEngine::Sprite* sprite, int index){
-        UnityEngine::GameObject* mainCanvas = QuestUI::BeatSaberUI::CreateCanvas();
+        UnityEngine::GameObject* mainCanvas = BSML::Lite::CreateCanvas();
         mainCanvas->set_active(false);
         this->index = index;
         image = BSML::Lite::CreateCanvas()->AddComponent<UnityEngine::UI::Image*>();

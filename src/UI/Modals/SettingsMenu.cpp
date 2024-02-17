@@ -1,5 +1,8 @@
 #include "UI/Modals/SettingsMenu.hpp"
 #include "GlobalNamespace/LevelCollectionTableView.hpp"
+#include "UnityEngine/UI/ContentSizeFitter.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+
 #include "HMUI/ScrollView.hpp"
 #include "NyaFloatingUI.hpp"
 #include "Utils/Utils.hpp"
@@ -32,7 +35,7 @@ void SettingsMenu::ctor() {
     // Setup canvas
     auto canvas = BSML::Lite::CreateCanvas();
     canvas->get_transform()->SetParent(this->settingsModal->get_transform(), false);
-    auto controlRect = reinterpret_cast<UnityEngine::RectTransform*>(canvas->get_transform());
+    auto controlRect = canvas->get_transform().cast<UnityEngine::RectTransform>();
     controlRect->set_anchoredPosition({0, 0});
 
     controlRect->set_anchorMin(UnityEngine::Vector2(0.0f, 0.0f));
@@ -40,8 +43,8 @@ void SettingsMenu::ctor() {
 
     controlRect->set_sizeDelta({50, 8.5});
     controlRect->set_localScale({1, 1, 1});
-    // canvas->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
-    // canvas->GetComponent<LayoutElement*>()->set_preferredHeight(60.0);
+     canvas->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
+     canvas->GetComponent<LayoutElement*>()->set_preferredHeight(60.0);
 
     // Create tabs control
     ArrayW<StringW> options(2);
@@ -57,9 +60,9 @@ void SettingsMenu::ctor() {
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
 
-    // TMPro::TextMeshProUGUI* title = CreateText(vert->get_transform(), "Settings");
-    // title->GetComponent<TMPro::TMP_Text*>()->set_alignment(TMPro::TextAlignmentOptions::Center);
-    // title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
+//     TMPro::TextMeshProUGUI* title = BSML::Lite::CreateText(vert->get_transform(), "Settings");
+//     title->GetComponent<TMPro::TMP_Text*>()->set_alignment(TMPro::TextAlignmentOptions::Center);
+//     title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
 
     // Get platform helper for scrolling
     auto platformHelper = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::LevelCollectionTableView*>()
@@ -68,247 +71,247 @@ void SettingsMenu::ctor() {
                               ->_platformHelper;
 
     // Nya configuration
-    {
-        // API Selection (nothing to select for now)
-        string API = getNyaConfig().API.GetValue();
-        this->api_switch = BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("API"), "Loading..",
-                                          {"Loading.."}, [this](StringW value) {
-                                              // Change the API in the config
-                                              getNyaConfig().API.SetValue(value);
+//    {
+//        // API Selection (nothing to select for now)
+//        string API = getNyaConfig().API.GetValue();
 
-                                              // Get this source
-                                              auto source = NyaAPI::get_data_source(value);
+//        this->api_switch = BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), "API", "Loading..", {}, [this](StringW value) {
+//                // Change the API in the config
+//                getNyaConfig().API.SetValue(value);
+//
+//                // Get this source
+//                auto source = NyaAPI::get_data_source(value);
+//
+//                this->selectedDataSource = source;
+//                this->selectedDataSourceName = std::string(value);
+//
+//                this->UpdateEndpointLists();
+//            });
 
-                                              this->selectedDataSource = source;
-                                              this->selectedDataSourceName = std::string(value);
-
-                                              this->UpdateEndpointLists();
-                                          });
-
-        // Add scrolling
-        if (platformHelper != nullptr) {
-            this->api_switch->tableView->scrollView->platformHelper = platformHelper;
-        }
-
-        // SFW endpoint switch
-        this->sfw_endpoint =
-            BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"), "Loading..", {"Loading.."},
-                           [this](StringW value) {
-                               // Get current endpoint
-                               string API = this->selectedDataSourceName;
-
-                               // find url
-                               int index = this->sfw_endpoint->selectedIndex;
-                               StringW url = this->sfw_endpoint_urls->get_Item(index);
-
-                               EndpointConfigUtils::updateEndpointValue(API, false, url);
-                           });
-
-        // Add scrolling
-        if (platformHelper != nullptr) {
-            this->sfw_endpoint->_tableView->scrollView->platformHelper = platformHelper;
-        }
-
-        if (getNyaConfig().NSFWUI.GetValue()) {
-            // NSFW endpoint selector
-            this->nsfw_endpoint =
-                BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..",
-                               {"Loading.."}, [this](StringW value) {
-                                   // Get current endpoint
-                                   string API = this->selectedDataSourceName;
-
-                                   // find url
-                                   int index = this->nsfw_endpoint->selectedIndex;
-                                   StringW url = this->nsfw_endpoint_urls->get_Item(index);
-
-                                   // Change the endpoint in the config
-                                   EndpointConfigUtils::updateEndpointValue(API, true, url);
-                               });
-
-            // NSFW toggle
-            bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-            this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
-                                             [](bool isChecked) { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
-            // Add scrolling
-            if (platformHelper != nullptr) {
-                this->nsfw_endpoint->tableView->scrollView->platformHelper = platformHelper;
-            }
-        }
-
-        HorizontalLayoutGroup* horz = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
-        horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
-        horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
-        horz->set_spacing(10);
-        {
-            this->downloadButton =
-                BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton", [this]() {
-                    auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
-                    imageView->SaveImage();
-                    this->downloadButton->set_interactable(false);
-                    this->settingsModal->Hide(true, nullptr);
-                });
-
-            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
-                                                 [this]() { this->settingsModal->Hide(true, nullptr); });
-        }
-        HorizontalLayoutGroup* horz2 = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
-        horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
-        horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
-        horz->set_spacing(10);
-
-        {
-            autoNyaButton = BSML::Lite::CreateToggle(horz2, "AutoNya", getNyaConfig().AutoNya.GetValue(), [this](bool value) {
-                getNyaConfig().AutoNya.SetValue(value);
-                if (value) {
-                    NyaUtils::ImageView* imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
-                    if (imageView) {
-                        imageView->OnEnable();
-                    }
-                }
-            });
-        }
-    }
-
-    {
-        VerticalLayoutGroup* floatingViewLayout = BSML::Lite::CreateVerticalLayoutGroup(floatingView);
-        floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_verticalFit(
-            ContentSizeFitter::FitMode::PreferredSize);
-        floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(
-            ContentSizeFitter::FitMode::PreferredSize);
-        floatingViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
-        {
-            auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(floatingViewLayout->get_transform());
-
-            Button* faceHeadset =
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
-                }
-            });
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
-                }
-            });
-        }
-        BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Default position"), "PracticeButton", [this]() {
-            if (Main::NyaFloatingUI != nullptr) {
-                Main::NyaFloatingUI->SetDefaultPos();
-            }
-        });
-
-        Button* closeButton = BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Close"), "PracticeButton",
-                                             [this]() { this->settingsModal->Hide(true, nullptr); });
-
-        BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
-                     [](bool value) {
-                         getNyaConfig().ShowHandle.SetValue(value);
-                         if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->UIScreen != nullptr) {
-                             Main::NyaFloatingUI->UpdateHandleVisibility();
-                         }
-                     });
-
-        auto slider = CreateSliderSetting(floatingViewLayout->get_transform(), "Floating Screen Scale", 0.1f,
-            getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f,
-            [](float value) {
-                getNyaConfig().FloatingScreenScale.SetValue(value);
-                if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->UpdateScale();
-                }
-            }
-        );
-    }
+//        // Add scrolling
+//        if (platformHelper != nullptr) {
+//            this->api_switch->_tableView->scrollView->_platformHelper = platformHelper;
+//        }
+//
+//        // SFW endpoint switch
+//        this->sfw_endpoint =
+//            BSML::Lite::CreateDropdown<StringW>(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"), "Loading..", {"Loading.."},
+//            [this](StringW value) {
+//                // Get current endpoint
+//                string API = this->selectedDataSourceName;
+//
+//                // find url
+//                int index = this->sfw_endpoint->selectedIndex;
+//                StringW url = this->sfw_endpoint_urls->get_Item(index);
+//
+//                EndpointConfigUtils::updateEndpointValue(API, false, url);
+//            });
+//
+//        // Add scrolling
+//        if (platformHelper != nullptr) {
+//            this->sfw_endpoint->_tableView->scrollView->platformHelper = platformHelper;
+//        }
+//
+//        if (getNyaConfig().NSFWUI.GetValue()) {
+//            // NSFW endpoint selector
+//            this->nsfw_endpoint =
+//                BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("NSFW endpoint"), "Loading..",
+//                               {"Loading.."}, [this](StringW value) {
+//                                   // Get current endpoint
+//                                   string API = this->selectedDataSourceName;
+//
+//                                   // find url
+//                                   int index = this->nsfw_endpoint->selectedIndex;
+//                                   StringW url = this->nsfw_endpoint_urls->get_Item(index);
+//
+//                                   // Change the endpoint in the config
+//                                   EndpointConfigUtils::updateEndpointValue(API, true, url);
+//                               });
+//
+//            // NSFW toggle
+//            bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
+//            this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
+//                                             [](bool isChecked) { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
+//            // Add scrolling
+//            if (platformHelper != nullptr) {
+//                this->nsfw_endpoint->tableView->scrollView->platformHelper = platformHelper;
+//            }
+//        }
+//
+//        HorizontalLayoutGroup* horz = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
+//        horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
+//        horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
+//        horz->set_spacing(10);
+//        {
+//            this->downloadButton =
+//                BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton", [this]() {
+//                    auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+//                    imageView->SaveImage();
+//                    this->downloadButton->set_interactable(false);
+//                    this->settingsModal->Hide(true, nullptr);
+//                });
+//
+//            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
+//                                                 [this]() { this->settingsModal->Hide(true, nullptr); });
+//        }
+//        HorizontalLayoutGroup* horz2 = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
+//        horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
+//        horz->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
+//        horz->set_spacing(10);
+//
+//        {
+//            autoNyaButton = BSML::Lite::CreateToggle(horz2, "AutoNya", getNyaConfig().AutoNya.GetValue(), [this](bool value) {
+//                getNyaConfig().AutoNya.SetValue(value);
+//                if (value) {
+//                    NyaUtils::ImageView* imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+//                    if (imageView) {
+//                        imageView->OnEnable();
+//                    }
+//                }
+//            });
+//        }
+//    }
+//
+//    {
+//        VerticalLayoutGroup* floatingViewLayout = BSML::Lite::CreateVerticalLayoutGroup(floatingView);
+//        floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_verticalFit(
+//            ContentSizeFitter::FitMode::PreferredSize);
+//        floatingViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(
+//            ContentSizeFitter::FitMode::PreferredSize);
+//        floatingViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
+//        {
+//            auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(floatingViewLayout->get_transform());
+//
+//            Button* faceHeadset =
+//            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
+//                if (Main::NyaFloatingUI != nullptr) {
+//                    Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
+//                }
+//            });
+//            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
+//                if (Main::NyaFloatingUI != nullptr) {
+//                    Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
+//                }
+//            });
+//        }
+//        BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Default position"), "PracticeButton", [this]() {
+//            if (Main::NyaFloatingUI != nullptr) {
+//                Main::NyaFloatingUI->SetDefaultPos();
+//            }
+//        });
+//
+//        Button* closeButton = BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Close"), "PracticeButton",
+//                                             [this]() { this->settingsModal->Hide(true, nullptr); });
+//
+//        BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
+//                     [](bool value) {
+//                         getNyaConfig().ShowHandle.SetValue(value);
+//                         if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->UIScreen != nullptr) {
+//                             Main::NyaFloatingUI->UpdateHandleVisibility();
+//                         }
+//                     });
+//
+//        auto slider = CreateSliderSetting(floatingViewLayout->get_transform(), "Floating Screen Scale", 0.1f,
+//            getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f,
+//            [](float value) {
+//                getNyaConfig().FloatingScreenScale.SetValue(value);
+//                if (Main::NyaFloatingUI != nullptr) {
+//                    Main::NyaFloatingUI->UpdateScale();
+//                }
+//            }
+//        );
+//    }
 }
 
 void SettingsMenu::UpdateEndpointLists() {
-    if (this->selectedDataSource == nullptr) {
-        return;
-    }
-
-    // Init lists to store endpoint labels (endpoints and lables are 1:1)
-    if (selectedDataSource->SfwEndpoints.size() == 0) {
-        sfw_endpoint_labels = List<StringW>::New_ctor();
-        sfw_endpoint_urls = List<StringW>::New_ctor();
-    } else {
-        sfw_endpoint_labels = NyaAPI::listEndpointLabels(&selectedDataSource->SfwEndpoints);
-        sfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->SfwEndpoints);
-
-        // Don't add random to local
-        if (selectedDataSource->Mode != DataMode::Local) {
-            sfw_endpoint_labels->Add(to_utf16("random"));
-            sfw_endpoint_urls->Add(to_utf16("random"));
-        }
-    }
-
-    if (selectedDataSource->NsfwEndpoints.size() == 0) {
-        nsfw_endpoint_labels = List<StringW>::New_ctor();
-        nsfw_endpoint_urls = List<StringW>::New_ctor();
-    } else {
-        nsfw_endpoint_labels = NyaAPI::listEndpointLabels(&selectedDataSource->NsfwEndpoints);
-        nsfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->NsfwEndpoints);
-
-        // Don't add random to local
-        if (selectedDataSource->Mode != DataMode::Local) {
-            nsfw_endpoint_labels->Add(to_utf16("random"));
-            nsfw_endpoint_urls->Add(to_utf16("random"));
-        }
-    }
-
-    // Update dropdowns
-    // If we don't have any sources, disable the dropdown
-    {
-        bool empty = sfw_endpoint_labels->get_Count() == 0;
-
-        this->sfw_endpoint->button->set_interactable(!empty);
-        this->sfw_endpoint->SetTexts(sfw_endpoint_labels->i_IReadOnlyList_1_T());
-
-        // Restore selected item
-        if (empty) {
-            this->sfw_endpoint->SelectCellWithIdx(0);
-        } else {
-            // Get the selected endpoint from the config
-            string selected_url =
-                EndpointConfigUtils::getEndpointValue(selectedDataSourceName, false);
-
-            // Find the index of the selected endpoint
-            int index = sfw_endpoint_urls->IndexOf(to_utf16(selected_url));
-
-            if (index >= 0) {
-                this->sfw_endpoint->SelectCellWithIdx(index);
-            }
-        }
-    }
-
-    if (getNyaConfig().NSFWUI.GetValue()) {
-        bool empty = nsfw_endpoint_labels->get_Count() == 0;
-
-        this->nsfw_endpoint->button->set_interactable(!empty);
-        this->nsfw_endpoint->SetTexts(nsfw_endpoint_labels->i_IReadOnlyList_1_T());
-
-        // Restore selected item
-        if (empty) {
-            this->nsfw_endpoint->SelectCellWithIdx(0);
-        } else {
-            // Get the selected endpoint from the config
-            string selected_url = EndpointConfigUtils::getEndpointValue(selectedDataSourceName, true);
-
-            // Find the index of the selected endpoint
-            int index = nsfw_endpoint_urls->IndexOf(to_utf16(selected_url));
-
-            if (index >= 0) {
-                this->nsfw_endpoint->SelectCellWithIdx(index);
-            }
-        }
-
-        // Enable/disable the toggle
-        this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
-    }
+//    if (this->selectedDataSource == nullptr) {
+//        return;
+//    }
+//
+//    // Init lists to store endpoint labels (endpoints and lables are 1:1)
+//    if (selectedDataSource->SfwEndpoints.size() == 0) {
+//        sfw_endpoint_labels = List<StringW>::New_ctor();
+//        sfw_endpoint_urls = List<StringW>::New_ctor();
+//    } else {
+//        sfw_endpoint_labels = NyaAPI::listEndpointLabels(&selectedDataSource->SfwEndpoints);
+//        sfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->SfwEndpoints);
+//
+//        // Don't add random to local
+//        if (selectedDataSource->Mode != DataMode::Local) {
+//            sfw_endpoint_labels->Add(to_utf16("random"));
+//            sfw_endpoint_urls->Add(to_utf16("random"));
+//        }
+//    }
+//
+//    if (selectedDataSource->NsfwEndpoints.size() == 0) {
+//        nsfw_endpoint_labels = List<StringW>::New_ctor();
+//        nsfw_endpoint_urls = List<StringW>::New_ctor();
+//    } else {
+//        nsfw_endpoint_labels = NyaAPI::listEndpointLabels(&selectedDataSource->NsfwEndpoints);
+//        nsfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->NsfwEndpoints);
+//
+//        // Don't add random to local
+//        if (selectedDataSource->Mode != DataMode::Local) {
+//            nsfw_endpoint_labels->Add(to_utf16("random"));
+//            nsfw_endpoint_urls->Add(to_utf16("random"));
+//        }
+//    }
+//
+//    // Update dropdowns
+//    // If we don't have any sources, disable the dropdown
+//    {
+//        bool empty = sfw_endpoint_labels->get_Count() == 0;
+//
+//        this->sfw_endpoint->button->set_interactable(!empty);
+//        this->sfw_endpoint->SetTexts(sfw_endpoint_labels->i_IReadOnlyList_1_T());
+//
+//        // Restore selected item
+//        if (empty) {
+//            this->sfw_endpoint->SelectCellWithIdx(0);
+//        } else {
+//            // Get the selected endpoint from the config
+//            string selected_url =
+//                EndpointConfigUtils::getEndpointValue(selectedDataSourceName, false);
+//
+//            // Find the index of the selected endpoint
+//            int index = sfw_endpoint_urls->IndexOf(to_utf16(selected_url));
+//
+//            if (index >= 0) {
+//                this->sfw_endpoint->SelectCellWithIdx(index);
+//            }
+//        }
+//    }
+//
+//    if (getNyaConfig().NSFWUI.GetValue()) {
+//        bool empty = nsfw_endpoint_labels->get_Count() == 0;
+//
+//        this->nsfw_endpoint->button->set_interactable(!empty);
+//        this->nsfw_endpoint->SetTexts(nsfw_endpoint_labels->i_IReadOnlyList_1_T());
+//
+//        // Restore selected item
+//        if (empty) {
+//            this->nsfw_endpoint->SelectCellWithIdx(0);
+//        } else {
+//            // Get the selected endpoint from the config
+//            string selected_url = EndpointConfigUtils::getEndpointValue(selectedDataSourceName, true);
+//
+//            // Find the index of the selected endpoint
+//            int index = nsfw_endpoint_urls->IndexOf(to_utf16(selected_url));
+//
+//            if (index >= 0) {
+//                this->nsfw_endpoint->SelectCellWithIdx(index);
+//            }
+//        }
+//
+//        // Enable/disable the toggle
+//        this->nsfw_toggle->set_isOn(getNyaConfig().NSFWEnabled.GetValue());
+//    }
 }
 
 bool SettingsMenu::isShown() {
     if (this->settingsModal == nullptr)
         return false;
-    return this->settingsModal->isShown;
+    return this->settingsModal->_isShown;
 }
 
 void SettingsMenu::SwitchTab(int idx) {
@@ -341,21 +344,22 @@ void SettingsMenu::Show() {
 
         auto sources = Nya::Utils::vectorToList(NyaAPI::get_source_list());
 
-        this->api_switch->SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(sources));
-
-        int index = Nya::Utils::findStrIndexInList(sources, API);
-        if (index != -1) {
-            this->api_switch->SelectCellWithIdx(index);
-        }
-
-        this->selectedDataSourceName = API;
-        this->selectedDataSource = source;
-
-        this->UpdateEndpointLists();
-
-        this->SwitchTab(0);
-
-        settingsModal->Show(true, true, nullptr);
+//        this->api_switch->dropdown->SetTexts(sources);
+//        this->api_switch->UpdateChoices()SetTexts(reinterpret_cast<System::Collections::Generic::IReadOnlyList_1<StringW>*>(sources));
+//
+//        int index = Nya::Utils::findStrIndexInList(sources, API);
+//        if (index != -1) {
+//            this->api_switch->SelectCellWithIdx(index);
+//        }
+//
+//        this->selectedDataSourceName = API;
+//        this->selectedDataSource = source;
+//
+//        this->UpdateEndpointLists();
+//
+//        this->SwitchTab(0);
+//
+//        settingsModal->Show(true, true, nullptr);
     });
 }
 

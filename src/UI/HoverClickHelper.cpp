@@ -24,7 +24,7 @@ namespace Nya {
     
     void HoverClickHelper::Awake(){
         isHit = false;
-        hintController = QuestUI::ArrayUtil::First(UnityEngine::Resources::FindObjectsOfTypeAll<HMUI::HoverHintController*>());
+        hintController = UnityEngine::Resources::FindObjectsOfTypeAll<HMUI::HoverHintController*>()->First();
         panelUI = nullptr;
         notClickedModal = true;
         outOfRange = false;
@@ -40,7 +40,7 @@ namespace Nya {
         handleTransform = handle;
         origHandleMat = handle->GetComponent<UnityEngine::MeshRenderer*>()->get_material();
         this->targetPosition = UnityEngine::Vector3::get_zero();
-        this->targetRotation = UnityEngine::Quaternion::_get_identityQuaternion();
+        this->targetRotation = UnityEngine::Quaternion::getStaticF_identityQuaternion();
     }
 
     void HoverClickHelper::Update(){
@@ -63,7 +63,7 @@ namespace Nya {
         if (!vrPointer  || !vrPointer->m_CachedPtr) {
             return;
         }
-        auto vrController = vrPointer->get_vrController();
+        auto vrController = vrPointer->get_lastSelectedVrController();
         if (!vrController  || !vrController->m_CachedPtr) {
             return;
         }
@@ -72,7 +72,7 @@ namespace Nya {
         if(UnityEngine::Physics::Raycast(vrController->get_position(), vrController->get_forward(), hit, 100)){
             // If the needed collider is found and not grabbing handle
             if(static_cast<std::string>(hit.get_collider()->get_name()).substr(0, 12).compare("gridcollider") == 0 && !grabbingHandle){
-                if (isHit && currentCollider && currentCollider.ptr() != hit.get_collider()->get_transform()) {
+                if (isHit && currentCollider && currentCollider->get_transform() != hit.get_collider()->get_transform()) {
                     panelUI->image->GetComponent<UnityEngine::UI::Image *>()->set_color(UnityEngine::Color::get_gray());
                     hintController->_hoverHintPanel->Hide();
                     panelUI = nullptr;
@@ -115,7 +115,7 @@ namespace Nya {
             panelUI->image->set_color(UnityEngine::Color::get_gray());
             // Main::NyaFloatingUI->updateGridNotesInfo(panelUI->index);
             Main::NyaFloatingUI->settingsMenu->Show();
-            hintController->hoverHintPanel->Hide();
+            hintController->_hoverHintPanel->Hide();
             panelUI = nullptr;
             isHit = false;
             modalLocked = true;
@@ -132,8 +132,8 @@ namespace Nya {
         }
 
         // VR conroller is sometimes null after leaving multiplayer?
-        auto vrController = vrPointer->get_vrController();
-        if (!vrController || !vrController->m_CachedPtr.m_value) {
+        auto vrController = vrPointer->get_lastSelectedVrController();
+        if (!vrController || !vrController->m_CachedPtr) {
             DEBUG("VR controller is null, trying to get a new one");
             this->UpdatePointer();
             return;
@@ -158,7 +158,7 @@ namespace Nya {
         if (triggerPressed && grabbingController != nullptr && grabbingController->get_triggerValue() < 0.1f){
             // If we were dragging the handle, release and save
             if (grabbingHandle){
-                auto* screenTransform = handleTransform->get_transform()->get_parent();
+                auto screenTransform = handleTransform->get_transform()->get_parent();
                 // Save coordinates to config
                 Main::NyaFloatingUI->updateCoordinates(screenTransform);
 
@@ -187,7 +187,7 @@ namespace Nya {
         outOfRange = false;
     }
 
-    HoverClickHelper* addHoverClickHelper(VRUIControls::VRPointer* pointer, UnityEngine::GameObject* handle, QuestUI::FloatingScreen* screen){
+    HoverClickHelper* addHoverClickHelper(VRUIControls::VRPointer* pointer, UnityEngine::GameObject* handle, BSML::FloatingScreen* screen){
         auto* helper = screen->get_gameObject()->AddComponent<HoverClickHelper*>();
         helper->Init(pointer, handle);
         return helper;
@@ -208,11 +208,11 @@ namespace Nya {
     }
 
     void HoverClickHelper::LookAtCamera(){
-        auto mainCamera = UnityEngine::Camera::get_main();
-        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
-        auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
-        this->targetRotation = newRotation;
-        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
+//        auto mainCamera = UnityEngine::Camera::get_main();
+//        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+//        auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
+//        this->targetRotation = newRotation;
+//        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
     }
 
     void HoverClickHelper::SetUpRight (){
