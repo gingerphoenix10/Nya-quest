@@ -109,9 +109,9 @@ namespace Nya::Utils {
      * @param string 
      * @return int -1 if not found anything or index of the element if the item is found
      */
-    int findStrIndexInList(List<StringW>* values, StringW string ) {
-        for (int i = 0; i < values->_size; i++){
-            auto value = values->_items[i];
+    int findStrIndexInList(ListW<StringW> values, StringW string ) {
+        for (int i = 0; i < values->get_Count(); i++){
+            auto value = values->get_Item(i);
             if (value == string) {
                 return i;
             }

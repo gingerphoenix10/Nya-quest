@@ -11,7 +11,7 @@ namespace Nya::Utils {
     std::string ToLowercase(std::string str);
     ListW<StringW> vectorToList(std::vector<StringW> values);
     std::vector<StringW> listWToVector(List<StringW>* values);
-    int findStrIndexInList(List<StringW>* values, StringW string );
+    int findStrIndexInList(ListW<StringW> values, StringW string );
     // Kill me
     int findStrIndexInListC(std::list<std::string> values, StringW string );
     int random(int min, int max);

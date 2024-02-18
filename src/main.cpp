@@ -330,7 +330,7 @@ extern "C" void load() {
     Nya::ApplyIndexingRules();
 
      BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
-//     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya", true);
+     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
 
     custom_types::Register::AutoRegister();
 

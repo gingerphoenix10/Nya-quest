@@ -208,11 +208,15 @@ namespace Nya {
     }
 
     void HoverClickHelper::LookAtCamera(){
-//        auto mainCamera = UnityEngine::Camera::get_main();
-//        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
-//        auto newRotation = UnityEngine::Quaternion::LookRotation(screenTransform->get_position() - mainCamera->get_transform()->get_position());
-//        this->targetRotation = newRotation;
-//        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
+        auto mainCamera = UnityEngine::Camera::get_main();
+        auto screenTransform = this->handleTransform->get_transform()->get_parent()->get_transform();
+        auto newRotation = UnityEngine::Quaternion::LookRotation(
+            Vector3::op_Subtraction(
+                screenTransform->get_position(),
+                mainCamera->get_transform()->get_position())
+            );
+        this->targetRotation = newRotation;
+        Main::NyaFloatingUI->updateCoordinates(screenTransform->get_position(), this->targetRotation.get_eulerAngles());
     }
 
     void HoverClickHelper::SetUpRight (){
