@@ -1,6 +1,5 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
-
 #include "UI/ViewControllers/SettingsViewController.hpp"
 #include "bsml/shared/BSML.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
@@ -10,10 +9,7 @@
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/NoteCutInfo.hpp"
-#include "GlobalNamespace/NoteData.hpp"
-#include "GlobalNamespace/ISaberSwingRatingCounter.hpp"
 #include "GlobalNamespace/ScoreModel.hpp"
-#include "GlobalNamespace/PlayerSpecificSettings.hpp"
 #include "GlobalNamespace/NoteCutDirection.hpp"
 #include "GlobalNamespace/CutScoreBuffer.hpp"
 #include "GlobalNamespace/ColorScheme.hpp"
@@ -21,7 +17,6 @@
 #include "GlobalNamespace/MultiplayerResultsViewController.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/StandardLevelDetailView.hpp"
-#include "GlobalNamespace/LevelCompletionResults.hpp"
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
@@ -263,7 +258,7 @@ Paper::ConstLoggerContext<4UL> Nya::getLogger() {
 }
 
 // Called at the early stages of game loading
-extern "C" void setup(CModInfo& info) {
+extern "C" __attribute__((visibility("default"))) void setup(CModInfo& info) {
     info.id = MOD_ID;
     info.version = VERSION;
     info.version_long = GIT_COMMIT;
@@ -280,6 +275,7 @@ void InitConfigOnStart(){
     }
 }
 
+// Handling buttons
 MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, void, GlobalNamespace::OculusVRHelper* self){
     FixedUpdateHook(self);
 
@@ -314,8 +310,12 @@ MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, 
 }
 
 // Called later on in the game loading - a good time to install function hooks
-extern "C" void load() {
+extern "C" __attribute__((visibility("default"))) void late_load() {
     il2cpp_functions::Init();
+    BSML::Init();
+
+    // Should always be before any custom types can possibly be used
+    custom_types::Register::AutoRegister();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
@@ -329,12 +329,10 @@ extern "C" void load() {
     Nya::CleanTempFolder();
     Nya::ApplyIndexingRules();
 
-     BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
-     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
+    BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
+    BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
 
-    custom_types::Register::AutoRegister();
-
-    Nya::getLoggerOld().info("Installing hooks...");
+    INFO("Installing hooks...");
     // Install our hooks
     INSTALL_HOOK(Nya::getLoggerOld(), Pause);
     INSTALL_HOOK(Nya::getLoggerOld(), FixedUpdateHook);
@@ -346,5 +344,5 @@ extern "C" void load() {
     INSTALL_HOOK(Nya::getLoggerOld(), SceneManager_Internal_ActiveSceneChanged);
     INSTALL_HOOK(Nya::getLoggerOld(), MainFlowCoordinator_DidActivate);
 
-    Nya::getLoggerOld().info("Installed all hooks!");
+    INFO("Installed all hooks!");
 }

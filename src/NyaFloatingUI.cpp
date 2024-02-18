@@ -45,37 +45,45 @@ namespace Nya {
         }
 
         auto FloatingScreen =  BSML::Lite::CreateFloatingScreen(
-            {40.0f, 32.0f},
+            {80.0f, 80.0f},
             {0.0f, 1.0f, 1.0f},
             {0, 0, 0},
             0.0f,
-            true,
-            false);
+            false,
+            true);
         UIScreen = FloatingScreen->get_gameObject();
         UIScreen->set_active(false);
         UIScreen->GetComponent<UnityEngine::Canvas*>()->set_sortingOrder(31);
+
         UnityEngine::GameObject::DontDestroyOnLoad(UIScreen);
 
         // Handle creation
         screenhandle = UIScreen->GetComponent<BSML::FloatingScreen*>()->handle;
-//        UIScreen->GetComponent<BSML::FloatingScreen*>()->bgGo->GetComponentInChildren<BSML::Backgroundable*>()->ApplyBackgroundWithAlpha("round-rect-panel", 0.0f);
+//        auto backgroundable = FloatingScreen->GetComponentInChildren<BSML::Backgroundable*>();
+//        if (backgroundable) {
+//            backgroundable->ApplyBackground("round-rect-panel");
+//            backgroundable->ApplyAlpha(0.5f);
+//        } else {
+//                INFO("Backgroundable not found");
+//        }
         screenhandle->get_transform()->set_localPosition(UnityEngine::Vector3(0.0f, -23.0f, 0.0f));
         screenhandle->get_transform()->set_localScale(UnityEngine::Vector3(5.3f, 3.3f, 5.3f));
 
-
-
-        auto* vert = BSML::Lite::CreateVerticalLayoutGroup(UIScreen->get_transform());
+        auto* vert = BSML::Lite::CreateVerticalLayoutGroup(FloatingScreen->get_transform());
 
         vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
 
         NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         // Set blank sprite to avoid white screens
-        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
+//        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
+        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::Chocola_Angry_png));
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
+
+        DEBUG("Adding image view to the game object");
         imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
-        ele->set_preferredHeight(50);
-        ele->set_preferredWidth(50);
+        ele->set_preferredHeight(70);
+        ele->set_preferredWidth(70);
 
         auto horz = BSML::Lite::CreateHorizontalLayoutGroup(vert->get_transform());
         horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
@@ -88,6 +96,8 @@ namespace Nya {
         [this]() {
             this->imageView->GetImage(nullptr);
         });
+
+
 
         this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
 
@@ -104,14 +114,24 @@ namespace Nya {
         auto* screenthingidk = FloatingScreen->get_gameObject()->AddComponent<HMUI::Screen*>();
         auto* normalpointer = Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>().get(0);
         hoverClickHelper = Nya::addHoverClickHelper(normalpointer, screenhandle, FloatingScreen);
-
+        DEBUG("HoverClickHelper created");
         this->isInitialized = true;
 
+        DEBUG("1");
         this->UpdateScale();
+        DEBUG("1");
         this->UpdateHandleVisibility();
+        DEBUG("1");
 
         // Sub to events
-        this->imageView->imageLoadingChange += {&NyaFloatingUI::OnIsLoadingChange, this};
+        if (this->imageView && this->imageView->m_CachedPtr) {
+            this->imageView->imageLoadingChange += {&NyaFloatingUI::OnIsLoadingChange, this};
+        } else {
+            INFO("ImageView not found");
+        }
+
+
+        DEBUG("1");
     }
     
     void NyaFloatingUI::SetDefaultPos () {
@@ -194,7 +214,9 @@ namespace Nya {
         // If screen does not exist, initialize the first time
         if (!this->UIScreen || !this->UIScreen->m_CachedPtr) {
             this->initScreen();
+            DEBUG("Initialized screen");
             // If the screen is created, get the first image
+            DEBUG("Getting first image");
             this->imageView->GetImage(nullptr);
         }
 

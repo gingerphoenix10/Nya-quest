@@ -207,11 +207,14 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
 }
 
 void Nya::UI::Modals::NSFWConsent::ctor() {
+}
+
+void Nya::UI::Modals::NSFWConsent::Awake() {
     {
        InitModalContents();
     }
 
-    this->modal = BSML::Lite::CreateModal(get_transform(), {95, 70}, nullptr);
+    this->modal = BSML::Lite::CreateModal(get_transform(),  {95, 70}, nullptr);
 
 
     // Root component
@@ -302,7 +305,6 @@ void Nya::UI::Modals::NSFWConsent::ctor() {
             submitButton->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(10);
         }
     }
-
     {
         // Create nsfw layout lel
         hornyPastryPufferLayout = BSML::Lite::CreateHorizontalLayoutGroup(rootVertical->get_transform());
@@ -316,7 +318,6 @@ void Nya::UI::Modals::NSFWConsent::ctor() {
         hornyImageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Vanilla_Horny_Pastry_Puffer_png));
         hornyPastryPufferLayout->get_gameObject()->set_active(false);
     }
-    
 }
 
 void Nya::UI::Modals::NSFWConsent::Show() {

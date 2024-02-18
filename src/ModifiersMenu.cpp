@@ -26,61 +26,63 @@ DEFINE_TYPE(Nya, ModifiersMenu);
 namespace Nya {
     // Disable
     void ModifiersMenu::OnDisable() {
+
     }
 
     // Enable (runs when the component appears)
     void ModifiersMenu::OnEnable() {
-        if (!this->initialized) {
-            // Get image when the component appears the first time
-            this->imageView->GetImage(nullptr);
-            this->initialized = true;
-        }
+
     }
 
     void ModifiersMenu::ctor() {
         this->initialized = false;
-        DEBUG("Creator runs");
-
-        auto vert = BSML::Lite::CreateVerticalLayoutGroup(get_transform());
-        vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
-
-        NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
-        NYA->set_preserveAspect(true);
-        // Set blank sprite to avoid white screens
-        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
-        auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
-        DEBUG("Adds component");
-        this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
-        ele->set_preferredHeight(50);
-        ele->set_preferredWidth(50);
-
-        auto horz = BSML::Lite::CreateHorizontalLayoutGroup(vert->get_transform());
-        horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
-        horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
-        horz->set_spacing(10);
-
-        this->nyaButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
-            [this]() {
-                this->imageView->GetImage(nullptr);
-            });
-
-        this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
-        // Settings button
-        this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
-        [this]() {
-            this->settingsMenu->Show();
-        });
-
-        
     }
 
     void ModifiersMenu::DidActivate(bool firstActivation)
     {
+
         if(firstActivation)
         {
+            DEBUG("Creator runs");
+
+            auto vert = BSML::Lite::CreateVerticalLayoutGroup(get_transform());
+            vert->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+
+            NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
+            NYA->set_preserveAspect(true);
+            // Set blank sprite to avoid white screens
+            NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
+            auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
+            DEBUG("Adds component");
+            this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
+            ele->set_preferredHeight(50);
+            ele->set_preferredWidth(50);
+
+            auto horz = BSML::Lite::CreateHorizontalLayoutGroup(vert->get_transform());
+            horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_verticalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            horz->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
+            horz->set_spacing(10);
+
+            this->nyaButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Nya", "PlayButton",
+                                                         [this]() {
+                                                             this->imageView->GetImage(nullptr);
+                                                         });
+
+            this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
+            // Settings button
+            this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+                                                              [this]() {
+                                                                  this->settingsMenu->Show();
+                                                              });
+
             // Sub to events of the image view
             this->imageView->imageLoadingChange += {&ModifiersMenu::OnIsLoadingChange, this};
+
+            // Get image when the component appears the first time
+            this->imageView->GetImage(nullptr);
+            this->initialized = true;
         }
+
     }
 
     void ModifiersMenu::OnIsLoadingChange (bool isLoading) {

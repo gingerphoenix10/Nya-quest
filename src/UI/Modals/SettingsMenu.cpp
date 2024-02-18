@@ -20,8 +20,12 @@ using namespace std;
 namespace Nya {
 // Constructor
 void SettingsMenu::ctor() {
+}
+
+
+void SettingsMenu::Awake() {
     // Init modal
-    this->settingsModal = BSML::Lite::CreateModal(get_transform(), {65, 60}, nullptr);
+    this->settingsModal = BSML::Lite::CreateModal(get_transform(), { 0, 0 } ,{65, 60}, nullptr);
     this->settingsModal->get_gameObject()->set_name(SettingsMenuWrapper);
 
     auto sourcesView = UnityEngine::GameObject::New_ctor()->AddComponent<UnityEngine::RectTransform*>();
@@ -43,8 +47,15 @@ void SettingsMenu::ctor() {
 
     controlRect->set_sizeDelta({50, 8.5});
     controlRect->set_localScale({1, 1, 1});
-     canvas->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
-     canvas->GetComponent<LayoutElement*>()->set_preferredHeight(60.0);
+
+    auto canvasLayoutElement = canvas->GetComponent<LayoutElement*>();
+    if (canvasLayoutElement) {
+        canvasLayoutElement = canvas->AddComponent<LayoutElement*>();
+        canvasLayoutElement->set_preferredWidth(60.0);
+        canvasLayoutElement->set_preferredHeight(60.0);
+    } else {
+        ERROR("Canvas layout element is null");
+    }
 
     // Create tabs control
     ArrayW<StringW> options(2);
@@ -60,10 +71,6 @@ void SettingsMenu::ctor() {
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
 
-//     TMPro::TextMeshProUGUI* title = BSML::Lite::CreateText(vert->get_transform(), "Settings");
-//     title->GetComponent<TMPro::TMP_Text*>()->set_alignment(TMPro::TextAlignmentOptions::Center);
-//     title->GetComponent<TMPro::TMP_Text*>()->set_fontSize(7.0);
-
     // Get platform helper for scrolling
     auto platformHelper = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::LevelCollectionTableView*>()
                               ->First()
@@ -72,7 +79,6 @@ void SettingsMenu::ctor() {
 
     std::vector<std::string_view> loadingOptionStrings = {"Loading.."};
     std::span<std::string_view> loadingOptions(loadingOptionStrings);
-
     // Nya configuration
     {
 
@@ -80,9 +86,9 @@ void SettingsMenu::ctor() {
         string API = getNyaConfig().API.GetValue();
 
         this->api_switch = BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), "API", "Loading..", loadingOptions, [this](StringW value) {
-                // Change the API in the config
-                getNyaConfig().API.SetValue(value);
 
+            // Change the API in the config
+                getNyaConfig().API.SetValue(value);
                 // Get this source
                 auto source = NyaAPI::get_data_source(value);
 
@@ -97,7 +103,7 @@ void SettingsMenu::ctor() {
 //            this->api_switch->_tableView->scrollView->_platformHelper = platformHelper;
 //        }
 
-
+        DEBUG("1");
 
         // SFW endpoint switch
         this->sfw_endpoint =
@@ -105,18 +111,11 @@ void SettingsMenu::ctor() {
             [this](StringW value) {
                 // Get current endpoint
                 string API = this->selectedDataSourceName;
-
                 // find url
                 int index = this->sfw_endpoint->index;
                 StringW url = this->sfw_endpoint_urls->get_Item(index);
-
                 EndpointConfigUtils::updateEndpointValue(API, false, url);
             });
-
-        // Add scrolling
-//        if (platformHelper != nullptr) {
-//            this->sfw_endpoint->_tableView->scrollView->platformHelper = platformHelper;
-//        }
 
         if (getNyaConfig().NSFWUI.GetValue()) {
             // NSFW endpoint selector
@@ -138,10 +137,6 @@ void SettingsMenu::ctor() {
             bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
             this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
                                              [](bool isChecked) { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
-            // Add scrolling
-//            if (platformHelper != nullptr) {
-//                this->nsfw_endpoint->tableView->scrollView->platformHelper = platformHelper;
-//            }
         }
 
         HorizontalLayoutGroup* horz = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
@@ -269,11 +264,13 @@ void SettingsMenu::UpdateEndpointLists() {
         bool empty = sfw_endpoint_labels->_size == 0;
 
         this->sfw_endpoint->set_interactable(!empty);
-        this->sfw_endpoint->dropdown->SetTexts(sfw_endpoint_labels->i___System__Collections__Generic__IReadOnlyList_1_T_());
+        this->sfw_endpoint->values = sfw_endpoint_labels->i___System__Collections__Generic__IReadOnlyList_1_T_();
+        this->sfw_endpoint->UpdateChoices();
 
         // Restore selected item
         if (empty) {
-            this->sfw_endpoint->dropdown->SelectCellWithIdx(0);
+            this->sfw_endpoint->index = 0;
+            this->sfw_endpoint->UpdateState();
         } else {
             // Get the selected endpoint from the config
             string selected_url =
@@ -286,7 +283,8 @@ void SettingsMenu::UpdateEndpointLists() {
             if (index.has_value()) {
                 auto idx = index.value();
                 if (idx >= 0) {
-                    this->sfw_endpoint->dropdown->SelectCellWithIdx(idx);
+                    this->sfw_endpoint->index = idx;
+                    this->sfw_endpoint->UpdateState();
                 }
             }
         }
@@ -296,11 +294,13 @@ void SettingsMenu::UpdateEndpointLists() {
         bool empty = nsfw_endpoint_labels.size() == 0;
 
         this->nsfw_endpoint->set_interactable(!empty);
-        this->nsfw_endpoint->dropdown->SetTexts(nsfw_endpoint_labels->i___System__Collections__Generic__IReadOnlyList_1_T_());
+        this->nsfw_endpoint->values = nsfw_endpoint_labels->i___System__Collections__Generic__IReadOnlyList_1_T_();
+        this->nsfw_endpoint->UpdateChoices();
 
         // Restore selected item
         if (empty) {
-            this->nsfw_endpoint->dropdown->SelectCellWithIdx(0);
+            this->nsfw_endpoint->index = 0;
+            this->nsfw_endpoint->UpdateState();
         } else {
             // Get the selected endpoint from the config
             string selected_url = EndpointConfigUtils::getEndpointValue(selectedDataSourceName, true);
@@ -311,7 +311,8 @@ void SettingsMenu::UpdateEndpointLists() {
             if (index.has_value()) {
                 auto idx = index.value();
                 if (idx >= 0) {
-                    this->nsfw_endpoint->dropdown->SelectCellWithIdx(idx);
+                    this->nsfw_endpoint->index = idx;
+                    this->nsfw_endpoint->UpdateState();
                 }
             }
         }
@@ -357,12 +358,12 @@ void SettingsMenu::Show() {
 
         auto sources = Nya::Utils::vectorToList(NyaAPI::get_source_list());
 
-        this->api_switch->dropdown->SetTexts(sources->i___System__Collections__Generic__IReadOnlyList_1_T_());
-
-        int index = Nya::Utils::findStrIndexInList(sources, API);
-        if (index != -1) {
-            this->api_switch->dropdown->SelectCellWithIdx(index);
-        }
+        // Set values
+        this->api_switch->values = sources->i___System__Collections__Generic__IReadOnlyList_1_T_();
+        // Refresh choices
+        this->api_switch->UpdateChoices();
+        // Select choice with id
+        this->api_switch->set_Value(StringW(API)->Clone());
 
         this->selectedDataSourceName = API;
         this->selectedDataSource = source;

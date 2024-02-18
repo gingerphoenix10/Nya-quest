@@ -1,16 +1,13 @@
 #include "Utils/Utils.hpp"
 #include <random>
-#include "bsml/shared/Helpers/utilities.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 #include "System/StringComparison.hpp"
 #include "System/Uri.hpp"
 #include <fstream>
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "System/Uri.hpp"
-#include "System/StringComparison.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 #include "UnityEngine/Networking/DownloadHandler.hpp"
-#include "UnityEngine/Networking/UnityWebRequestAsyncOperation.hpp"
+
 
 #include "custom-types/shared/coroutine.hpp"
 using namespace UnityEngine;
@@ -231,7 +228,7 @@ namespace Nya::Utils {
         
         auto error = www->GetError();
         bool failed = error != UnityEngine::Networking::UnityWebRequest::UnityWebRequestError::OK;
-        if (failed) {
+        if (!failed) {
             DEBUG("Got data, callback");
             // Saving files 
             std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);
@@ -260,10 +257,12 @@ namespace Nya::Utils {
             ERROR("Can't get data async without a callback to use it with");
             return;
         }
+
         // TODO: Implement a global coro starter for Nya
-        // this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
-        //     DownloadFileCoroutine(uri, path, onFinished)
-        // ));
+         BSML::SharedCoroutineStarter::StartCoroutine(
+            custom_types::Helpers::CoroutineHelper::New(
+             DownloadFileCoroutine(uri, path, onFinished)
+            ));
     }
 
     

@@ -24,6 +24,7 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
         void Hide();
 
         DECLARE_CTOR(ctor);
+        DECLARE_INSTANCE_METHOD(void, Awake);
 
         // If the menu is floating
         bool isFloating = false;

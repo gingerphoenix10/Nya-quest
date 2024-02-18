@@ -25,8 +25,10 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# stop symbol leaking
+add_link_options(-Wl,--exclude-libs,ALL)
 # compile options used
-add_compile_options(-frtti -fexceptions)
+add_compile_options(-frtti -fexceptions  -fvisibility=hidden)
 add_compile_options(-O3)
 # NSFW toggle to remove nsfw entirely
 add_compile_options(-DNSFW)

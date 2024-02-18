@@ -48,7 +48,7 @@ DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour,
         custom_types::Helpers::Coroutine FadeoutModal(FadeOutContent content);
 
         DECLARE_CTOR(ctor);
-
+        DECLARE_INSTANCE_METHOD(void, Awake);
         DECLARE_INSTANCE_METHOD(void, Show );
         DECLARE_INSTANCE_METHOD(bool, isShown );
 

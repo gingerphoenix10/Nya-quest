@@ -51,10 +51,17 @@ void NyaUtils::ImageView::ctor()
     // Temp File name
     // WARNING: Sometimes this temp name does not make sense, so I validate it
     this->tempName = "";
-    imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
     this->autoNyaRunning = false;
     this->isLoading = false;
+    // Create callback
     this->imageLoadingChange = UnorderedEventCallback<bool>();
+}
+
+// Awake
+void NyaUtils::ImageView::Awake()
+{
+    // Get the image view
+    imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
 }
 
 bool NyaUtils::ImageView::HasImageToSave() {

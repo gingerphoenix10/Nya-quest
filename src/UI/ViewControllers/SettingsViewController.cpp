@@ -20,8 +20,8 @@ DEFINE_TYPE(Nya::UI::ViewControllers, SettingsViewController);
 using namespace BSML;
 
 void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+    std::span<std::string_view> buttonOptionsValues(buttonOptions);
     if (firstActivation) {
-
         this->nsfwModal = get_gameObject()->AddComponent<Nya::UI::Modals::NSFWConsent*>();
 
         auto *container = BSML::Lite::CreateScrollableSettingsContainer(get_transform());
@@ -92,9 +92,9 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
 
 
 
-        std::span<std::string_view> values(buttonOptions);
+
         // Create actual Dropdown
-        BSML::Lite::CreateDropdown(container->get_transform(), "Nya on controller button", values[getNyaConfig().UseButton.GetValue()], values, [](auto value) {
+        BSML::Lite::CreateDropdown(container->get_transform(), "Nya on controller button", buttonOptionsValues[getNyaConfig().UseButton.GetValue()], buttonOptionsValues, [](auto value) {
 
             // Find Index of selected Element
             int index = std::find(buttonOptions.begin(), buttonOptions.end(), value) - buttonOptions.begin();
