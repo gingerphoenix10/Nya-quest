@@ -159,12 +159,20 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
         int randomIndex = Nya::Utils::random(0, fileList.size()-1);
 
         auto path = fileList[randomIndex];
-        BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
+        BSML::Utilities::SetImage(this->imageView,  "file://" + path, false, BSML::Utilities::ScaleOptions(), false, [finished, this]() {
             // Set is loading status
             this->isLoading = false;
             if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
 
             if (finished != nullptr) finished(true);
+        }, [finished, this](BSML::Utilities::ImageLoadError error) {
+            this->SetErrorImage();
+
+            // Set is loading status
+            this->isLoading = false;
+            if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
+
+            if (finished != nullptr) finished(false);
         });
       }
 
@@ -260,13 +268,21 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
                     this->tempName = fileFullName;
                     this->isNSFW = NSFWEnabled;
 
-                    BSML::Utilities::SetImage(this->imageView, "file://" + path,  true, BSML::Utilities::ScaleOptions(),[finished, this]() {
+                    BSML::Utilities::SetImage(this->imageView,  "file://" + path, false, BSML::Utilities::ScaleOptions(), false, [finished, this]() {
                         // Set is loading status
                         this->isLoading = false;
                         if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
 
                         if (finished != nullptr) finished(true);
-                    });
+                    }, [finished, this](BSML::Utilities::ImageLoadError error) {
+                      this->SetErrorImage();
+
+                      // Set is loading status
+                      this->isLoading = false;
+                      if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(false);
+
+                      if (finished != nullptr) finished(false);
+                  });
                 }
                 
             });

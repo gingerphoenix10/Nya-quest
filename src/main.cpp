@@ -83,8 +83,8 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 {
     DEBUG("MenuTransitionsHelper_RestartGame");
     // Destroy the floating UI on soft restart
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
-        GameObject::DestroyImmediate(Main::NyaFloatingUI->UIScreen->get_gameObject());
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI){
+        GameObject::DestroyImmediate(Main::NyaFloatingUI->floatingScreen->get_gameObject());
 
         Nya::NyaFloatingUI::delete_instance();
         Main::NyaFloatingUI = nullptr;
@@ -323,11 +323,16 @@ extern "C" __attribute__((visibility("default"))) void late_load() {
     // Do config validation and modifications on start
     InitConfigOnStart();
 
-    // Make local folders if they do not exist
-    makeFolder();
-    // Sometimes when crashing, the temp folder is not deleted, so we do it here on start
-    Nya::CleanTempFolder();
-    Nya::ApplyIndexingRules();
+    try {
+        // Make local folders if they do not exist
+        makeFolder();
+        // Sometimes when crashing, the temp folder is not deleted, so we do it here on start
+        Nya::CleanTempFolder();
+        Nya::ApplyIndexingRules();
+    } catch (std::exception& e) {
+        ERROR("Error making folders and applying indexing rules: %s", e.what());
+    }
+    
 
     BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");

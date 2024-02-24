@@ -54,7 +54,7 @@ void SettingsMenu::Awake() {
         canvasLayoutElement->set_preferredWidth(60.0);
         canvasLayoutElement->set_preferredHeight(60.0);
     } else {
-        ERROR("Canvas layout element is null");
+        INFO("Canvas layout element is null, adding..");
     }
 
     // Create tabs control
@@ -70,12 +70,6 @@ void SettingsMenu::Awake() {
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
-
-    // Get platform helper for scrolling
-    auto platformHelper = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::LevelCollectionTableView*>()
-                              ->First()
-                              ->GetComponentInChildren<HMUI::ScrollView*>()
-                              ->_platformHelper;
 
     std::vector<std::string_view> loadingOptionStrings = {"Loading.."};
     std::span<std::string_view> loadingOptions(loadingOptionStrings);
@@ -97,13 +91,6 @@ void SettingsMenu::Awake() {
 
                 this->UpdateEndpointLists();
             });
-
-        // Add scrolling (what if it was fixed??)
-//        if (platformHelper != nullptr) {
-//            this->api_switch->_tableView->scrollView->_platformHelper = platformHelper;
-//        }
-
-        DEBUG("1");
 
         // SFW endpoint switch
         this->sfw_endpoint =
@@ -186,12 +173,12 @@ void SettingsMenu::Awake() {
             Button* faceHeadset =
             BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
+                    Main::NyaFloatingUI->LookAtCamera();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
+                    Main::NyaFloatingUI->SetUpRight();
                 }
             });
         }
@@ -207,7 +194,7 @@ void SettingsMenu::Awake() {
         BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
                      [](bool value) {
                          getNyaConfig().ShowHandle.SetValue(value);
-                         if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->UIScreen != nullptr) {
+                         if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->floatingScreen != nullptr) {
                              Main::NyaFloatingUI->UpdateHandleVisibility();
                          }
                      });

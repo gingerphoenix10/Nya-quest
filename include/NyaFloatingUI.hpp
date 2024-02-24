@@ -1,7 +1,6 @@
 // This code is mostly taken from https://github.com/Royston1999/SliceDetails-Quest
 #pragma once
 
-#include "UI/HoverClickHelper.hpp"
 #include <cmath>
 #define _USE_MATH_DEFINES
 #include "HMUI/ModalView.hpp"
@@ -16,6 +15,7 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UI/Modals/SettingsMenu.hpp"
 #include "ImageView.hpp"
+#include "bsml/shared/BSML/FloatingScreen/FloatingScreen.hpp"
 
 
 using namespace UnityEngine::UI;
@@ -34,6 +34,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onUnPause();
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
+            void updateCoordinates(BSML::FloatingScreen* self, const BSML::FloatingScreenHandleEventArgs& args);
             void updateCoordinates(UnityEngine::Transform* transform);
             void updateCoordinates(UnityEngine::Vector3 position, UnityEngine::Vector3 eulerRotation);
             void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
@@ -45,19 +46,17 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_METHOD(void, SetDefaultPos);
             DECLARE_INSTANCE_METHOD(void, ScaleFloatingScreen, float scale);
             DECLARE_INSTANCE_METHOD(void, UpdateScale);
+            DECLARE_INSTANCE_METHOD(void, LookAtCamera);
+            DECLARE_INSTANCE_METHOD(void, SetUpRight);
 
             DECLARE_INSTANCE_METHOD(void, UpdateHandleVisibility);
 
             DECLARE_INSTANCE_METHOD(void, OnIsLoadingChange, bool isLoading); 
             
             DECLARE_CTOR(ctor);
-            // DECLARE_DTOR(dtor);
-
-            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, screenhandle);
-            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, UIScreen);
+            DECLARE_INSTANCE_FIELD(BSML::FloatingScreen*, floatingScreen);
+            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, floatingScreenGO);
             DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
-            
-            DECLARE_INSTANCE_FIELD(Nya::HoverClickHelper*, hoverClickHelper);
 
             // NYA
             DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);

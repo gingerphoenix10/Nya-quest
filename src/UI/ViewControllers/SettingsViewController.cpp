@@ -31,7 +31,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             getNyaConfig().inPause.SetValue(value);
             if (
                 Main::NyaFloatingUI != nullptr && 
-                Main::NyaFloatingUI->UIScreen != nullptr
+                Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
@@ -42,7 +42,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 getNyaConfig().inMenu.SetValue(value);
                 if (
                     Main::NyaFloatingUI != nullptr && 
-                    Main::NyaFloatingUI->UIScreen != nullptr
+                    Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
                 }
@@ -54,7 +54,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 getNyaConfig().ShowHandle.SetValue(value);
                 if (
                     Main::NyaFloatingUI != nullptr && 
-                    Main::NyaFloatingUI->UIScreen != nullptr
+                    Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->UpdateHandleVisibility();
                 }
@@ -138,13 +138,13 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             UnityEngine::UI::Button* faceHeadset = BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
+                    Main::NyaFloatingUI->LookAtCamera();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
+                    Main::NyaFloatingUI->SetUpRight();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Default position"), "PracticeButton",
@@ -160,7 +160,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             EndpointConfigUtils::ResetPositions();
             if (
                 Main::NyaFloatingUI != nullptr &&
-                Main::NyaFloatingUI->UIScreen != nullptr
+                Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
