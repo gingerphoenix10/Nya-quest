@@ -181,18 +181,6 @@ inline std::map<std::string, SourceData> endpoint_data = {
             "url"
         }
     },
-    {"Catboys",
-        {
-            "https://api.catboys.com/",
-            DataMode::Json,
-            {
-                {"catboys", "img"},
-                {"baka", "baka"},
-            },
-            {},
-            "url"
-        }
-    },
     {"Bocchi",
         {
             "https://boccher.pixelboom.dev/api/",
