@@ -5,6 +5,7 @@
 #include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "logging.hpp"
 
 std::vector<std::string_view> buttonOptions = {
     "None",
@@ -135,19 +136,19 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
             // Buttons for settings
             // TODO: Make it work with floating ui off
-            UnityEngine::UI::Button* faceHeadset = BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton",
+            UnityEngine::UI::Button* faceHeadset = BSML::Lite::CreateUIButton(hor->get_transform(), "Face headset", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->LookAtCamera();
                 }
             });
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton",
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Set upright", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->SetUpRight();
                 }
             });
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Default position"), "PracticeButton",
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Default position", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->SetDefaultPos();
@@ -155,7 +156,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             });
         }
 
-        BSML::Lite::CreateUIButton(container->get_transform(), to_utf16("Reset all positions"), "PracticeButton",
+        BSML::Lite::CreateUIButton(container->get_transform(), "Reset all positions", "PracticeButton",
         [this]() {
             EndpointConfigUtils::ResetPositions();
             if (
@@ -169,7 +170,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
 
 
         #ifdef NSFW
-            BSML::Lite::CreateUIButton(container->get_transform(), to_utf16(getNyaConfig().NSFWUI.GetValue()?"Enable NSFW again":"Enable NSFW"), "PracticeButton",
+            BSML::Lite::CreateUIButton(container->get_transform(), (getNyaConfig().NSFWUI.GetValue()?"Enable NSFW again":"Enable NSFW"), "PracticeButton",
             [this]() {
                 BSML::MainThreadScheduler::Schedule([this]{
                     this->nsfwModal->Show();
@@ -177,7 +178,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             });
             if (getNyaConfig().NSFWUI.GetValue()) {
 
-                BSML::Lite::CreateUIButton(container->get_transform(), to_utf16("Disable NSFW"), "PracticeButton",
+                BSML::Lite::CreateUIButton(container->get_transform(), "Disable NSFW", "PracticeButton",
                 [this]() {
                     BSML::MainThreadScheduler::Schedule([this]{
                         getNyaConfig().NSFWUI.SetValue(false);

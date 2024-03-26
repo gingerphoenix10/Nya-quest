@@ -18,6 +18,8 @@
 #include <string>
 #include <iostream>
 #include "assets.hpp"
+#include "logging.hpp"
+
 using namespace UnityEngine;
 using namespace Nya;
 
@@ -70,7 +72,7 @@ namespace Nya {
 
             this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
             // Settings button
-            this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+            this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Settings", "PracticeButton",
                                                               [this]() {
                                                                   this->settingsMenu->Show();
                                                               });

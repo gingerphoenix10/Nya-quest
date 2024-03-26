@@ -231,7 +231,7 @@ void Nya::UI::Modals::NSFWConsent::Awake() {
         {   
             auto vert = BSML::Lite::CreateVerticalLayoutGroup(mainLayout->get_transform());
             vert->set_padding(RectOffset::New_ctor(2, 0, 0, 0));
-            topText = BSML::Lite::CreateText(mainLayout->get_transform(), to_utf16("TopText"), false);
+            topText = BSML::Lite::CreateText(mainLayout->get_transform(), "TopText", false);
             topText->set_fontSize(8.2f);
             topText->set_fontStyle(TMPro::FontStyles::Underline);
             topText->set_alignment(TMPro::TextAlignmentOptions::Center);
@@ -248,7 +248,7 @@ void Nya::UI::Modals::NSFWConsent::Awake() {
                 midTextLayout->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(45);
 
                 // Create mid text
-                midText = BSML::Lite::CreateText(midTextLayout->get_transform(), to_utf16("MidText"), false);
+                midText = BSML::Lite::CreateText(midTextLayout->get_transform(), "MidText", false);
                 midText->set_fontSize(5.0f);
                 midText->set_alignment(TMPro::TextAlignmentOptions::Center);
                 midText->set_enableWordWrapping(true);

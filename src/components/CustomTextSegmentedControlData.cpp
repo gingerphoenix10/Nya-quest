@@ -14,7 +14,6 @@ DEFINE_TYPE(NyaUI, CustomTextSegmentedControlData);
 
 using namespace UnityEngine;
 
-extern Logger& getLogger();
 
 namespace NyaUI
 {

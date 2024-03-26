@@ -5,12 +5,12 @@
 
 #include "libcurl/shared/curl.h"
 #include "libcurl/shared/easy.h"
-#include "main.hpp"
+#include "logging.hpp"
+
 #include <thread>
 #define TIMEOUT 10
 #define USER_AGENT useragent
 
-extern Logger& getLogger();
 
 namespace WebUtils
 {   

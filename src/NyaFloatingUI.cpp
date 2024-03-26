@@ -1,6 +1,7 @@
 #include "NyaFloatingUI.hpp"
 #include "NyaConfig.hpp"
 #include "main.hpp"
+#include "logging.hpp"
 #include "EndpointConfigUtils.hpp"
 
 #include "Utils/Utils.hpp"
@@ -38,7 +39,8 @@ namespace Nya {
             return;
         }
 
-        this->floatingScreen =  BSML::Lite::CreateFloatingScreen({80.0f, 80.0f},{0.0f, 1.0f, 1.0f},{0, 0, 0},0.0f,false,true);
+        this->floatingScreen = BSML::Lite::CreateFloatingScreen({80.0f, 80.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, false, true, BSML::Side::Bottom);
+        floatingScreen->set_HighlightHandle(true);
 
         auto UIScreen = floatingScreen->get_gameObject();
         UIScreen->set_active(false);
@@ -81,7 +83,7 @@ namespace Nya {
         this->settingsMenu = NYA->get_gameObject()->AddComponent<Nya::SettingsMenu*>();
 
         // Settings button
-        this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Settings"), "PracticeButton",
+        this->settingsButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Settings", "PracticeButton",
         [this]() {
             this->settingsMenu->Show();
         });
@@ -141,7 +143,6 @@ namespace Nya {
         if (!reinitialize && this->currentScene == scene) {
             return;
         }
-        
         this->currentScene = scene;
 
         // Disable everything if config does not need it and return
@@ -161,7 +162,7 @@ namespace Nya {
                 
                 return;
         };
-        
+
         // If screen does not exist, initialize the first time
         if (!this->floatingScreen || !this->floatingScreen->m_CachedPtr) {
             this->initScreen();

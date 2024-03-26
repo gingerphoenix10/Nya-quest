@@ -1,6 +1,7 @@
 #include "UI/PanelUI.hpp"
 #include "main.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
+#include "logging.hpp"
 using namespace Nya;
 
 namespace Nya {

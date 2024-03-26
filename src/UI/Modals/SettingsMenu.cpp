@@ -94,7 +94,7 @@ void SettingsMenu::Awake() {
 
         // SFW endpoint switch
         this->sfw_endpoint =
-            BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), to_utf16("SFW endpoint"), "Loading..", loadingOptions,
+            BSML::Lite::CreateDropdown(sourcesViewLayout->get_transform(), "SFW endpoint", "Loading..", loadingOptions,
             [this](StringW value) {
                 // Get current endpoint
                 string API = this->selectedDataSourceName;
@@ -122,7 +122,7 @@ void SettingsMenu::Awake() {
 
             // NSFW toggle
             bool NSFWEnabled = getNyaConfig().NSFWEnabled.GetValue();
-            this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), to_utf16("NSFW toggle"), NSFWEnabled,
+            this->nsfw_toggle = BSML::Lite::CreateToggle(sourcesViewLayout->get_transform(), "NSFW toggle", NSFWEnabled,
                                              [](bool isChecked) { getNyaConfig().NSFWEnabled.SetValue(isChecked); });
         }
 
@@ -132,14 +132,14 @@ void SettingsMenu::Awake() {
         horz->set_spacing(10);
         {
             this->downloadButton =
-                BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Download Nya"), "PracticeButton", [this]() {
+                BSML::Lite::CreateUIButton(horz->get_transform(), "Download Nya", "PracticeButton", [this]() {
                     auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
                     imageView->SaveImage();
                     this->downloadButton->set_interactable(false);
                     this->settingsModal->Hide(true, nullptr);
                 });
 
-            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), to_utf16("Close"), "PracticeButton",
+            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Close", "PracticeButton",
                                                  [this]() { this->settingsModal->Hide(true, nullptr); });
         }
         HorizontalLayoutGroup* horz2 = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
@@ -171,24 +171,24 @@ void SettingsMenu::Awake() {
             auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(floatingViewLayout->get_transform());
 
             Button* faceHeadset =
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton", [this]() {
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Face headset", "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->LookAtCamera();
                 }
             });
-            BSML::Lite::CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton", [this]() {
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Set upright", "PracticeButton", [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->SetUpRight();
                 }
             });
         }
-        BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Default position"), "PracticeButton", [this]() {
+        BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), "Default position", "PracticeButton", [this]() {
             if (Main::NyaFloatingUI != nullptr) {
                 Main::NyaFloatingUI->SetDefaultPos();
             }
         });
 
-        Button* closeButton = BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), to_utf16("Close"), "PracticeButton",
+        Button* closeButton = BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), "Close", "PracticeButton",
                                              [this]() { this->settingsModal->Hide(true, nullptr); });
 
         BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
@@ -226,8 +226,8 @@ void SettingsMenu::UpdateEndpointLists() {
 
         // Don't add random to local
         if (selectedDataSource->Mode != DataMode::Local) {
-            sfw_endpoint_labels->Add(to_utf16("random"));
-            sfw_endpoint_urls->Add(to_utf16("random"));
+            sfw_endpoint_labels->Add("random");
+            sfw_endpoint_urls->Add("random");
         }
     }
 
@@ -240,8 +240,8 @@ void SettingsMenu::UpdateEndpointLists() {
 
         // Don't add random to local
         if (selectedDataSource->Mode != DataMode::Local) {
-            nsfw_endpoint_labels->Add(to_utf16("random"));
-            nsfw_endpoint_urls->Add(to_utf16("random"));
+            nsfw_endpoint_labels->Add("random");
+            nsfw_endpoint_urls->Add("random");
         }
     }
 
@@ -264,7 +264,7 @@ void SettingsMenu::UpdateEndpointLists() {
                 EndpointConfigUtils::getEndpointValue(selectedDataSourceName, false);
 
             // Find the index of the selected endpoint
-            auto index = sfw_endpoint_urls.index_of(to_utf16(selected_url));
+            auto index = sfw_endpoint_urls.index_of(selected_url);
 
             // Select the endpoint
             if (index.has_value()) {
@@ -293,7 +293,7 @@ void SettingsMenu::UpdateEndpointLists() {
             string selected_url = EndpointConfigUtils::getEndpointValue(selectedDataSourceName, true);
 
             // Find the index of the selected endpoint
-            auto index = nsfw_endpoint_urls.index_of(to_utf16(selected_url));
+            auto index = nsfw_endpoint_urls.index_of(selected_url);
 
             if (index.has_value()) {
                 auto idx = index.value();

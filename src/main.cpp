@@ -19,7 +19,6 @@
 #include "GlobalNamespace/StandardLevelDetailView.hpp"
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/MainMenuViewController.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "NyaConfig.hpp"
@@ -30,6 +29,7 @@
 #include "Events.hpp"
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
 #include <fstream>
+#include "logging.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
@@ -64,9 +64,9 @@ MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, Pa
     }
 }
 
-MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
+MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, ByRef<::GlobalNamespace::BeatmapKey> beatmapKey, ::GlobalNamespace::BeatmapLevel* beatmapLevel, bool practice, bool newHighScore) {
     DEBUG("Results");
-    Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
+    Results(self, levelCompletionResults, transformedBeatmapData, beatmapKey, beatmapLevel, practice, newHighScore);
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
@@ -246,17 +246,6 @@ void Nya::ApplyIndexingRules()
     
 }
 
-Logger& Nya::getLoggerOld() {
-    static Logger* logger = new Logger(modInfo);
-    return *logger;
-}
-
-// Returns a logger, useful for printing debug messages
-Paper::ConstLoggerContext<4UL> Nya::getLogger() {
-    static auto fastContext = Paper::Logger::WithContext<"Nya">();
-    return fastContext;
-}
-
 // Called at the early stages of game loading
 extern "C" __attribute__((visibility("default"))) void setup(CModInfo& info) {
     info.id = MOD_ID;
@@ -337,17 +326,19 @@ extern "C" __attribute__((visibility("default"))) void late_load() {
     BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
 
+    auto logger = Paper::ConstLoggerContext("Nya");
+
     INFO("Installing hooks...");
     // Install our hooks
-    INSTALL_HOOK(Nya::getLoggerOld(), Pause);
-    INSTALL_HOOK(Nya::getLoggerOld(), FixedUpdateHook);
-    INSTALL_HOOK(Nya::getLoggerOld(), Results);
-    INSTALL_HOOK(Nya::getLoggerOld(), Unpause);
-    INSTALL_HOOK(Nya::getLoggerOld(), Restartbutton);
-    INSTALL_HOOK(Nya::getLoggerOld(), MultiResults);
-    INSTALL_HOOK(Nya::getLoggerOld(), MenuTransitionsHelper_RestartGame);
-    INSTALL_HOOK(Nya::getLoggerOld(), SceneManager_Internal_ActiveSceneChanged);
-    INSTALL_HOOK(Nya::getLoggerOld(), MainFlowCoordinator_DidActivate);
+    INSTALL_HOOK(logger, Pause);
+    INSTALL_HOOK(logger, FixedUpdateHook);
+    INSTALL_HOOK(logger, Results);
+    INSTALL_HOOK(logger, Unpause);
+    INSTALL_HOOK(logger, Restartbutton);
+    INSTALL_HOOK(logger, MultiResults);
+    INSTALL_HOOK(logger, MenuTransitionsHelper_RestartGame);
+    INSTALL_HOOK(logger, SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(logger, MainFlowCoordinator_DidActivate);
 
     INFO("Installed all hooks!");
 }
