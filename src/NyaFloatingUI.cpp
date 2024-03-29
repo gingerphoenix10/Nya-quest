@@ -19,6 +19,7 @@
 #include "assets.hpp"
 #include "libs/magic_enum.hpp"
 #include "UnityEngine/Camera.hpp"
+#include "Utils/Utils.hpp"
 
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
@@ -39,7 +40,7 @@ namespace Nya {
             return;
         }
 
-        this->floatingScreen = BSML::Lite::CreateFloatingScreen({80.0f, 80.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, false, true, BSML::Side::Bottom);
+        this->floatingScreen = BSML::Lite::CreateFloatingScreen({100.0f, 80.0f}, {0.0f, 1.0f, 1.0f}, {0, 0, 0}, 0.0f, false, true, BSML::Side::Bottom);
         floatingScreen->set_HighlightHandle(true);
 
         auto UIScreen = floatingScreen->get_gameObject();
@@ -88,13 +89,18 @@ namespace Nya {
             this->settingsMenu->Show();
         });
 
+        // Set size of the buttons
+        UnityEngine::Vector2 sizeDelta = {19, 8};
+        Nya::Utils::SetButtonSize(this->nyaButton, sizeDelta);
+        Nya::Utils::SetButtonSize(this->settingsButton, sizeDelta);
+
         this->isInitialized = true;
 
         this->UpdateScale();
         this->UpdateHandleVisibility();
 
         // Sub to events
-        if (this->imageView && this->imageView->m_CachedPtr) {
+        if (this->imageView) {
             this->imageView->imageLoadingChange.addCallback(&NyaFloatingUI::OnIsLoadingChange, this);
         } else {
             INFO("ImageView not found");
@@ -107,7 +113,7 @@ namespace Nya {
         // Do nothing if hover click helper is not present
         
         // If screen does not exist, initialize the first time to reset stuff
-        if (!this->floatingScreen || !this->floatingScreen->m_CachedPtr) {
+        if (!this->floatingScreen) {
             DEBUG("LOL IT ACTUALLY HAPPENS");
             // this->isInitialized = false;
             this->initScreen();
@@ -155,21 +161,22 @@ namespace Nya {
                 scene == Nya::FloatingUIScene::MainMenu && !getNyaConfig().inMenu.GetValue()
             )) {
                 INFO("DISABLING THE SCREEN");
-                if (
-                    this->floatingScreen &&
-                    this->floatingScreen->m_CachedPtr
-                ) floatingScreen->get_gameObject()->set_active(false);
+                if (this->floatingScreen) floatingScreen->get_gameObject()->set_active(false);
                 
                 return;
         };
 
         // If screen does not exist, initialize the first time
-        if (!this->floatingScreen || !this->floatingScreen->m_CachedPtr) {
+        if (!this->floatingScreen) {
             this->initScreen();
             DEBUG("Initialized screen");
-            // If the screen is created, get the first image
-            DEBUG("Getting first image");
-            this->imageView->GetImage(nullptr);
+           
+
+            // If the screen is created, get the first image after a delay to avoid being too fast
+            BSML::MainThreadScheduler::ScheduleAfterTime(0.3f, [this](){
+                DEBUG("Getting first image");
+                this->imageView->GetImage(nullptr);
+            });
         }
 
         if (scene == Nya::FloatingUIScene::Pause) {
@@ -245,7 +252,7 @@ namespace Nya {
     void NyaFloatingUI::OnIsLoadingChange (bool isLoading) {
         BSML::MainThreadScheduler::Schedule([this, isLoading]
         {
-            if (this->nyaButton && this->nyaButton->m_CachedPtr)
+            if (this->nyaButton)
                 this->nyaButton->set_interactable(!isLoading);
         });
     }
@@ -276,7 +283,7 @@ namespace Nya {
     };
 
     void NyaFloatingUI::ScaleFloatingScreen(float scale) {
-        if (this->floatingScreen && this->floatingScreen->m_CachedPtr) {
+        if (this->floatingScreen) {
             this->floatingScreen->get_gameObject()->get_transform()->set_localScale(
                 UnityEngine::Vector3(
                     0.03f * scale,
@@ -302,19 +309,20 @@ namespace Nya {
 
     void NyaFloatingUI::LookAtCamera(){
         auto mainCamera = UnityEngine::Camera::get_main();
+        if (!mainCamera) return;
         auto currentPosition = this->floatingScreen->get_ScreenPosition();
         auto newRotation = UnityEngine::Quaternion::LookRotation(
             Vector3::op_Subtraction(
                 currentPosition,
                 mainCamera->get_transform()->get_position())
             );
-
         // TODO: Do lerp
         this->floatingScreen->set_ScreenRotation(newRotation);
         Main::NyaFloatingUI->updateCoordinates(currentPosition, newRotation.get_eulerAngles());
     }
 
     void NyaFloatingUI::SetUpRight (){
+        if (!this->floatingScreen) return;
         auto currentPosition = this->floatingScreen->get_ScreenPosition();
         auto currentRotation = this->floatingScreen->get_ScreenRotation();
         auto newRotation = UnityEngine::Quaternion::Euler(0.0, currentRotation.get_eulerAngles().y, 0.0);

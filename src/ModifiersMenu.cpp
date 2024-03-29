@@ -19,6 +19,7 @@
 #include <iostream>
 #include "assets.hpp"
 #include "logging.hpp"
+#include "Utils/Utils.hpp"
 
 using namespace UnityEngine;
 using namespace Nya;
@@ -76,6 +77,10 @@ namespace Nya {
                                                               [this]() {
                                                                   this->settingsMenu->Show();
                                                               });
+            // Set button sizes
+            UnityEngine::Vector2 sizeDelta = {19, 8};
+            Nya::Utils::SetButtonSize(this->nyaButton, sizeDelta);
+            Nya::Utils::SetButtonSize(this->settingsButton, sizeDelta);
 
             // Sub to events of the image view
             this->imageView->imageLoadingChange += {&ModifiersMenu::OnIsLoadingChange, this};
@@ -90,7 +95,7 @@ namespace Nya {
     void ModifiersMenu::OnIsLoadingChange (bool isLoading) {
         BSML::MainThreadScheduler::Schedule([this, isLoading]
         {
-            if (this->nyaButton && this->nyaButton->m_CachedPtr)
+            if (this->nyaButton)
                 this->nyaButton->set_interactable(!isLoading);
         });
     }

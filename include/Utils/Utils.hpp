@@ -28,5 +28,7 @@ namespace Nya::Utils {
     /// @param path path to the file
     /// @param onFinished what to do with the downloaded bytes
     void DownloadFile(std::string uri, std::string path, std::function<void(bool success, std::string path)> onFinished);
+
+    void SetButtonSize(UnityW<UnityEngine::UI::Button> button, UnityEngine::Vector2 size);
 }
 

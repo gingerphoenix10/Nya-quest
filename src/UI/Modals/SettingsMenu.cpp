@@ -139,8 +139,12 @@ void SettingsMenu::Awake() {
                     this->settingsModal->Hide(true, nullptr);
                 });
 
-            Button* closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Close", "PracticeButton",
+            UnityW<Button> closeButton = BSML::Lite::CreateUIButton(horz->get_transform(), "Close", "PracticeButton",
                                                  [this]() { this->settingsModal->Hide(true, nullptr); });
+            // Set button sizes
+            UnityEngine::Vector2 sizeDelta = {25, 8};
+            Nya::Utils::SetButtonSize(this->downloadButton, sizeDelta);
+            Nya::Utils::SetButtonSize(closeButton, sizeDelta);
         }
         HorizontalLayoutGroup* horz2 = BSML::Lite::CreateHorizontalLayoutGroup(sourcesViewLayout->get_transform());
         horz->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
@@ -199,7 +203,7 @@ void SettingsMenu::Awake() {
                          }
                      });
 
-        auto slider = BSML::Lite::CreateSliderSetting(floatingViewLayout->get_transform(), "Floating Screen Scale", 0.1f,
+        auto slider = BSML::Lite::CreateSliderSetting(floatingViewLayout->get_transform(), "Screen Scale", 0.1f,
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f,
             [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);

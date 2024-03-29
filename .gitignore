@@ -12,5 +12,5 @@ report.html
 cmake-build-debug/
 *.logs
 .idea/
-# Since qpm fails to generate good .mod.json files, we have to include them
-# mod.json
+mod.json
+*.log

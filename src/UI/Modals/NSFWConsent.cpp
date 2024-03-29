@@ -214,7 +214,7 @@ void Nya::UI::Modals::NSFWConsent::Awake() {
        InitModalContents();
     }
 
-    this->modal = BSML::Lite::CreateModal(get_transform(),  {95, 70}, nullptr);
+    this->modal = BSML::Lite::CreateModal(get_transform(), {0,0},{95, 70}, nullptr);
 
 
     // Root component

@@ -265,6 +265,26 @@ namespace Nya::Utils {
             ));
     }
 
+    void SetButtonSize(UnityW<UnityEngine::UI::Button> button, UnityEngine::Vector2 size) {
+        if (!button) {
+            ERROR("Button is null");
+            return;
+        }
+        UnityW<UnityEngine::UI::LayoutElement> layoutElement = button->get_gameObject()->GetComponent<UnityEngine::UI::LayoutElement*>();
+        if(!layoutElement)
+            layoutElement = button->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
+        if (!layoutElement) {
+            ERROR("Failed to get or add layout element");
+            return;
+        }
+
+        layoutElement->set_minWidth(size.x);
+        layoutElement->set_minHeight(size.y);
+        layoutElement->set_preferredWidth(size.x);
+        layoutElement->set_preferredHeight(size.y);
+        layoutElement->set_flexibleWidth(size.x);
+        layoutElement->set_flexibleHeight(size.y);
+    }
     
 }
 

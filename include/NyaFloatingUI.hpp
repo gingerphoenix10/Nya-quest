@@ -54,19 +54,19 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             DECLARE_INSTANCE_METHOD(void, OnIsLoadingChange, bool isLoading); 
             
             DECLARE_CTOR(ctor);
-            DECLARE_INSTANCE_FIELD(BSML::FloatingScreen*, floatingScreen);
-            DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, floatingScreenGO);
-            DECLARE_INSTANCE_FIELD(UnityEngine::Material*, UINoGlow);
+            DECLARE_INSTANCE_FIELD(UnityW<BSML::FloatingScreen>, floatingScreen);
+            DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::GameObject>, floatingScreenGO);
+            DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::Material>, UINoGlow);
 
             // NYA
-            DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
-            DECLARE_INSTANCE_FIELD(NyaUtils::ImageView*, imageView);
-            DECLARE_INSTANCE_FIELD(UnityEngine::Plane*, plane);
+            DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, NYA);
+            DECLARE_INSTANCE_FIELD(UnityW<NyaUtils::ImageView>, imageView);
+            DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::Plane>, plane);
 
-            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
+            DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, nyaButton);
             // Settings buttons and modal
-            DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
-            DECLARE_INSTANCE_FIELD(Nya::SettingsMenu*, settingsMenu);
+            DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, settingsButton);
+            DECLARE_INSTANCE_FIELD(UnityW<Nya::SettingsMenu>, settingsMenu);
 
             static NyaFloatingUI* get_instance();
             static void delete_instance();

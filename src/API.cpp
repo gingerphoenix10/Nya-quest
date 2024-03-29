@@ -158,29 +158,29 @@ inline std::map<std::string, SourceData> endpoint_data = {
             "url"
         }
     },
-    {"Anime-Images API",
-        {
-            "https://anime-api.hisoka17.repl.co/img/",
-            DataMode::Json,
-            {
-                {"hug", "hug"},
-                {"kiss", "kiss"},
-                {"slap", "slap"},
-                {"wink", "wink"},
-                {"pat", "pat"},
-                {"kill", "kill"},
-                {"cuddle", "cuddle"},
-                {"punch", "punch"},
-                {"waifu", "waifu"},
-            },
-            {
-                {"hentai", "hentai"},
-                {"boobs", "nsfw/boobs"},
-                {"lesbian", "nsfw/lesbian"},
-            },
-            "url"
-        }
-    },
+    // {"Anime-Images API",
+    //     {
+    //         "https://anime-api.hisoka17.repl.co/img/",
+    //         DataMode::Json,
+    //         {
+    //             {"hug", "hug"},
+    //             {"kiss", "kiss"},
+    //             {"slap", "slap"},
+    //             {"wink", "wink"},
+    //             {"pat", "pat"},
+    //             {"kill", "kill"},
+    //             {"cuddle", "cuddle"},
+    //             {"punch", "punch"},
+    //             {"waifu", "waifu"},
+    //         },
+    //         {
+    //             {"hentai", "hentai"},
+    //             {"boobs", "nsfw/boobs"},
+    //             {"lesbian", "nsfw/lesbian"},
+    //         },
+    //         "url"
+    //     }
+    // },
     {"Bocchi",
         {
             "https://boccher.pixelboom.dev/api/",
