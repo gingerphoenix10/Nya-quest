@@ -158,41 +158,29 @@ inline std::map<std::string, SourceData> endpoint_data = {
             "url"
         }
     },
-    {"Anime-Images API",
-        {
-            "https://anime-api.hisoka17.repl.co/img/",
-            DataMode::Json,
-            {
-                {"hug", "hug"},
-                {"kiss", "kiss"},
-                {"slap", "slap"},
-                {"wink", "wink"},
-                {"pat", "pat"},
-                {"kill", "kill"},
-                {"cuddle", "cuddle"},
-                {"punch", "punch"},
-                {"waifu", "waifu"},
-            },
-            {
-                {"hentai", "hentai"},
-                {"boobs", "nsfw/boobs"},
-                {"lesbian", "nsfw/lesbian"},
-            },
-            "url"
-        }
-    },
-    {"Catboys",
-        {
-            "https://api.catboys.com/",
-            DataMode::Json,
-            {
-                {"catboys", "img"},
-                {"baka", "baka"},
-            },
-            {},
-            "url"
-        }
-    },
+    // {"Anime-Images API",
+    //     {
+    //         "https://anime-api.hisoka17.repl.co/img/",
+    //         DataMode::Json,
+    //         {
+    //             {"hug", "hug"},
+    //             {"kiss", "kiss"},
+    //             {"slap", "slap"},
+    //             {"wink", "wink"},
+    //             {"pat", "pat"},
+    //             {"kill", "kill"},
+    //             {"cuddle", "cuddle"},
+    //             {"punch", "punch"},
+    //             {"waifu", "waifu"},
+    //         },
+    //         {
+    //             {"hentai", "hentai"},
+    //             {"boobs", "nsfw/boobs"},
+    //             {"lesbian", "nsfw/lesbian"},
+    //         },
+    //         "url"
+    //     }
+    // },
     {"Bocchi",
         {
             "https://boccher.pixelboom.dev/api/",
@@ -327,12 +315,12 @@ void NyaAPI::get_path_from_json_api(
         return -1;
     }
 
-    ListWrapper<StringW> NyaAPI::listEndpointLabels(std::vector<EndpointCategory>* values) {
+    ListW<StringW> NyaAPI::listEndpointLabels(std::vector<EndpointCategory>* values) {
         // TODO: Fix
         int count = values->size();
         
         // Convert stuff to list
-        ListWrapper<StringW> list(List<StringW>::New_ctor());
+        ListW<StringW> list = ListW<StringW>::New();
         if (count == 0) {
             return list;
         }
@@ -342,12 +330,12 @@ void NyaAPI::get_path_from_json_api(
         return list;
     }
 
-    ListWrapper<StringW> NyaAPI::listEndpointUrls(std::vector<EndpointCategory>* values) {
+    ListW<StringW> NyaAPI::listEndpointUrls(std::vector<EndpointCategory>* values) {
         // TODO: Fix
         int count = values->size();
         
         // Convert stuff to list
-        ListWrapper<StringW> list(List<StringW>::New_ctor());
+        ListW<StringW> list = ListW<StringW>::New();
         if (count == 0) {
             return list;
         }

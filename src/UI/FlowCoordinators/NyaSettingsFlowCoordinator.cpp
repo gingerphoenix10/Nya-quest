@@ -1,13 +1,12 @@
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
-#include "HMUI/ViewController_AnimationDirection.hpp"
-#include "HMUI/ViewController_AnimationType.hpp"
+#include "bsml/shared/Helpers/creation.hpp"
 
 DEFINE_TYPE(Nya::UI::FlowCoordinators, NyaSettingsFlowCoordinator);
 
 
 void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::Awake(){
-    if (!SettingsViewController || !SettingsViewController->m_CachedPtr.m_value) {
-        SettingsViewController = BeatSaberUI::CreateViewController<ViewControllers::SettingsViewController*>();
+    if (!SettingsViewController || !SettingsViewController->m_CachedPtr) {
+        SettingsViewController = BSML::Helpers::CreateViewController<ViewControllers::SettingsViewController*>();
     }
 }
 
@@ -19,7 +18,7 @@ void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::DidActivate(bool fir
     ProvideInitialViewControllers(SettingsViewController, nullptr, nullptr, nullptr, nullptr);
 }
 void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::BackButtonWasPressed(HMUI::ViewController* topViewController) {
-    if (this->parentFlowCoordinator && this->parentFlowCoordinator->m_CachedPtr.m_value) {
-        this->parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
+    if (this->_parentFlowCoordinator && this->_parentFlowCoordinator->m_CachedPtr) {
+        this->_parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
     }
 }

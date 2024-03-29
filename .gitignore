@@ -3,14 +3,14 @@ build/
 extern/
 extern.cmake
 qpm_defines.cmake
-qpm.shared.json
 ndkpath.txt
 logs/
 binary_cache/
 perf.data
 report.html
 *.qmod
-
-
-# Since qpm fails to generate good .mod.json files, we have to include them
-# mod.json
+cmake-build-debug/
+*.logs
+.idea/
+mod.json
+*.log

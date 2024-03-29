@@ -8,11 +8,12 @@
 #include "UnityEngine/Vector2.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Vector4.hpp"
+#include "logging.hpp"
 
-#define NYA_PATH_FORMAT "/sdcard/ModData/%s/Mods/Nya/"
+#define NYA_PATH_FORMAT "/sdcard/ModData/{}/Mods/Nya/"
 
 namespace NyaGlobals {
-    static std::string nyaPath = string_format(NYA_PATH_FORMAT, modloader::get_application_id().c_str());
+    static std::string nyaPath = fmt::format(NYA_PATH_FORMAT, modloader::get_application_id().c_str());
     static std::string imagesPath = nyaPath + "Images/";
     static std::string imagesPathSFW = nyaPath + "Images/sfw/";
     static std::string imagesPathNSFW = nyaPath + "Images/nsfw/";

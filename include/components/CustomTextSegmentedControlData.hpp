@@ -4,7 +4,6 @@
 #include "UnityEngine/GameObject.hpp"
 
 #include "HMUI/SegmentedControl.hpp"
-#include "HMUI/SegmentedControl_IDataSource.hpp"
 #include "HMUI/SegmentedControlCell.hpp"
 #include "HMUI/TextSegmentedControlCell.hpp"
 
@@ -19,9 +18,9 @@ ___DECLARE_TYPE_WRAPPER_INHERITANCE(NyaUI, CustomTextSegmentedControlData, Il2Cp
     DECLARE_INSTANCE_FIELD(HMUI::SegmentedControlCell*, singleCellPrefab);
     DECLARE_INSTANCE_FIELD(HMUI::SegmentedControlCell*, middleCellPrefab);
     DECLARE_INSTANCE_FIELD(ArrayW<StringW>, texts);
-
-    DECLARE_OVERRIDE_METHOD(int, NumberOfCells, il2cpp_utils::il2cpp_type_check::MetadataGetter<&HMUI::SegmentedControl::IDataSource::NumberOfCells>::get());
-    DECLARE_OVERRIDE_METHOD(HMUI::SegmentedControlCell*, CellForCellNumber, il2cpp_utils::il2cpp_type_check::MetadataGetter<&HMUI::SegmentedControl::IDataSource::CellForCellNumber>::get(), int idx);
+    
+    DECLARE_OVERRIDE_METHOD_MATCH(int, NumberOfCells, &HMUI::SegmentedControl::IDataSource::NumberOfCells);
+    DECLARE_OVERRIDE_METHOD_MATCH(HMUI::SegmentedControlCell*, CellForCellNumber, &HMUI::SegmentedControl::IDataSource::CellForCellNumber, int idx);
     DECLARE_CTOR(ctor);
     DECLARE_DTOR(dtor);
     public:

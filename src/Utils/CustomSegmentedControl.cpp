@@ -2,6 +2,7 @@
 
 #include "main.hpp"
 #include "string"
+#include "bsml/shared/Helpers/delegates.hpp"
 using namespace UnityEngine;
 
 namespace Nya::Utils
@@ -12,7 +13,7 @@ namespace Nya::Utils
         static SafePtrUnity<HMUI::TextSegmentedControl> segmentedControlTemplate;
         if (!segmentedControlTemplate)
         {
-            segmentedControlTemplate = Resources::FindObjectsOfTypeAll<HMUI::TextSegmentedControl *>().First([](auto x)
+            segmentedControlTemplate = Resources::FindObjectsOfTypeAll<HMUI::TextSegmentedControl *>()->First([](auto x)
                                                                                                        {
                 // INFO: This selector could break in any new update. If you came here, try to modify the selection
                 if (x->get_name() != "TextSegmentedControl") return false;
@@ -27,7 +28,7 @@ namespace Nya::Utils
         segmentedControlObj->SetActive(false);
         static ConstString NyaUITextSegmentedControl("NyaUITextSegmentedControl");
         segmentedControlObj->set_name(NyaUITextSegmentedControl);
-        auto rectTransform = reinterpret_cast<RectTransform *>(segmentedControlObj->get_transform());
+        auto rectTransform = segmentedControlObj->get_transform().cast<RectTransform>();
         rectTransform->set_sizeDelta(sizeDelta);
         rectTransform->set_anchoredPosition(anchoredPosition);
 
@@ -35,21 +36,20 @@ namespace Nya::Utils
         auto control = segmentedControlObj->AddComponent<HMUI::SegmentedControl *>();
         auto result = segmentedControlObj->AddComponent<NyaUI::CustomTextSegmentedControlData *>();
 
-        result->firstCellPrefab = segmentedControlTemplate->firstCellPrefab;
-        result->lastCellPrefab = segmentedControlTemplate->lastCellPrefab;
-        result->middleCellPrefab = segmentedControlTemplate->middleCellPrefab;
-        result->singleCellPrefab = segmentedControlTemplate->singleCellPrefab;
+        result->firstCellPrefab = segmentedControlTemplate->_firstCellPrefab;
+        result->lastCellPrefab = segmentedControlTemplate->_lastCellPrefab;
+        result->middleCellPrefab = segmentedControlTemplate->_middleCellPrefab;
+        result->singleCellPrefab = segmentedControlTemplate->_singleCellPrefab;
 
         result->segmentedControl = control;
-        control->dataSource = reinterpret_cast<HMUI::SegmentedControl::IDataSource *>(result);
+        control->dataSource = reinterpret_cast<HMUI::SegmentedControl::IDataSource*>(result);
 
         if (onCellWithIdxClicked)
         {
-            using DelegateType = System::Action_2<HMUI::SegmentedControl *, int> *;
-            std::function<void(HMUI::SegmentedControl *, int)> fun = [onCellWithIdxClicked](HMUI::SegmentedControl *cell, int idx)
+            using DelegateType = System::Action_2<UnityW<HMUI::SegmentedControl>, int> *;
+            std::function<void(HMUI::SegmentedControl *, int)> fun = [onCellWithIdxClicked](UnityW<HMUI::SegmentedControl> cell, int idx)
             { onCellWithIdxClicked(idx); };
-            auto delegate = custom_types::MakeDelegate<DelegateType>(fun);
-            // auto delegate = MakeDelegate(DelegateType, fun);
+            auto delegate = BSML::MakeDelegate<DelegateType>(fun);
             control->add_didSelectCellEvent(delegate);
         }
 

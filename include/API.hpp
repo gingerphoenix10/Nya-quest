@@ -46,8 +46,8 @@ std::map<std::string, SourceData>* getEndpoints();
 
 int findSourceIndexInListC(std::vector<EndpointCategory>* values, StringW string);
 
-ListWrapper<StringW> listEndpointLabels(std::vector<EndpointCategory>* values);
-ListWrapper<StringW> listEndpointUrls(std::vector<EndpointCategory>* values);
+ListW<StringW> listEndpointLabels(std::vector<EndpointCategory>* values);
+ListW<StringW> listEndpointUrls(std::vector<EndpointCategory>* values);
 
 // Get random endpoint from the list
 EndpointCategory* getRandomEndpoint(std::vector<EndpointCategory>* values);

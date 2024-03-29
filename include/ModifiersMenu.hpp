@@ -15,10 +15,10 @@
 #include "UI/Modals/SettingsMenu.hpp"
 
 DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
-    DECLARE_INSTANCE_FIELD(HMUI::ImageView*, NYA);
+    DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, NYA);
     // DECLARE_INSTANCE_FIELD(bool, );
-    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, nyaButton);
-    DECLARE_INSTANCE_FIELD(NyaUtils::ImageView*, imageView);
+    DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, nyaButton);
+    DECLARE_INSTANCE_FIELD(UnityW<NyaUtils::ImageView>, imageView);
     DECLARE_INSTANCE_FIELD(bool, initialized);
 
 
@@ -35,8 +35,8 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_DTOR(dtor);
 
     // Settings buttons and modal
-    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
-    DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
-    DECLARE_INSTANCE_FIELD(Nya::SettingsMenu*, settingsMenu);
+    DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, settingsButton);
+    DECLARE_INSTANCE_FIELD(UnityW<HMUI::ModalView>, settingsModal);
+    DECLARE_INSTANCE_FIELD(UnityW<Nya::SettingsMenu>, settingsMenu);
     
 )

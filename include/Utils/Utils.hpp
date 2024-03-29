@@ -9,13 +9,13 @@
 namespace Nya::Utils {
     bool IsGif(std::string str);
     std::string ToLowercase(std::string str);
-    List<StringW>* vectorToList(std::vector<StringW> values);
+    ListW<StringW> vectorToList(std::vector<StringW> values);
     std::vector<StringW> listWToVector(List<StringW>* values);
-    int findStrIndexInList(List<StringW>* values, StringW string );
+    int findStrIndexInList(ListW<StringW> values, StringW string );
     // Kill me
     int findStrIndexInListC(std::list<std::string> values, StringW string );
     int random(int min, int max);
-    ListWrapper<StringW> listStringToStringW(std::list<std::string> values);
+    ListW<StringW> listStringToStringW(std::list<std::string> values);
 
     bool IsAnimated(std::string str);
 
@@ -28,5 +28,7 @@ namespace Nya::Utils {
     /// @param path path to the file
     /// @param onFinished what to do with the downloaded bytes
     void DownloadFile(std::string uri, std::string path, std::function<void(bool success, std::string path)> onFinished);
+
+    void SetButtonSize(UnityW<UnityEngine::UI::Button> button, UnityEngine::Vector2 size);
 }
 

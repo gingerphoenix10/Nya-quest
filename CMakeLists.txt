@@ -13,6 +13,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
+include(${EXTERN_DIR}/includes/kaleb/shared/cmake/assets.cmake)
 
 # c++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -24,8 +25,10 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# stop symbol leaking
+add_link_options(-Wl,--exclude-libs,ALL)
 # compile options used
-add_compile_options(-frtti -fexceptions)
+add_compile_options(-frtti -fexceptions  -fvisibility=hidden)
 add_compile_options(-O3)
 # NSFW toggle to remove nsfw entirely
 add_compile_options(-DNSFW)
@@ -80,6 +83,11 @@ target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
 target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog -lz)
+
+# add assets
+add_assets(${COMPILE_ID}-assets STATIC ${CMAKE_CURRENT_LIST_DIR}/assets ${INCLUDE_DIR}/assets.hpp)
+target_link_libraries(${COMPILE_ID} PRIVATE -llog -lz  ${COMPILE_ID}-assets)
+
 # add extern stuff like libs and other includes
 include(extern.cmake)
 
@@ -102,5 +110,3 @@ add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rename stripped_lib${COMPILE_ID}.so lib${COMPILE_ID}.so
         COMMENT "Rename the stripped lib to regular"
         )
-
-include(assets_include.cmake)

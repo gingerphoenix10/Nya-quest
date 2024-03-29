@@ -1,4 +1,5 @@
 #include "EndpointConfigUtils.hpp"
+#include "logging.hpp"
 
 using namespace Nya;
 

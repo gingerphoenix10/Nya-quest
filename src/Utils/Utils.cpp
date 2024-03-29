@@ -1,19 +1,15 @@
 #include "Utils/Utils.hpp"
 #include <random>
-#include "Helpers/utilities.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 #include "System/StringComparison.hpp"
 #include "System/Uri.hpp"
 #include <fstream>
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "System/Uri.hpp"
-#include "System/StringComparison.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 #include "UnityEngine/Networking/DownloadHandler.hpp"
-#include "UnityEngine/Networking/UnityWebRequestAsyncOperation.hpp"
+
 
 #include "custom-types/shared/coroutine.hpp"
-#define coro(coroutine) GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(coroutine))
 using namespace UnityEngine;
 using namespace UnityEngine::Networking;
 
@@ -51,8 +47,8 @@ namespace Nya::Utils {
      * @param values 
      * @return List<StringW>* 
      */
-    List<StringW>* vectorToList(std::vector<StringW> values) {
-        List<StringW>* list = List<StringW>::New_ctor();
+    ListW<StringW> vectorToList(std::vector<StringW> values) {
+        ListW<StringW> list = ListW<StringW>::New();
         for (int i = 0; i < values.size(); i++){
             auto value = values[i];
             list->Add(value);
@@ -77,12 +73,12 @@ namespace Nya::Utils {
         return tmp_s;
     }
 
-    ListWrapper<StringW> listStringToStringW(std::list<std::string> values) {
+    ListW<StringW> listStringToStringW(std::list<std::string> values) {
         // TODO: Fix
         int count = values.size();
         
         // Convert stuff to list
-        ListWrapper<StringW> list(List<StringW>::New_ctor());
+        ListW<StringW> list = ListW<StringW>::New();
         if (count == 0) {
             return list;
         }
@@ -99,7 +95,7 @@ namespace Nya::Utils {
      * @return List<StringW> 
      */
     std::vector<StringW> listWToVector(List<StringW>* values) {
-        std::vector<StringW> vector = std::vector<StringW>(values->items);
+        std::vector<StringW> vector = std::vector<StringW>(values->_items);
         return vector;
     }
 
@@ -110,8 +106,8 @@ namespace Nya::Utils {
      * @param string 
      * @return int -1 if not found anything or index of the element if the item is found
      */
-    int findStrIndexInList(List<StringW>* values, StringW string ) {
-        for (int i = 0; i < values->size; i++){
+    int findStrIndexInList(ListW<StringW> values, StringW string ) {
+        for (int i = 0; i < values->get_Count(); i++){
             auto value = values->get_Item(i);
             if (value == string) {
                 return i;
@@ -192,7 +188,7 @@ namespace Nya::Utils {
         // Get all pointers
         auto pointers = UnityEngine::Resources::FindObjectsOfTypeAll<VRUIControls::VRPointer*>();
 
-        int count = pointers.Length();
+        int count = pointers.size();
         DEBUG("Total number of pointers: {}", count );
 
         for (int i = 0; i < count; i++)
@@ -202,8 +198,8 @@ namespace Nya::Utils {
             // Game clones the pointers all the time and disables the original pointer, so we need to only look at active pointers
             if (pointer->get_isActiveAndEnabled()) {
                 // VR conroller is sometimes null after leaving multiplayer?
-                auto vrController = pointer->get_vrController();
-                if (vrController  && vrController->m_CachedPtr.m_value) {
+                auto vrController = pointer->get_lastSelectedVrController();
+                if (vrController  && vrController->m_CachedPtr) {
                     DEBUG("Found vr conroller on {}", i );
                     return pointer;
                 }
@@ -230,8 +226,9 @@ namespace Nya::Utils {
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(www->SendWebRequest());
         
         
-        
-        if (!www->get_isNetworkError()) {
+        auto error = www->GetError();
+        bool failed = error != UnityEngine::Networking::UnityWebRequest::UnityWebRequestError::OK;
+        if (!failed) {
             DEBUG("Got data, callback");
             // Saving files 
             std::ofstream f(path,  std::ios_base::binary | std::ios_base::trunc);
@@ -260,9 +257,34 @@ namespace Nya::Utils {
             ERROR("Can't get data async without a callback to use it with");
             return;
         }
-        coro(DownloadFileCoroutine(uri, path, onFinished));
+
+        // TODO: Implement a global coro starter for Nya
+         BSML::SharedCoroutineStarter::StartCoroutine(
+            custom_types::Helpers::CoroutineHelper::New(
+             DownloadFileCoroutine(uri, path, onFinished)
+            ));
     }
 
+    void SetButtonSize(UnityW<UnityEngine::UI::Button> button, UnityEngine::Vector2 size) {
+        if (!button) {
+            ERROR("Button is null");
+            return;
+        }
+        UnityW<UnityEngine::UI::LayoutElement> layoutElement = button->get_gameObject()->GetComponent<UnityEngine::UI::LayoutElement*>();
+        if(!layoutElement)
+            layoutElement = button->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
+        if (!layoutElement) {
+            ERROR("Failed to get or add layout element");
+            return;
+        }
+
+        layoutElement->set_minWidth(size.x);
+        layoutElement->set_minHeight(size.y);
+        layoutElement->set_preferredWidth(size.x);
+        layoutElement->set_preferredHeight(size.y);
+        layoutElement->set_flexibleWidth(size.x);
+        layoutElement->set_flexibleHeight(size.y);
+    }
     
 }
 

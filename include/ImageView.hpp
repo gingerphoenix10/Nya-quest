@@ -3,7 +3,7 @@
 
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "Gif.hpp"
+#include "custom-types/shared/coroutine.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "HMUI/ImageView.hpp"
 #include "UnityEngine/Texture2D.hpp"
@@ -25,6 +25,7 @@ DECLARE_CLASS_CODEGEN(NyaUtils, ImageView, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(bool, autoNyaRunning);
     DECLARE_INSTANCE_FIELD(bool, autoNyaNewImage);
     DECLARE_INSTANCE_FIELD(bool, isLoading);
+    DECLARE_INSTANCE_METHOD(void, Awake);
     DECLARE_INSTANCE_METHOD(void, OnEnable);
     DECLARE_INSTANCE_METHOD(void, OnDisable);
     DECLARE_INSTANCE_METHOD(void, OnNyaPhysicalClick);

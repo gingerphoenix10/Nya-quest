@@ -24,21 +24,10 @@ namespace Nya {
             static Nya::NyaFloatingUI* NyaFloatingUI;
     };
 
-    Paper::ConstLoggerContext<4UL> getLogger();
-
     // Define these functions here so that we can easily read configuration and log information from other files
     Configuration& getConfig();  
-    // Old version of the logger
-    Logger& getLoggerOld();
     // Creates/removes .nomedia based on config
     void ApplyIndexingRules();
     // Cleans temp folder
     void CleanTempFolder();
 }
-
-
-#define INFO(...) Nya::getLogger().fmtLog<Paper::LogLevel::INF>(__VA_ARGS__)
-#define ERROR(...) Nya::getLogger().fmtLog<Paper::LogLevel::ERR>(__VA_ARGS__)
-#define CRITICAL(...) Nya::getLogger().fmtLog<Paper::LogLevel::ERR>(__VA_ARGS__)
-#define DEBUG(...) Nya::getLogger().fmtLog<Paper::LogLevel::DBG>(__VA_ARGS__)
-#define WARNING(...) Nya::getLogger().fmtLog<Paper::LogLevel::WRN>(__VA_ARGS__)

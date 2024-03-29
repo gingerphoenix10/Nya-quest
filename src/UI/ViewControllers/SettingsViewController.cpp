@@ -2,8 +2,12 @@
 
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "UnityEngine/Resources.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "logging.hpp"
 
-std::vector<std::string> buttonOptions = {
+std::vector<std::string_view> buttonOptions = {
     "None",
     "A",
     "B",
@@ -14,96 +18,93 @@ std::vector<std::string> buttonOptions = {
 
 DEFINE_TYPE(Nya::UI::ViewControllers, SettingsViewController);
 
-using namespace QuestUI::BeatSaberUI;
+using namespace BSML;
 
 void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+    std::span<std::string_view> buttonOptionsValues(buttonOptions);
     if (firstActivation) {
-
         this->nsfwModal = get_gameObject()->AddComponent<Nya::UI::Modals::NSFWConsent*>();
 
-        auto *container = CreateScrollableSettingsContainer(get_transform());
+        auto *container = BSML::Lite::CreateScrollableSettingsContainer(get_transform());
 
-        CreateToggle(container->get_transform(), "Floating in Pause Menu",
+        BSML::Lite::CreateToggle(container->get_transform(), "Floating in Pause Menu",
             getNyaConfig().inPause.GetValue(), [](bool value) {
             getNyaConfig().inPause.SetValue(value);
             if (
                 Main::NyaFloatingUI != nullptr && 
-                Main::NyaFloatingUI->UIScreen != nullptr
+                Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
         });
-        CreateToggle(container->get_transform(), "Floating on Menu Screen",
+        BSML::Lite::CreateToggle(container->get_transform(), "Floating on Menu Screen",
             getNyaConfig().inMenu.GetValue(),
             [](bool value) {
                 getNyaConfig().inMenu.SetValue(value);
                 if (
                     Main::NyaFloatingUI != nullptr && 
-                    Main::NyaFloatingUI->UIScreen != nullptr
+                    Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
                 }
         });
 
-        CreateToggle(container->get_transform(), "Show handle",
+        BSML::Lite::CreateToggle(container->get_transform(), "Show handle",
             getNyaConfig().ShowHandle.GetValue(),
             [](bool value) {
                 getNyaConfig().ShowHandle.SetValue(value);
                 if (
                     Main::NyaFloatingUI != nullptr && 
-                    Main::NyaFloatingUI->UIScreen != nullptr
+                    Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->UpdateHandleVisibility();
                 }
         });
 
-        auto slider = CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f, 
+        auto slider = BSML::Lite::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f,
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->UpdateScale();
                 }
             }
-            
+
         );
 
-        CreateToggle(container->get_transform(), "AutoNya",
+        BSML::Lite::CreateToggle(container->get_transform(), "AutoNya",
             getNyaConfig().AutoNya.GetValue(),
             [](bool value) {
                 getNyaConfig().AutoNya.SetValue(value);
                 if (
                     value &&
-                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI != nullptr &&
                     Main::NyaFloatingUI->imageView != nullptr
                 ) {
                     Main::NyaFloatingUI->imageView->OnEnable();
                 }
         });
 
-        CreateSliderSetting(container->get_transform(), "Nya Delay", 0.5f, 
+        BSML::Lite::CreateSliderSetting(container->get_transform(), "Nya Delay", 0.5f,
             getNyaConfig().AutoNyaDelay.GetValue(), 4.0f, 30.0f, [](float value) {
                 getNyaConfig().AutoNyaDelay.SetValue(value);
             }
         );
 
-        // Create StringWrapper Vector with Content of buttonOptions
-        // We cant create it directly, as StringW is not designed for static use
-        std::vector<StringW> buttonOptionsWrapper = {};
-        for (auto option : buttonOptions) {
-            buttonOptionsWrapper.emplace_back(option);
-        }
+
+
+
 
         // Create actual Dropdown
-        CreateDropdown(container->get_transform(), "Nya on controller button", buttonOptionsWrapper[getNyaConfig().UseButton.GetValue()], buttonOptionsWrapper, [](auto value) {
+        BSML::Lite::CreateDropdown(container->get_transform(), "Nya on controller button", buttonOptionsValues[getNyaConfig().UseButton.GetValue()], buttonOptionsValues, [](auto value) {
 
             // Find Index of selected Element
             int index = std::find(buttonOptions.begin(), buttonOptions.end(), value) - buttonOptions.begin();
 
             // And Save it
-            getNyaConfig().UseButton.SetValue(index); 
+            getNyaConfig().UseButton.SetValue(index);
         });
-        
-        CreateToggle(container->get_transform(), "Index saved images",
+
+        BSML::Lite::CreateToggle(container->get_transform(), "Index saved images",
             getNyaConfig().IndexSFW.GetValue(), [](bool value) {
                 getNyaConfig().IndexSFW.SetValue(value);
                 Nya::ApplyIndexingRules();
@@ -112,7 +113,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
 
         #ifdef NSFW
             if (getNyaConfig().NSFWUI.GetValue()) {
-                CreateToggle(container->get_transform(), "Index saved NSFW images",
+                BSML::Lite::CreateToggle(container->get_transform(), "Index saved NSFW images",
                     getNyaConfig().IndexNSFW.GetValue(), [](bool value) {
                         getNyaConfig().IndexNSFW.SetValue(value);
                         Nya::ApplyIndexingRules();
@@ -123,7 +124,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
 
         #ifdef NSFW
             if (getNyaConfig().NSFWUI.GetValue()) {
-                CreateToggle(container->get_transform(), "Remember NSFW",
+                BSML::Lite::CreateToggle(container->get_transform(), "Remember NSFW",
                     getNyaConfig().RememberNSFW.GetValue(), [](bool value) {
                         getNyaConfig().RememberNSFW.SetValue(value);
                     }
@@ -131,55 +132,55 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             }
         #endif
 
-        {   
-            auto* hor = CreateHorizontalLayoutGroup(container->get_transform());
+        {
+            auto* hor = BSML::Lite::CreateHorizontalLayoutGroup(container->get_transform());
             // Buttons for settings
             // TODO: Make it work with floating ui off
-            UnityEngine::UI::Button* faceHeadset = CreateUIButton(hor->get_transform(), to_utf16("Face headset"), "PracticeButton",
+            UnityEngine::UI::Button* faceHeadset = BSML::Lite::CreateUIButton(hor->get_transform(), "Face headset", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->LookAtCamera();
+                    Main::NyaFloatingUI->LookAtCamera();
                 }
             });
-            CreateUIButton(hor->get_transform(), to_utf16("Set upright"), "PracticeButton",
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Set upright", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
-                    Main::NyaFloatingUI->hoverClickHelper->SetUpRight();
+                    Main::NyaFloatingUI->SetUpRight();
                 }
             });
-            CreateUIButton(hor->get_transform(), to_utf16("Default position"), "PracticeButton",
+            BSML::Lite::CreateUIButton(hor->get_transform(), "Default position", "PracticeButton",
             [this]() {
                 if (Main::NyaFloatingUI != nullptr) {
                     Main::NyaFloatingUI->SetDefaultPos();
                 }
             });
         }
-        
-        CreateUIButton(container->get_transform(), to_utf16("Reset all positions"), "PracticeButton",
+
+        BSML::Lite::CreateUIButton(container->get_transform(), "Reset all positions", "PracticeButton",
         [this]() {
             EndpointConfigUtils::ResetPositions();
             if (
-                Main::NyaFloatingUI != nullptr && 
-                Main::NyaFloatingUI->UIScreen != nullptr
+                Main::NyaFloatingUI != nullptr &&
+                Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
             }
         });
 
-        
+
 
         #ifdef NSFW
-            CreateUIButton(container->get_transform(), to_utf16(getNyaConfig().NSFWUI.GetValue()?"Enable NSFW again":"Enable NSFW"), "PracticeButton",
+            BSML::Lite::CreateUIButton(container->get_transform(), (getNyaConfig().NSFWUI.GetValue()?"Enable NSFW again":"Enable NSFW"), "PracticeButton",
             [this]() {
-                QuestUI::MainThreadScheduler::Schedule([this]{
+                BSML::MainThreadScheduler::Schedule([this]{
                     this->nsfwModal->Show();
                 });
             });
             if (getNyaConfig().NSFWUI.GetValue()) {
-              
-                CreateUIButton(container->get_transform(), to_utf16("Disable NSFW"), "PracticeButton",
+
+                BSML::Lite::CreateUIButton(container->get_transform(), "Disable NSFW", "PracticeButton",
                 [this]() {
-                    QuestUI::MainThreadScheduler::Schedule([this]{
+                    BSML::MainThreadScheduler::Schedule([this]{
                         getNyaConfig().NSFWUI.SetValue(false);
                         // If we are turning it off completely, we should also turn off indexing of NSFW images
                         getNyaConfig().IndexNSFW.SetValue(false);

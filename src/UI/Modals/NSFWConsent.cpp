@@ -2,16 +2,21 @@
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/RectOffset.hpp"
+#include "UnityEngine/UI/ContentSizeFitter.hpp"
 #include "assets.hpp"
 #include "UnityEngine/WaitForSeconds.hpp"
+#include "UnityEngine/Transform.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Text.hpp"
+
 DEFINE_TYPE(Nya::UI::Modals, NSFWConsent);
 
 using namespace UnityEngine;
 using namespace UnityEngine::UI;
-using namespace QuestUI::BeatSaberUI;
+using namespace BSML;
 using namespace std;
 
-#define coro(coroutine) GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(coroutine))
 
 custom_types::Helpers::Coroutine Nya::UI::Modals::NSFWConsent::InteractabilityCooldown(SliderSetting * setting) {
     setting->slider->set_interactable(false);
@@ -42,7 +47,7 @@ custom_types::Helpers::Coroutine Nya::UI::Modals::NSFWConsent::FadeoutModal(Fade
             hornyPastryPufferLayout->get_gameObject()->SetActive(true);
             // Wait for 2 seconds
             co_yield reinterpret_cast<System::Collections::IEnumerator*>(WaitForSeconds::New_ctor(2));
-            modal->Hide(true, nullptr);
+            modal->Hide();
 
             UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::MenuTransitionsHelper*>()[0]->RestartGame(nullptr);
         }
@@ -53,7 +58,7 @@ custom_types::Helpers::Coroutine Nya::UI::Modals::NSFWConsent::FadeoutModal(Fade
             hornyPastryPufferLayout->get_gameObject()->SetActive(false);
             // Wait for 2 seconds
             co_yield reinterpret_cast<System::Collections::IEnumerator*>(WaitForSeconds::New_ctor(2));
-            modal->Hide(true, nullptr);
+            modal->Hide();
         }
         break;
     
@@ -63,7 +68,7 @@ custom_types::Helpers::Coroutine Nya::UI::Modals::NSFWConsent::FadeoutModal(Fade
             hornyPastryPufferLayout->get_gameObject()->SetActive(false);
             // Wait for 2 seconds
             co_yield reinterpret_cast<System::Collections::IEnumerator*>(WaitForSeconds::New_ctor(2));
-            modal->Hide(true, nullptr);
+            modal->Hide();
         }
         break;
     
@@ -80,8 +85,9 @@ void Nya::UI::Modals::NSFWConsent::UpdateModalContent() {
         // Enable nsfw
         getNyaConfig().NSFWUI.SetValue(true);
         
-        
-        coro(this->FadeoutModal(FadeOutContent::HornyPastryPuffer));
+        this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+            this->FadeoutModal(FadeOutContent::HornyPastryPuffer)
+        ));
 
         return;
     }
@@ -96,7 +102,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Woah There!",
                 "Are you sure you want to enable NSFW features? You have to be 18+ to do this!",
-                IncludedAssets::Chocola_Surprised_png,
+                Assets::Chocola_Surprised_png,
                 "No",
                 "Yes, I'm 18+",
                 true,
@@ -110,7 +116,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Are you sure?",
                 "Mhm... you super sure you're 18 or older??",
-                IncludedAssets::Chocola_Question_Mark_png,
+                Assets::Chocola_Question_Mark_png,
                 "No, I'm not",
                 "Yes, I'm certain",
                 true,
@@ -123,7 +129,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Are you very sure?",
                 "If you're lying I will find out and tell your parents. \r\n(They will be very disappointed in you)",
-                IncludedAssets::Chocola_Angry_png,
+                Assets::Chocola_Angry_png,
                 "Sorry, I lied",
                 "Yes, I'm not lying",
                 true,
@@ -136,7 +142,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Just double checking",
                 "Okay so you're absolutely positive that you're 18+ and want to enable NSFW features?",
-                IncludedAssets::Chocola_Howdidyoudothat_png,
+                Assets::Chocola_Howdidyoudothat_png,
                 "No",
                 "Yes",
                 true,
@@ -149,7 +155,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Surprise math question!",
                 "To confirm that you're really 18, let's do a maths question! \r\nWhat is 6 + 9 * (4 - 2) + 0?",
-                IncludedAssets::Chocola_Laugh_png,
+                Assets::Chocola_Laugh_png,
                 "No",
                 "Yes",
                 true,
@@ -162,7 +168,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Correct!",
                 "If you got that right then you must be a smart and sensible adult!",
-                IncludedAssets::Chocola_Happy_png,
+                Assets::Chocola_Happy_png,
                 "but I'm not...",
                 "I am!",
                 true,
@@ -175,7 +181,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Wait!",
                 "The NSFW features could be dangerous! \r\nWhy else would they be called \"Not Safe For Work??\"",
-                IncludedAssets::Chocola_Spooked_png,
+                Assets::Chocola_Spooked_png,
                 "That sounds risky!",
                 "I am prepared",
                 true,
@@ -189,7 +195,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Last time I'll ask",
                 "So you definitely want to enable the NSFW features and suffer the consequences which may entail from it?",
-                IncludedAssets::Chocola_Bashful_png,
+                Assets::Chocola_Bashful_png,
                 "No",
                 "Yes",
                 true,
@@ -201,71 +207,74 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
 }
 
 void Nya::UI::Modals::NSFWConsent::ctor() {
+}
+
+void Nya::UI::Modals::NSFWConsent::Awake() {
     {
        InitModalContents();
     }
 
-    this->modal = CreateModal(get_transform(), {95, 70}, nullptr);
+    this->modal = BSML::Lite::CreateModal(get_transform(), {0,0},{95, 70}, nullptr);
 
 
     // Root component
-    auto* rootVertical = CreateVerticalLayoutGroup(this->modal->get_transform());
+    auto* rootVertical = BSML::Lite::CreateVerticalLayoutGroup(this->modal->get_transform());
     auto rootVerticalElement = rootVertical->GetComponent<UnityEngine::UI::LayoutElement*>();
     rootVertical->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     rootVerticalElement->set_preferredWidth(92);
 
     {        
         // Create main layout
-        mainLayout = CreateVerticalLayoutGroup(rootVertical->get_transform());
+        mainLayout = BSML::Lite::CreateVerticalLayoutGroup(rootVertical->get_transform());
         // mainLayout->get_gameObject()->set_active(false);
         // Create top text
         {   
-            auto vert = CreateVerticalLayoutGroup(mainLayout->get_transform());
+            auto vert = BSML::Lite::CreateVerticalLayoutGroup(mainLayout->get_transform());
             vert->set_padding(RectOffset::New_ctor(2, 0, 0, 0));
-            topText = CreateText(mainLayout->get_transform(), to_utf16("TopText"), false);
+            topText = BSML::Lite::CreateText(mainLayout->get_transform(), "TopText", false);
             topText->set_fontSize(8.2f);
             topText->set_fontStyle(TMPro::FontStyles::Underline);
             topText->set_alignment(TMPro::TextAlignmentOptions::Center);
         }
         {
             // Create horizontal layout for mid text and image
-            auto hor = CreateHorizontalLayoutGroup(mainLayout->get_transform());
+            auto hor = BSML::Lite::CreateHorizontalLayoutGroup(mainLayout->get_transform());
             auto fitter = hor->GetComponent<UnityEngine::UI::ContentSizeFitter*>();
             fitter->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
 
             {
                 // Create mid text layout
-                auto midTextLayout = CreateVerticalLayoutGroup(hor->get_transform());
+                auto midTextLayout = BSML::Lite::CreateVerticalLayoutGroup(hor->get_transform());
                 midTextLayout->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(45);
 
                 // Create mid text
-                midText = CreateText(midTextLayout->get_transform(), to_utf16("MidText"), false);
+                midText = BSML::Lite::CreateText(midTextLayout->get_transform(), "MidText", false);
                 midText->set_fontSize(5.0f);
                 midText->set_alignment(TMPro::TextAlignmentOptions::Center);
                 midText->set_enableWordWrapping(true);
             }
 
             // Create mid image
-            midImage = CreateImage(hor->get_transform(), nullptr, {0, 0}, {40, 40});
+            midImage = BSML::Lite::CreateImage(hor->get_transform(), nullptr, {0, 0}, {40, 40});
             midImage->set_preserveAspect(true);
             // TODO: Remove later
-            midImage->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::Vanilla_Horny_Pastry_Puffer_png));
+            midImage->set_sprite(BSML::Lite::ArrayToSprite(Assets::Vanilla_Horny_Pastry_Puffer_png));
             midImage->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(40);
             midImage->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(40);
 
         }
         {
             // Create buttons layout
-            buttonsLayout = CreateHorizontalLayoutGroup(mainLayout->get_transform());
+            buttonsLayout = BSML::Lite::CreateHorizontalLayoutGroup(mainLayout->get_transform());
             // Create no button
-            noButton = CreateUIButton(buttonsLayout->get_transform(), "No", [this](){
+            noButton = BSML::Lite::CreateUIButton(buttonsLayout->get_transform(), "No", [this](){
                 this->Hide();
             });
             noButton->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(34);
             noButton->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(10);
 
             // Create yes button
-            yesButton = CreateUIButton(buttonsLayout->get_transform(), "Yes", [this](){
+            yesButton = BSML::Lite::CreateUIButton(buttonsLayout->get_transform(), "Yes", [this](){
                 ConfirmationStage += 1;
                 UpdateModalContent();
             });
@@ -274,46 +283,46 @@ void Nya::UI::Modals::NSFWConsent::ctor() {
         }
         {
             // Create slider layout
-            sliderLayout = CreateHorizontalLayoutGroup(mainLayout->get_transform());
+            sliderLayout = BSML::Lite::CreateHorizontalLayoutGroup(mainLayout->get_transform());
             sliderLayout->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(80);
 
             // Create slider
-            slider = CreateSliderSetting(sliderLayout->get_transform(), "Value", 1.0f, 1.0f, 0.0f, 60.0f, [this](float value){});
+            slider = BSML::Lite::CreateSliderSetting(sliderLayout->get_transform(), "Value", 1.0f, 1.0f, 0.0f, 60.0f, [this](float value){});
             slider->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(80);
             
             // create submit button
-            submitButton = CreateUIButton(sliderLayout->get_transform(), "Submit", [this](){
-                if (slider->get_value() == 24.0f) {
+            submitButton = BSML::Lite::CreateUIButton(sliderLayout->get_transform(), "Submit", [this](){
+                if (slider->get_Value() == 24.0f) {
                     ConfirmationStage += 1;
                     UpdateModalContent();
                 } else {
-                    coro(this->FadeoutModal(FadeOutContent::IncorrectMath));
+                    this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                        this->FadeoutModal(FadeOutContent::IncorrectMath)
+                    ));
                 }
             });
             submitButton->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(25);
             submitButton->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(10);
         }
     }
-
     {
         // Create nsfw layout lel
-        hornyPastryPufferLayout = CreateHorizontalLayoutGroup(rootVertical->get_transform());
+        hornyPastryPufferLayout = BSML::Lite::CreateHorizontalLayoutGroup(rootVertical->get_transform());
         auto hornyPastryPufferElement = hornyPastryPufferLayout->GetComponent<UnityEngine::UI::LayoutElement*>();
         hornyPastryPufferElement->set_preferredWidth(92);
         hornyPastryPufferElement->set_preferredHeight(70);
         hornyPastryPufferElement->GetComponent<UnityEngine::UI::ContentSizeFitter*>()->set_horizontalFit(UnityEngine::UI::ContentSizeFitter::FitMode::PreferredSize);
 
-        auto hornyImageView = CreateImage(hornyPastryPufferLayout->get_transform(), nullptr, {0, 0}, {0, 0});
+        auto hornyImageView = BSML::Lite::CreateImage(hornyPastryPufferLayout->get_transform(), nullptr, {0, 0}, {0, 0});
         hornyImageView->set_preserveAspect(true);
-        hornyImageView->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(IncludedAssets::Vanilla_Horny_Pastry_Puffer_png));
+        hornyImageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Vanilla_Horny_Pastry_Puffer_png));
         hornyPastryPufferLayout->get_gameObject()->set_active(false);
     }
-    
 }
 
 void Nya::UI::Modals::NSFWConsent::Show() {
 
-    QuestUI::MainThreadScheduler::Schedule([this] {
+    BSML::MainThreadScheduler::Schedule([this] {
         mainLayout->get_gameObject()->set_active(true);
         hornyPastryPufferLayout->get_gameObject()->set_active(false);
         buttonsLayout->get_gameObject()->set_active(true);
@@ -322,7 +331,7 @@ void Nya::UI::Modals::NSFWConsent::Show() {
 
         UpdateModalContent();
 
-        this->modal->Show(true, true, nullptr);
+        this->modal->Show();
     });
     
 
@@ -330,10 +339,10 @@ void Nya::UI::Modals::NSFWConsent::Show() {
 
 void Nya::UI::Modals::NSFWConsent::ChangeModalContent(ModalContent& modalContent) {
     // Scheduler
-    QuestUI::MainThreadScheduler::Schedule([this, modalContent] {
-        topText->SetText(modalContent.TopText);
-        midText->SetText(modalContent.MidText);
-        midImage->set_sprite(QuestUI::BeatSaberUI::ArrayToSprite(modalContent.MidImage));
+    BSML::MainThreadScheduler::Schedule([this, modalContent] {
+        topText->set_text(modalContent.TopText);
+        midText->set_text(modalContent.MidText);
+        midImage->set_sprite(BSML::Lite::ArrayToSprite(modalContent.MidImage));
 
         if (modalContent.ShowInputs) {
             if (modalContent.MathTime) {
@@ -341,11 +350,15 @@ void Nya::UI::Modals::NSFWConsent::ChangeModalContent(ModalContent& modalContent
                 buttonsLayout->get_gameObject()->set_active(false);
                 sliderLayout->get_gameObject()->set_active(true);
 
-                slider->set_value(0.0f);
+                slider->set_Value(0.0f);
 
                 if (modalContent.ButtonIntractabilityCooldown) {
-                    coro(this->InteractabilityCooldown(slider));
-                    coro(this->InteractabilityCooldown(submitButton));
+                    this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                        this->InteractabilityCooldown(slider)
+                    ));
+                    this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                        this->InteractabilityCooldown(submitButton)
+                    ));
                 } else {
                     submitButton->set_interactable(true);
                 }
@@ -354,12 +367,16 @@ void Nya::UI::Modals::NSFWConsent::ChangeModalContent(ModalContent& modalContent
                 buttonsLayout->get_gameObject()->set_active(true);
                 sliderLayout->get_gameObject()->set_active(false);
 
-                noButton->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->SetText(modalContent.NoButtonText);
-                yesButton->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->SetText(modalContent.YesButtonText);
+                noButton->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_text(modalContent.NoButtonText);
+                yesButton->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_text(modalContent.YesButtonText);
                 
                 if (modalContent.ButtonIntractabilityCooldown) {
-                    coro(this->InteractabilityCooldown(yesButton));
-                    coro(this->InteractabilityCooldown(noButton));
+                    this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                        this->InteractabilityCooldown(yesButton)
+                    )); 
+                    this->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(
+                        this->InteractabilityCooldown(noButton)
+                    ));
                 } else {
                     yesButton->set_interactable(true);
                     noButton->set_interactable(true);
@@ -372,11 +389,11 @@ void Nya::UI::Modals::NSFWConsent::ChangeModalContent(ModalContent& modalContent
 }
 
 void Nya::UI::Modals::NSFWConsent::Hide() {
-    QuestUI::MainThreadScheduler::Schedule([this] {
-        this->modal->Hide(true, nullptr);
+    BSML::MainThreadScheduler::Schedule([this] {
+        this->modal->Hide();
     });
 }
 
 bool Nya::UI::Modals::NSFWConsent::isShown() {
-    return this->modal->isShown;
+    return this->modal->_isShown;
 }

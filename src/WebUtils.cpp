@@ -5,12 +5,12 @@
 
 #include "libcurl/shared/curl.h"
 #include "libcurl/shared/easy.h"
+#include "logging.hpp"
 
 #include <thread>
 #define TIMEOUT 10
 #define USER_AGENT useragent
 
-extern Logger& getLogger();
 
 namespace WebUtils
 {   
@@ -88,7 +88,7 @@ namespace WebUtils
 			s->append((char*)contents, newLength);
 		} catch(std::bad_alloc &e) {
 			//handle memory problem
-			getLogger().critical("Failed to allocate string of size: %lu", newLength);
+			DEBUG("Failed to allocate string of size: {}", newLength);
 			return 0;
 		}
 		return newLength;
@@ -164,7 +164,7 @@ namespace WebUtils
 				auto res = curl_easy_perform(curl);
 				/* Check for errors */ 
 				if (res != CURLE_OK) {
-					getLogger().critical("curl_easy_perform() failed: %u: %s", res, curl_easy_strerror(res));
+//					DEBUG("curl_easy_perform() failed: {}: {}", res, curl_easy_strerror(res));
 				}
 				curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 				curl_easy_cleanup(curl);
@@ -226,7 +226,7 @@ namespace WebUtils
 				auto res = curl_easy_perform(curl);
 				/* Check for errors */ 
 				if (res != CURLE_OK) {
-					getLogger().critical("curl_easy_perform() failed: %u: %s", res, curl_easy_strerror(res));
+//					getLogger().critical("curl_easy_perform() failed: %u: %s", res, curl_easy_strerror(res));
 				}
 				curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 				curl_easy_cleanup(curl);

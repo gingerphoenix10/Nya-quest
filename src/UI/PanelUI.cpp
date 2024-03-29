@@ -1,5 +1,7 @@
 #include "UI/PanelUI.hpp"
 #include "main.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
+#include "logging.hpp"
 using namespace Nya;
 
 namespace Nya {
@@ -8,10 +10,10 @@ namespace Nya {
     }
 
     PanelUI::PanelUI(UnityEngine::Transform* parent, UnityEngine::Sprite* sprite, int index){
-        UnityEngine::GameObject* mainCanvas = QuestUI::BeatSaberUI::CreateCanvas();
+        UnityEngine::GameObject* mainCanvas = BSML::Lite::CreateCanvas();
         mainCanvas->set_active(false);
         this->index = index;
-        image = QuestUI::BeatSaberUI::CreateCanvas()->AddComponent<UnityEngine::UI::Image*>();
+        image = BSML::Lite::CreateCanvas()->AddComponent<UnityEngine::UI::Image*>();
         image->set_material(Main::NyaFloatingUI->UINoGlow);
         image->set_sprite(sprite);
 
@@ -22,12 +24,12 @@ namespace Nya {
         text->set_alignment(TMPro::TextAlignmentOptions::Center);
 
         auto* collider = mainCanvas->AddComponent<UnityEngine::BoxCollider*>();
-        hoverHint = QuestUI::BeatSaberUI::AddHoverHint(collider->get_gameObject(), "hewoo");
+        hoverHint = BSML::Lite::AddHoverHint(collider->get_gameObject(), "hewoo");
         collider->set_size({13.0f, 13.0f, 0.0f});
         collider->set_name("gridcollider " + std::to_string(index));
-        hoverHint->hoverHintController = nullptr;
+        hoverHint->_hoverHintController = nullptr;
 
-        UnityEngine::RectTransform* rectTransform = (UnityEngine::RectTransform*)image->get_transform();
+        UnityEngine::RectTransform* rectTransform = image->get_transform().cast<UnityEngine::RectTransform>();
         rectTransform->set_anchorMin(UnityEngine::Vector2(0.5f, 0.5f));
         rectTransform->set_anchorMax(UnityEngine::Vector2(0.5f, 0.5f));
         rectTransform->set_anchoredPosition({0.0f, 0.0f});

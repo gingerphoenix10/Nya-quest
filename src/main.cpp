@@ -1,8 +1,7 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
-
 #include "UI/ViewControllers/SettingsViewController.hpp"
-#include "questui/shared/QuestUI.hpp"
+#include "bsml/shared/BSML.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/LevelCompletionResults.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
@@ -10,10 +9,7 @@
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/NoteCutInfo.hpp"
-#include "GlobalNamespace/NoteData.hpp"
-#include "GlobalNamespace/ISaberSwingRatingCounter.hpp"
 #include "GlobalNamespace/ScoreModel.hpp"
-#include "GlobalNamespace/PlayerSpecificSettings.hpp"
 #include "GlobalNamespace/NoteCutDirection.hpp"
 #include "GlobalNamespace/CutScoreBuffer.hpp"
 #include "GlobalNamespace/ColorScheme.hpp"
@@ -21,20 +17,19 @@
 #include "GlobalNamespace/MultiplayerResultsViewController.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/StandardLevelDetailView.hpp"
-#include "GlobalNamespace/LevelCompletionResults.hpp"
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
 #include "GlobalNamespace/MainSettingsModelSO.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/MainMenuViewController.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "NyaConfig.hpp"
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 #include "GlobalNamespace/OVRInput.hpp"
-#include "GlobalNamespace/OVRInput_Button.hpp"
 #include "GlobalNamespace/OculusVRHelper.hpp"
+#include "GlobalNamespace/MainFlowCoordinator.hpp"
 #include "Events.hpp"
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
 #include <fstream>
+#include "logging.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
@@ -46,7 +41,7 @@ Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
     DEBUG("Pause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
     }
     
@@ -55,7 +50,7 @@ MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
     DEBUG("Unpause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
     
@@ -64,20 +59,20 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
     DEBUG("Restartbutton");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
 }
 
-MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, IDifficultyBeatmap* difficultyBeatmap, bool practice, bool newHighScore) {
+MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewController* self, LevelCompletionResults* levelCompletionResults, IReadonlyBeatmapData* transformedBeatmapData, ByRef<::GlobalNamespace::BeatmapKey> beatmapKey, ::GlobalNamespace::BeatmapLevel* beatmapLevel, bool practice, bool newHighScore) {
     DEBUG("Results");
-    Results(self, levelCompletionResults, transformedBeatmapData, difficultyBeatmap, practice, newHighScore);
+    Results(self, levelCompletionResults, transformedBeatmapData, beatmapKey, beatmapLevel, practice, newHighScore);
 }
 
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MultiResults");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
     
@@ -88,8 +83,8 @@ MAKE_HOOK_MATCH(MenuTransitionsHelper_RestartGame, &MenuTransitionsHelper::Resta
 {
     DEBUG("MenuTransitionsHelper_RestartGame");
     // Destroy the floating UI on soft restart
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr.m_value){
-        GameObject::DestroyImmediate(Main::NyaFloatingUI->UIScreen->get_gameObject());
+    if (Main::NyaFloatingUI && Main::NyaFloatingUI){
+        GameObject::DestroyImmediate(Main::NyaFloatingUI->floatingScreen->get_gameObject());
 
         Nya::NyaFloatingUI::delete_instance();
         Main::NyaFloatingUI = nullptr;
@@ -101,7 +96,7 @@ MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoord
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MainFlowCoordinator_DidActivate");
     
-    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr.m_value) {
+    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     } else {
@@ -120,7 +115,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
         std::string nextSceneName(nextScene.get_name());
 
         if (Nya::Main::NyaFloatingUI != nullptr) {
-            QuestUI::MainThreadScheduler::Schedule([prevScene, nextScene]
+            BSML::MainThreadScheduler::Schedule([prevScene, nextScene]
             {
                 Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);
             });
@@ -251,19 +246,8 @@ void Nya::ApplyIndexingRules()
     
 }
 
-Logger& Nya::getLoggerOld() {
-    static Logger* logger = new Logger(modInfo);
-    return *logger;
-}
-
-// Returns a logger, useful for printing debug messages
-Paper::ConstLoggerContext<4UL> Nya::getLogger() {
-    static auto fastContext = Paper::Logger::WithContext<"Nya">();
-    return fastContext;
-}
-
 // Called at the early stages of game loading
-extern "C" void setup(CModInfo& info) {
+extern "C" __attribute__((visibility("default"))) void setup(CModInfo& info) {
     info.id = MOD_ID;
     info.version = VERSION;
     info.version_long = GIT_COMMIT;
@@ -280,42 +264,47 @@ void InitConfigOnStart(){
     }
 }
 
+// Handling buttons
 MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, void, GlobalNamespace::OculusVRHelper* self){
     FixedUpdateHook(self);
 
 
-    static bool pressedEventAllreadyRun = false;
+     static bool pressedEventAllreadyRun = false;
     
-    // 0 Means nothing is assigned, and we dont need to do anything
-    int useButtonValue = getNyaConfig().UseButton.GetValue();
-    if(useButtonValue > 0){
-        // Determine if we need the Right or Left Controller (Right is 2 Left is One)
-        // Definition from: GlobalNamespace::OVRInput::Controller::RTouch
-        int controllerIndex = useButtonValue > 2 ? 1 : 2;
+    // // 0 Means nothing is assigned, and we dont need to do anything
+     int useButtonValue = getNyaConfig().UseButton.GetValue();
+     if(useButtonValue > 0){
+         // Determine if we need the Right or Left Controller (Right is 2 Left is One)
+         // Definition from: GlobalNamespace::OVRInput::Controller::RTouch
+         int controllerIndex = useButtonValue > 2 ? 1 : 2;
 
-        // Here we correct the Index for direct Usage as Input for OVRInput.Get
-        // After this line the Primary Button A/X (1/3 in Config) is 0 and the Secondary Button (2/4 in Config) is 1
-        // Source: https://developer.oculus.com/documentation/unity/unity-ovrinput/
-        useButtonValue = ((useButtonValue - 1) % 2) + 1;
-        
-        bool buttonPressed = GlobalNamespace::OVRInput::Get(useButtonValue, controllerIndex);
-        if(buttonPressed){
-            if(!pressedEventAllreadyRun) {
-                if (Nya::GlobalEvents::onControllerNya.size() > 0) {
-                    Nya::GlobalEvents::onControllerNya.invoke();
-                    pressedEventAllreadyRun = true;
-                }
-            }
-        }
-        else {
-            pressedEventAllreadyRun = false;
-        }
-    }
+         // Here we correct the Index for direct Usage as Input for OVRInput.Get
+         // After this line the Primary Button A/X (1/3 in Config) is 0 and the Secondary Button (2/4 in Config) is 1
+         // Source: https://developer.oculus.com/documentation/unity/unity-ovrinput/
+         useButtonValue = ((useButtonValue - 1) % 2) + 1;
+
+         bool buttonPressed = GlobalNamespace::OVRInput::Get(GlobalNamespace::__OVRInput__Button(useButtonValue), controllerIndex);
+         if(buttonPressed){
+             if(!pressedEventAllreadyRun) {
+                 if (Nya::GlobalEvents::onControllerNya.size() > 0) {
+                     Nya::GlobalEvents::onControllerNya.invoke();
+                     pressedEventAllreadyRun = true;
+                 }
+             }
+         }
+         else {
+             pressedEventAllreadyRun = false;
+         }
+     }
 }
 
 // Called later on in the game loading - a good time to install function hooks
-extern "C" void load() {
+extern "C" __attribute__((visibility("default"))) void late_load() {
     il2cpp_functions::Init();
+    BSML::Init();
+
+    // Should always be before any custom types can possibly be used
+    custom_types::Register::AutoRegister();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
@@ -323,30 +312,33 @@ extern "C" void load() {
     // Do config validation and modifications on start
     InitConfigOnStart();
 
-    // Make local folders if they do not exist
-    makeFolder();
-    // Sometimes when crashing, the temp folder is not deleted, so we do it here on start
-    Nya::CleanTempFolder();
-    Nya::ApplyIndexingRules();
-    QuestUI::Init();
+    try {
+        // Make local folders if they do not exist
+        makeFolder();
+        // Sometimes when crashing, the temp folder is not deleted, so we do it here on start
+        Nya::CleanTempFolder();
+        Nya::ApplyIndexingRules();
+    } catch (std::exception& e) {
+        ERROR("Error making folders and applying indexing rules: %s", e.what());
+    }
+    
 
-    QuestUI::Register::RegisterGameplaySetupMenu<Nya::ModifiersMenu*>(modInfo, "Nya");
-    // QuestUI::Register::RegisterModSettingsViewController<Nya::SettingsViewController*>(modInfo, "Nya");
-    QuestUI::Register::RegisterModSettingsFlowCoordinator<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>(modInfo, "Nya");
+    BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
+    BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
 
-    custom_types::Register::AutoRegister();
+    auto logger = Paper::ConstLoggerContext("Nya");
 
-    Nya::getLoggerOld().info("Installing hooks...");
+    INFO("Installing hooks...");
     // Install our hooks
-    INSTALL_HOOK(Nya::getLoggerOld(), Pause);
-    INSTALL_HOOK(Nya::getLoggerOld(), FixedUpdateHook);
-    INSTALL_HOOK(Nya::getLoggerOld(), Results);
-    INSTALL_HOOK(Nya::getLoggerOld(), Unpause);
-    INSTALL_HOOK(Nya::getLoggerOld(), Restartbutton);
-    INSTALL_HOOK(Nya::getLoggerOld(), MultiResults);
-    INSTALL_HOOK(Nya::getLoggerOld(), MenuTransitionsHelper_RestartGame);
-    INSTALL_HOOK(Nya::getLoggerOld(), SceneManager_Internal_ActiveSceneChanged);
-    INSTALL_HOOK(Nya::getLoggerOld(), MainFlowCoordinator_DidActivate);
+    INSTALL_HOOK(logger, Pause);
+    INSTALL_HOOK(logger, FixedUpdateHook);
+    INSTALL_HOOK(logger, Results);
+    INSTALL_HOOK(logger, Unpause);
+    INSTALL_HOOK(logger, Restartbutton);
+    INSTALL_HOOK(logger, MultiResults);
+    INSTALL_HOOK(logger, MenuTransitionsHelper_RestartGame);
+    INSTALL_HOOK(logger, SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(logger, MainFlowCoordinator_DidActivate);
 
-    Nya::getLoggerOld().info("Installed all hooks!");
+    INFO("Installed all hooks!");
 }
