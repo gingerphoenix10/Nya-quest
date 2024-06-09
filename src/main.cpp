@@ -18,7 +18,6 @@
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/StandardLevelDetailView.hpp"
 #include "GlobalNamespace/MenuTransitionsHelper.hpp"
-#include "GlobalNamespace/MainSettingsModelSO.hpp"
 #include "GlobalNamespace/MainMenuViewController.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "NyaConfig.hpp"
@@ -36,12 +35,12 @@ using namespace GlobalNamespace;
 using namespace Nya;
 
 
-Nya::NyaFloatingUI* Nya::Main::NyaFloatingUI = nullptr;
+SafePtrUnity<Nya::NyaFloatingUI> Nya::Main::NyaFloatingUI = nullptr;
 
 MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
     Pause(self);
     DEBUG("Pause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
+    if (Main::NyaFloatingUI){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Pause);
     }
     
@@ -50,7 +49,7 @@ MAKE_HOOK_MATCH(Pause, &GamePause::Pause, void, GamePause* self) {
 MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* self) {
     Unpause(self);
     DEBUG("Unpause");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
+    if (Main::NyaFloatingUI){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
     
@@ -59,7 +58,7 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
 MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, PauseMenuManager* self) {
     Restartbutton(self);
     DEBUG("Restartbutton");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
+    if (Main::NyaFloatingUI){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
     }
 }
@@ -72,7 +71,7 @@ MAKE_HOOK_MATCH(Results, &ResultsViewController::Init, void, ResultsViewControll
 MAKE_HOOK_MATCH(MultiResults, &MultiplayerResultsViewController::DidActivate, void, MultiplayerResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     MultiResults(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MultiResults");
-    if (Main::NyaFloatingUI && Main::NyaFloatingUI->m_CachedPtr){
+    if (Main::NyaFloatingUI){
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     }
     
@@ -98,7 +97,7 @@ MAKE_HOOK_MATCH(MainFlowCoordinator_DidActivate, &GlobalNamespace::MainFlowCoord
     MainFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
     DEBUG("MainFlowCoordinator_DidActivate");
     
-    if (!Main::NyaFloatingUI || !Main::NyaFloatingUI->m_CachedPtr) {
+    if (!Main::NyaFloatingUI) {
         Nya::Main::NyaFloatingUI = Nya::NyaFloatingUI::get_instance();
         Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::MainMenu);
     } else {
@@ -116,7 +115,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneMan
         std::string prevSceneName(prevScene.get_name());
         std::string nextSceneName(nextScene.get_name());
 
-        if (Nya::Main::NyaFloatingUI != nullptr) {
+        if (Nya::Main::NyaFloatingUI) {
             BSML::MainThreadScheduler::Schedule([prevScene, nextScene]
             {
                 Nya::Main::NyaFloatingUI->OnActiveSceneChanged(prevScene, nextScene);

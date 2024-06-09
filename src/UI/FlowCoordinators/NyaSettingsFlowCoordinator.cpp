@@ -5,7 +5,7 @@ DEFINE_TYPE(Nya::UI::FlowCoordinators, NyaSettingsFlowCoordinator);
 
 
 void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::Awake(){
-    if (!SettingsViewController || !SettingsViewController->m_CachedPtr) {
+    if (!SettingsViewController) {
         SettingsViewController = BSML::Helpers::CreateViewController<ViewControllers::SettingsViewController*>();
     }
 }
@@ -18,7 +18,7 @@ void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::DidActivate(bool fir
     ProvideInitialViewControllers(SettingsViewController, nullptr, nullptr, nullptr, nullptr);
 }
 void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::BackButtonWasPressed(HMUI::ViewController* topViewController) {
-    if (this->_parentFlowCoordinator && this->_parentFlowCoordinator->m_CachedPtr) {
+    if (this->_parentFlowCoordinator) {
         this->_parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
     }
 }

@@ -21,7 +21,7 @@ namespace Nya {
         public:
             static bool configValid;
             static void loadConfig();
-            static Nya::NyaFloatingUI* NyaFloatingUI;
+            static SafePtrUnity<Nya::NyaFloatingUI> NyaFloatingUI;
     };
 
     // Define these functions here so that we can easily read configuration and log information from other files

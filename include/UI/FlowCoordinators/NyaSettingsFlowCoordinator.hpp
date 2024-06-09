@@ -10,7 +10,7 @@ using namespace Nya::UI;
 
 DECLARE_CLASS_CODEGEN(Nya::UI::FlowCoordinators, NyaSettingsFlowCoordinator, HMUI::FlowCoordinator,
     
-    DECLARE_INSTANCE_FIELD(ViewControllers::SettingsViewController*, SettingsViewController);
+    DECLARE_INSTANCE_FIELD(UnityW<ViewControllers::SettingsViewController>, SettingsViewController);
 
     DECLARE_INSTANCE_METHOD(void, Awake);
 

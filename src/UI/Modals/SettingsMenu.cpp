@@ -176,18 +176,18 @@ void SettingsMenu::Awake() {
 
             Button* faceHeadset =
             BSML::Lite::CreateUIButton(hor->get_transform(), "Face headset", "PracticeButton", [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->LookAtCamera();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), "Set upright", "PracticeButton", [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->SetUpRight();
                 }
             });
         }
         BSML::Lite::CreateUIButton(floatingViewLayout->get_transform(), "Default position", "PracticeButton", [this]() {
-            if (Main::NyaFloatingUI != nullptr) {
+            if (Main::NyaFloatingUI) {
                 Main::NyaFloatingUI->SetDefaultPos();
             }
         });
@@ -198,7 +198,7 @@ void SettingsMenu::Awake() {
         BSML::Lite::CreateToggle(floatingViewLayout->get_transform(), "Show handle", getNyaConfig().ShowHandle.GetValue(),
                      [](bool value) {
                          getNyaConfig().ShowHandle.SetValue(value);
-                         if (Main::NyaFloatingUI != nullptr && Main::NyaFloatingUI->floatingScreen != nullptr) {
+                         if (Main::NyaFloatingUI && Main::NyaFloatingUI->floatingScreen != nullptr) {
                              Main::NyaFloatingUI->UpdateHandleVisibility();
                          }
                      });
@@ -207,7 +207,7 @@ void SettingsMenu::Awake() {
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f,
             [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->UpdateScale();
                 }
             }

@@ -31,7 +31,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             getNyaConfig().inPause.GetValue(), [](bool value) {
             getNyaConfig().inPause.SetValue(value);
             if (
-                Main::NyaFloatingUI != nullptr && 
+                Main::NyaFloatingUI && 
                 Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
@@ -42,7 +42,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             [](bool value) {
                 getNyaConfig().inMenu.SetValue(value);
                 if (
-                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI && 
                     Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
@@ -54,7 +54,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             [](bool value) {
                 getNyaConfig().ShowHandle.SetValue(value);
                 if (
-                    Main::NyaFloatingUI != nullptr && 
+                    Main::NyaFloatingUI && 
                     Main::NyaFloatingUI->floatingScreen != nullptr
                 ) {
                     Main::NyaFloatingUI->UpdateHandleVisibility();
@@ -64,7 +64,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
         auto slider = BSML::Lite::CreateSliderSetting(container->get_transform(), "Floating Screen Scale", 0.1f,
             getNyaConfig().FloatingScreenScale.GetValue(), 0.1f, 2.0f, [](float value) {
                 getNyaConfig().FloatingScreenScale.SetValue(value);
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->UpdateScale();
                 }
             }
@@ -77,7 +77,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                 getNyaConfig().AutoNya.SetValue(value);
                 if (
                     value &&
-                    Main::NyaFloatingUI != nullptr &&
+                    Main::NyaFloatingUI &&
                     Main::NyaFloatingUI->imageView != nullptr
                 ) {
                     Main::NyaFloatingUI->imageView->OnEnable();
@@ -138,19 +138,19 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
             // TODO: Make it work with floating ui off
             UnityEngine::UI::Button* faceHeadset = BSML::Lite::CreateUIButton(hor->get_transform(), "Face headset", "PracticeButton",
             [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->LookAtCamera();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), "Set upright", "PracticeButton",
             [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->SetUpRight();
                 }
             });
             BSML::Lite::CreateUIButton(hor->get_transform(), "Default position", "PracticeButton",
             [this]() {
-                if (Main::NyaFloatingUI != nullptr) {
+                if (Main::NyaFloatingUI) {
                     Main::NyaFloatingUI->SetDefaultPos();
                 }
             });
@@ -160,7 +160,7 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
         [this]() {
             EndpointConfigUtils::ResetPositions();
             if (
-                Main::NyaFloatingUI != nullptr &&
+                Main::NyaFloatingUI &&
                 Main::NyaFloatingUI->floatingScreen != nullptr
             ) {
                 Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
