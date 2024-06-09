@@ -36,11 +36,11 @@ Feel free to point out any suggestions or improvements by submitting a PR or con
 ## Build instructions
 
 ### Prerequisites
-1. Install ninja, cmake and android ndk (version 24 or higher)
-2. Create a file called `ndkpath.txt` in the project root and paste the path to ndk folder
-3. install [qpm-rust](https://github.com/Lauriethefish/quest-mod-template) and add it to PATH
-4. Install dependencies using `qpm-rust restore`
-5. Generate a mod.json using a command `qpm-rust qmod build` (it is needed to build a mod)
+1. Install ninja, cmake and [android ndk](https://developer.android.com/ndk/downloads) (version 27 or higher)
+2. Create a file called `ndkpath.txt` in the project root and paste the path to ndk folder or add ANDROID_NDK_HOME environment variable
+3. install [qpm](https://github.com/QuestPackageManager/QPM.CLI) and add it to PATH
+4. Install dependencies using `qpm restore`
+5. Generate a mod.json using a command `qpm qmod build` (it is needed to build a mod)
 
 ### Building 
 ```ps1
