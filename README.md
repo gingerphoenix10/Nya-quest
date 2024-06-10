@@ -21,7 +21,7 @@ Images which are downloaded via Nya will also be placed in the sfw / nsfw folder
 ## Installation
 [Install](https://bsmg.wiki/quest-modding.html#installation) the latest version of [Nya Quest](https://github.com/FrozenAlex/Nya-quest/releases/latest).
 ## Contribution
-Feel free to point out any suggestions or improvements by submitting a PR or contacting me on Discord ([FrozenAlex#4028](https://discordapp.com/users/150649616772235264)).
+Feel free to point out any suggestions or improvements by submitting a PR or contacting me on Discord ([FrozenAlex](https://discordapp.com/users/150649616772235264)).
 
 ## Credits
 
