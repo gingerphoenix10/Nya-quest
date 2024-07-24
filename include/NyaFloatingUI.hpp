@@ -16,6 +16,7 @@
 #include "UI/Modals/SettingsMenu.hpp"
 #include "ImageView.hpp"
 #include "bsml/shared/BSML/FloatingScreen/FloatingScreen.hpp"
+#include "bsml/shared/BSML.hpp"
 
 
 using namespace UnityEngine::UI;
@@ -34,7 +35,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onUnPause();
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
-            void updateCoordinates(BSML::FloatingScreen* self, const BSML::FloatingScreenHandleEventArgs& args);
+            void updateCoordinates(UnityW<BSML::FloatingScreen> self, const BSML::FloatingScreenHandleEventArgs& args);
             void updateCoordinates(UnityEngine::Transform* transform);
             void updateCoordinates(UnityEngine::Vector3 position, UnityEngine::Vector3 eulerRotation);
             void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
@@ -61,7 +62,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
 
             // NYA
             DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, NYA);
-            DECLARE_INSTANCE_FIELD(UnityW<NyaUtils::ImageView>, imageView);
+            DECLARE_INSTANCE_FIELD(UnityW<Nya::ImageView>, imageView);
             DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::Plane>, plane);
 
             DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, nyaButton);

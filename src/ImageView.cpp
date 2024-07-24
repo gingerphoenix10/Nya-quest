@@ -37,15 +37,14 @@
 #include "Events.hpp"
 #include "System/GC.hpp"
 
-
 // Necessary
-DEFINE_TYPE(NyaUtils, ImageView);
+DEFINE_TYPE(Nya, ImageView);
 
 using namespace UnityEngine;
 using namespace NyaAPI;
 
 // Start
-void NyaUtils::ImageView::ctor()
+void Nya::ImageView::ctor()
 {
     this->lastImageURL = "";
     this->isNSFW = false;
@@ -59,20 +58,36 @@ void NyaUtils::ImageView::ctor()
 }
 
 // Awake
-void NyaUtils::ImageView::Awake()
+void Nya::ImageView::Awake()
 {
     // Get the image view
     imageView = this->get_gameObject()->GetComponent<HMUI::ImageView *>();
 }
 
-bool NyaUtils::ImageView::HasImageToSave() {
+bool Nya::ImageView::HasImageToSave() {
     return (this->lastImageURL != "" && this->tempName != "" && Nya::Utils::IsImage(this->tempName));
 }
 
+// AutoNya related stuff
+void Nya::ImageView::LateUpdate()
+{
+    bool autoNya = getNyaConfig().AutoNya.GetValue();
+    if (!autoNya || this->isLoading) return;
+    int autoNyaDelay = getNyaConfig().AutoNyaDelay.GetValue();
+    // Time in seconds since the last frame
+    float delta = Time::get_deltaTime();
+    // Add the time since the last frame to the time since the last nya
+    this->timeSinceLastNya += delta;
+    
+    if (this->timeSinceLastNya >= (float) autoNyaDelay) {
+        // Get new image
+        this->GetImage(nullptr);
+    }
+}
 
 // TODO: review crash related to this (https://analyzer.questmodding.com/crashes/4V2U)
 //  filesystem error: in rename: No such file or directory [/sdcard/ModData/com.beatgames.beatsaber/Mods/Nya/Temp/edOwqtb4.png] [/sdcard/ModData/com.beatgames.beatsaber/Mods/Nya/Images/nsfw/edOwqtb4.png]
-void NyaUtils::ImageView::SaveImage() {
+void Nya::ImageView::SaveImage() {
     if (this->lastImageURL != "" && this->tempName != "" && Nya::Utils::IsImage(this->tempName)) {
         INFO("MOVING FILE");
         std::string original = NyaGlobals::tempPath + this->tempName;
@@ -91,9 +106,11 @@ void NyaUtils::ImageView::SaveImage() {
 }
 
 // Update
-void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = nullptr)
+void Nya::ImageView::GetImage(std::function<void(bool success)> finished = nullptr)
 {
     this->isLoading = true;
+    // Reset time since last nya
+    this->timeSinceLastNya = 0.0f;
     if (this->imageLoadingChange.size() > 0) this->imageLoadingChange.invoke(true);
 
     // Delete the last downloaded image
@@ -269,6 +286,12 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
                     this->lastImageURL = url;
                     this->tempName = fileFullName;
                     this->isNSFW = NSFWEnabled;
+                    
+                    // Check if image view is still valid and if not, don't set the image
+                    if (this->imageView == nullptr || this->imageView->___m_CachedPtr.m_value == nullptr) {
+                        if (finished != nullptr) finished(false);
+                        return;
+                    }
 
                     BSML::Utilities::SetImage(this->imageView,  "file://" + path, true, BSML::Utilities::ScaleOptions(), false, [finished, this]() {
                         // Set is loading status
@@ -296,17 +319,17 @@ void NyaUtils::ImageView::GetImage(std::function<void(bool success)> finished = 
   }           
 }
 
-void NyaUtils::ImageView::SetErrorImage()
+void Nya::ImageView::SetErrorImage()
 {
+    // If the image view is not valid, don't set the image
+    if (this->imageView == nullptr || this->imageView->___m_CachedPtr.m_value == nullptr) return;
+    
     Nya::Utils::RemoveAnimationUpdater(this->imageView);
     this->imageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Chocola_Dead_png));
 }
 
-void NyaUtils::ImageView::dtor()
-{
-}
 
-void NyaUtils::ImageView::OnNyaPhysicalClick(){
+void Nya::ImageView::OnNyaPhysicalClick(){
     if (this->isLoading) {
         return;
     }
@@ -314,62 +337,15 @@ void NyaUtils::ImageView::OnNyaPhysicalClick(){
     this->GetImage(nullptr);
 }
 
-void NyaUtils::ImageView::OnEnable()
+void Nya::ImageView::OnEnable()
 {
     // Subscribe to physical click
-    Nya::GlobalEvents::onControllerNya += {&NyaUtils::ImageView::OnNyaPhysicalClick ,this};
-
-     if (getNyaConfig().AutoNya.GetValue() && this->autoNyaRunning == false) {
-         this->StartCoroutine(custom_types::Helpers::new_coro(this->AutoNyaCoro()));
-     }
+    Nya::GlobalEvents::onControllerNya += {&Nya::ImageView::OnNyaPhysicalClick ,this};
 }
 
-void NyaUtils::ImageView::OnDisable()
+void Nya::ImageView::OnDisable()
 {
     this->autoNyaRunning = false;
     // Unsubscribe to physical click
-    Nya::GlobalEvents::onControllerNya -= {&NyaUtils::ImageView::OnNyaPhysicalClick ,this};
-}
-
-
-// Coroutine for autonya
-custom_types::Helpers::Coroutine NyaUtils::ImageView::AutoNyaCoro()
-{
-    // Extra guard agains simultaneous autonyas just to be sure
-    if (this->autoNyaRunning) {
-        co_return;
-    };
-    autoNyaNewImage = true;
-    this->autoNyaRunning = true;
-
-    while (true) {
-        // Check if it's enabled
-        bool enabled = getNyaConfig().AutoNya.GetValue();
-
-        // Quit if not enabled or is not running
-        if (!enabled ||  !this->autoNyaRunning) {
-            this->autoNyaRunning = false;
-            co_return;
-        }
-
-        if (autoNyaNewImage) {
-            autoNyaNewImage = false;
-            int waitTime = getNyaConfig().AutoNyaDelay.GetValue();
-            co_yield reinterpret_cast<System::Collections::IEnumerator*>(WaitForSeconds::New_ctor(waitTime));
-
-            // Check again cause if it's disabled we want to quit after the delay
-            enabled = getNyaConfig().AutoNya.GetValue();
-            if (!enabled ||  !this->autoNyaRunning) {
-                this->autoNyaRunning = false;
-                co_return;
-            }
-            this->GetImage([this](bool success){
-                this->autoNyaNewImage = true;
-            });
-        }
-
-        co_yield nullptr;
-    }
-    
-    
+    Nya::GlobalEvents::onControllerNya -= {&Nya::ImageView::OnNyaPhysicalClick ,this};
 }

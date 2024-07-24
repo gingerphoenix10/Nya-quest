@@ -133,7 +133,7 @@ void SettingsMenu::Awake() {
         {
             this->downloadButton =
                 BSML::Lite::CreateUIButton(horz->get_transform(), "Download Nya", "PracticeButton", [this]() {
-                    auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+                    UnityW<Nya::ImageView> imageView = this->get_gameObject()->GetComponent<Nya::ImageView*>();
                     imageView->SaveImage();
                     this->downloadButton->set_interactable(false);
                     this->settingsModal->Hide(true, nullptr);
@@ -155,7 +155,7 @@ void SettingsMenu::Awake() {
             autoNyaButton = BSML::Lite::CreateToggle(horz2, "AutoNya", getNyaConfig().AutoNya.GetValue(), [this](bool value) {
                 getNyaConfig().AutoNya.SetValue(value);
                 if (value) {
-                    NyaUtils::ImageView* imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+                    UnityW<Nya::ImageView> imageView = this->get_gameObject()->GetComponent<Nya::ImageView*>();
                     if (imageView) {
                         imageView->OnEnable();
                     }
@@ -326,7 +326,7 @@ void SettingsMenu::SwitchTab(int idx) {
 
 void SettingsMenu::Show() {
     INFO("Settings button clicked");
-    auto imageView = this->get_gameObject()->GetComponent<NyaUtils::ImageView*>();
+    UnityW<Nya::ImageView> imageView = this->get_gameObject()->GetComponent<Nya::ImageView*>();
     this->downloadButton->set_interactable(imageView->HasImageToSave());
 
     // Run UI on the main thread

@@ -18,7 +18,7 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, NYA);
     // DECLARE_INSTANCE_FIELD(bool, );
     DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, nyaButton);
-    DECLARE_INSTANCE_FIELD(UnityW<NyaUtils::ImageView>, imageView);
+    DECLARE_INSTANCE_FIELD(UnityW<Nya::ImageView>, imageView);
     DECLARE_INSTANCE_FIELD(bool, initialized);
 
 

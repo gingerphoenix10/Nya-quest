@@ -12,20 +12,24 @@
 #include "UnityEngine/Material.hpp"
 #include <functional>
 
-DECLARE_CLASS_CODEGEN(NyaUtils, ImageView, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya, ImageView, UnityEngine::MonoBehaviour,
   public:
     
     std::string lastImageURL;
     std::string tempName;
 
+    // AutoNya
+    float timeSinceLastNya = 0.0f;
+
     DECLARE_CTOR(ctor);
-    DECLARE_DTOR(dtor);
+    DECLARE_SIMPLE_DTOR();
 
     DECLARE_INSTANCE_FIELD(HMUI::ImageView*, imageView);
     DECLARE_INSTANCE_FIELD(bool, autoNyaRunning);
     DECLARE_INSTANCE_FIELD(bool, autoNyaNewImage);
     DECLARE_INSTANCE_FIELD(bool, isLoading);
     DECLARE_INSTANCE_METHOD(void, Awake);
+    DECLARE_INSTANCE_METHOD(void, LateUpdate);
     DECLARE_INSTANCE_METHOD(void, OnEnable);
     DECLARE_INSTANCE_METHOD(void, OnDisable);
     DECLARE_INSTANCE_METHOD(void, OnNyaPhysicalClick);
@@ -42,7 +46,6 @@ DECLARE_CLASS_CODEGEN(NyaUtils, ImageView, UnityEngine::MonoBehaviour,
     void SaveImage();
     bool HasImageToSave();
     void SetErrorImage();
-    custom_types::Helpers::Coroutine AutoNyaCoro();
 
     // Event to sub to when image started loading, returns isLoading, meaning that the image is loading
     UnorderedEventCallback<bool> imageLoadingChange;

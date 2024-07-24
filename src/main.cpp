@@ -302,10 +302,10 @@ MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, 
 // Called later on in the game loading - a good time to install function hooks
 extern "C" __attribute__((visibility("default"))) void late_load() {
     il2cpp_functions::Init();
-    BSML::Init();
-
     // Should always be before any custom types can possibly be used
     custom_types::Register::AutoRegister();
+    
+    BSML::Init();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);

@@ -64,7 +64,7 @@ namespace Nya {
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
 
         DEBUG("Adding image view to the game object");
-        imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
+        imageView = NYA->get_gameObject()->AddComponent<Nya::ImageView*>();
         ele->set_preferredHeight(70);
         ele->set_preferredWidth(70);
 

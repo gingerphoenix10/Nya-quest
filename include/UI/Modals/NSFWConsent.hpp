@@ -53,23 +53,23 @@ DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour,
         DECLARE_INSTANCE_METHOD(bool, isShown );
 
         // // Settings buttons and modal
-        DECLARE_INSTANCE_FIELD(BSML::ModalView*, modal);
+        DECLARE_INSTANCE_FIELD(UnityW<BSML::ModalView>, modal);
 
-        DECLARE_INSTANCE_FIELD(VerticalLayoutGroup *, mainLayout);
-        DECLARE_INSTANCE_FIELD(HorizontalLayoutGroup *, hornyPastryPufferLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<VerticalLayoutGroup>, mainLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, hornyPastryPufferLayout);
 
-        DECLARE_INSTANCE_FIELD(HorizontalLayoutGroup *, buttonsLayout);
-        DECLARE_INSTANCE_FIELD(HorizontalLayoutGroup *, sliderLayout);
-
-
-        DECLARE_INSTANCE_FIELD(TextMeshProUGUI *, topText);
-        DECLARE_INSTANCE_FIELD(TextMeshProUGUI *, midText);
-        DECLARE_INSTANCE_FIELD(ImageView *, midImage);
+        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, buttonsLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, sliderLayout);
 
 
-        DECLARE_INSTANCE_FIELD(Button *, noButton);
-        DECLARE_INSTANCE_FIELD(Button *, yesButton);
+        DECLARE_INSTANCE_FIELD(UnityW<TextMeshProUGUI>, topText);
+        DECLARE_INSTANCE_FIELD(UnityW<TextMeshProUGUI>, midText);
+        DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, midImage);
 
-        DECLARE_INSTANCE_FIELD(BSML::SliderSetting *, slider);
-        DECLARE_INSTANCE_FIELD(Button *, submitButton);
+
+        DECLARE_INSTANCE_FIELD(UnityW<Button>, noButton);
+        DECLARE_INSTANCE_FIELD(UnityW<Button>, yesButton);
+
+        DECLARE_INSTANCE_FIELD(UnityW<BSML::SliderSetting>, slider);
+        DECLARE_INSTANCE_FIELD(UnityW<Button>, submitButton);
 )

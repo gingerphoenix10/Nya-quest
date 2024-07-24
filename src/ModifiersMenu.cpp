@@ -57,7 +57,7 @@ namespace Nya {
             NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
             auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
             DEBUG("Adds component");
-            this->imageView = NYA->get_gameObject()->AddComponent<NyaUtils::ImageView*>();
+            this->imageView = NYA->get_gameObject()->AddComponent<Nya::ImageView*>();
             ele->set_preferredHeight(50);
             ele->set_preferredWidth(50);
 
