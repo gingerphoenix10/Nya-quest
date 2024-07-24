@@ -35,7 +35,7 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             void onUnPause();
             void onResultsScreenActivate();
             void onResultsScreenDeactivate();
-            void updateCoordinates(UnityW<BSML::FloatingScreen> self, const BSML::FloatingScreenHandleEventArgs& args);
+            void updateCoordinates(BSML::FloatingScreen* self, const BSML::FloatingScreenHandleEventArgs& args);
             void updateCoordinates(UnityEngine::Transform* transform);
             void updateCoordinates(UnityEngine::Vector3 position, UnityEngine::Vector3 eulerRotation);
             void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);

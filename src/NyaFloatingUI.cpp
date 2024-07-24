@@ -196,7 +196,7 @@ namespace Nya {
     
     void NyaFloatingUI::updateCoordinates(BSML::FloatingScreen* self, const BSML::FloatingScreenHandleEventArgs& args) {
         DEBUG("Updating coordinates called from handle event");
-        if (!self) {
+        if (self == nullptr || self->___m_CachedPtr.m_value == nullptr) {
             ERROR("Floating screen not found when updating coordinates");
             return;
         };
