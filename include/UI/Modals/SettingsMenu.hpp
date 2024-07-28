@@ -10,7 +10,6 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "HMUI/ModalView.hpp"
-#include "UI/PanelUI.hpp"
 #include "Utils/CustomSegmentedControl.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "beatsaber-hook/shared/utils/typedefs.h"

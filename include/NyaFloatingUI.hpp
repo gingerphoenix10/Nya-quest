@@ -4,7 +4,6 @@
 #include <cmath>
 #define _USE_MATH_DEFINES
 #include "HMUI/ModalView.hpp"
-#include "UI/PanelUI.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Plane.hpp"

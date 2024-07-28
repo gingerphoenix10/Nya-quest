@@ -13,7 +13,7 @@ void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::Awake(){
 void Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator::DidActivate(bool firstActivation, bool addedToHeirarchy, bool screenSystemEnabling) {
     if (!firstActivation) return;
 
-    SetTitle(il2cpp_utils::newcsstr("Nya Settings"), HMUI::ViewController::AnimationType::In);
+    SetTitle("Nya Settings", HMUI::ViewController::AnimationType::In);
     showBackButton = true;
     ProvideInitialViewControllers(SettingsViewController, nullptr, nullptr, nullptr, nullptr);
 }

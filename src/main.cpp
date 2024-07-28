@@ -175,10 +175,10 @@ void makeFolder()
 
 
 void Nya::CleanTempFolder(){
-    if (direxists(NyaGlobals::tempPath.c_str()))
+    if (direxists(NyaGlobals::tempPath))
     {
         std::vector<std::string> files = FileUtils::getAllFilesInFolder(NyaGlobals::tempPath);
-        for (std::string file : files) {
+        for (const std::string& file : files) {
             FileUtils::deleteFile(file);
         }
     }
@@ -186,7 +186,7 @@ void Nya::CleanTempFolder(){
 
 void Nya::ApplyIndexingRules() 
 {    
-    if (!direxists(NyaGlobals::nyaPath.c_str()))
+    if (!direxists(NyaGlobals::nyaPath))
     {
         ERROR("Nya folder not found, no reason to proceed!");
         return;
@@ -302,10 +302,11 @@ MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, 
 // Called later on in the game loading - a good time to install function hooks
 extern "C" __attribute__((visibility("default"))) void late_load() {
     il2cpp_functions::Init();
-    // Should always be before any custom types can possibly be used
-    custom_types::Register::AutoRegister();
     
     BSML::Init();
+
+    // Should always be before any custom types can possibly be used
+    custom_types::Register::AutoRegister();
 
     // Load the config - make sure this is after il2cpp_functions::Init();
     getNyaConfig().Init(modInfo);
@@ -320,26 +321,22 @@ extern "C" __attribute__((visibility("default"))) void late_load() {
         Nya::CleanTempFolder();
         Nya::ApplyIndexingRules();
     } catch (std::exception& e) {
-        ERROR("Error making folders and applying indexing rules: %s", e.what());
+        ERROR("Error making folders and applying indexing rules: {}", e.what());
     }
     
 
     BSML::Register::RegisterGameplaySetupTab<Nya::ModifiersMenu*>("Nya");
     BSML::Register::RegisterSettingsMenu<Nya::UI::FlowCoordinators::NyaSettingsFlowCoordinator*>("Nya");
 
-    auto logger = Paper::ConstLoggerContext("Nya");
-
     INFO("Installing hooks...");
-    // Install our hooks
-    INSTALL_HOOK(logger, Pause);
-    INSTALL_HOOK(logger, FixedUpdateHook);
-    INSTALL_HOOK(logger, Results);
-    INSTALL_HOOK(logger, Unpause);
-    INSTALL_HOOK(logger, Restartbutton);
-    INSTALL_HOOK(logger, MultiResults);
-    INSTALL_HOOK(logger, MenuTransitionsHelper_RestartGame);
-    INSTALL_HOOK(logger, SceneManager_Internal_ActiveSceneChanged);
-    INSTALL_HOOK(logger, MainFlowCoordinator_DidActivate);
-
+    INSTALL_HOOK(Logger, Pause);
+    INSTALL_HOOK(Logger, FixedUpdateHook);
+    INSTALL_HOOK(Logger, Results);
+    INSTALL_HOOK(Logger, Unpause);
+    INSTALL_HOOK(Logger, Restartbutton);
+    INSTALL_HOOK(Logger, MultiResults);
+    INSTALL_HOOK(Logger, MenuTransitionsHelper_RestartGame);
+    INSTALL_HOOK(Logger, SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(Logger, MainFlowCoordinator_DidActivate);
     INFO("Installed all hooks!");
 }

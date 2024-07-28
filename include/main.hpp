@@ -19,13 +19,9 @@ inline modloader::ModInfo modInfo = {MOD_ID, VERSION, GIT_COMMIT}; // Stores the
 namespace Nya {
     class Main {
         public:
-            static bool configValid;
-            static void loadConfig();
             static SafePtrUnity<Nya::NyaFloatingUI> NyaFloatingUI;
     };
 
-    // Define these functions here so that we can easily read configuration and log information from other files
-    Configuration& getConfig();  
     // Creates/removes .nomedia based on config
     void ApplyIndexingRules();
     // Cleans temp folder
