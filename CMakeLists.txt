@@ -4,13 +4,6 @@ include(qpm_defines.cmake)
 # override mod id
 set(MOD_ID "Nya")
 
-# Enable link time optimization
-# In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
-# However, the instability was seen using Android.mk/ndk-build builds. With Ninja + CMake, this problem seems to have been solved.
-# As always, test thoroughly
-# - Fern
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
 include(${EXTERN_DIR}/includes/kaleb/shared/cmake/assets.cmake)
@@ -29,9 +22,21 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_link_options(-Wl,--exclude-libs,ALL)
 # compile options used
 add_compile_options(-frtti -fexceptions  -fvisibility=hidden)
-add_compile_options(-O3)
 # NSFW toggle to remove nsfw entirely
 add_compile_options(-DNSFW)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "RELEASE" OR ${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo" OR ${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
+
+    # Better optimizations
+    add_compile_options(-O3)
+
+    # LTO
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    add_compile_options(-flto)
+else()
+    # Debug options
+    add_compile_options(-O0 -g)
+endif()
 
 # get git info
 execute_process(COMMAND git config user.name OUTPUT_VARIABLE GIT_USER)
@@ -63,12 +68,18 @@ add_compile_definitions(MOD_ID=\"${MOD_ID}\")
 RECURSE_FILES(cpp_file_list ${SOURCE_DIR}/*.cpp)
 RECURSE_FILES(c_file_list ${SOURCE_DIR}/*.c)
 
+RECURSE_FILES(inline_hook_c ${EXTERN_DIR}/includes/beatsaber-hook/shared/inline-hook/*.c)
+RECURSE_FILES(inline_hook_cpp ${EXTERN_DIR}/includes/beatsaber-hook/shared/inline-hook/*.cpp)
+
+
 # add all src files to compile
 add_library(
         ${COMPILE_ID}
         SHARED
         ${cpp_file_list}
         ${c_file_list}
+        ${inline_hook_c}
+        ${inline_hook_cpp}
 )
 
 target_include_directories(${COMPILE_ID} PRIVATE .)

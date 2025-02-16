@@ -17,7 +17,7 @@
 
 using namespace NyaAPI;
 
-DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour) {
     public:
        
         void Hide();
@@ -61,4 +61,4 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour,
         
         DECLARE_INSTANCE_FIELD(BSML::DropdownListSetting*, nsfw_endpoint);
         DECLARE_INSTANCE_FIELD(BSML::ToggleSetting*, nsfw_toggle);
-)
+};

@@ -13,22 +13,22 @@
 #define NYA_PATH_FORMAT "/sdcard/ModData/{}/Mods/Nya/"
 
 namespace NyaGlobals {
-    static std::string nyaPath = fmt::format(NYA_PATH_FORMAT, modloader::get_application_id().c_str());
-    static std::string imagesPath = nyaPath + "Images/";
-    static std::string imagesPathSFW = nyaPath + "Images/sfw/";
-    static std::string imagesPathNSFW = nyaPath + "Images/nsfw/";
-    static std::string tempPath = nyaPath + "Temp/";
+        static std::string nyaPath = fmt::format(NYA_PATH_FORMAT, modloader::get_application_id().c_str());
+        static std::string imagesPath = nyaPath + "Images/";
+        static std::string imagesPathSFW = nyaPath + "Images/sfw/";
+        static std::string imagesPathNSFW = nyaPath + "Images/nsfw/";
+        static std::string tempPath = nyaPath + "Temp/";
 }
 
-DECLARE_JSON_CLASS(EndpointConfig,
+DECLARE_JSON_STRUCT(EndpointConfig) {
     NAMED_VALUE_OPTIONAL(std::string, sfw, "sfw");
     NAMED_VALUE_OPTIONAL(std::string, nsfw, "nsfw");
     EndpointConfig(std::optional<std::string> safe, std::optional<std::string> unsafe) : sfw(safe), nsfw(unsafe) {};
     EndpointConfig() {};
-)
+};
 
 
-DECLARE_CONFIG(NyaConfig,
+DECLARE_CONFIG(NyaConfig) {
     CONFIG_VALUE(inPause, bool, "Show in pause", true);
     CONFIG_VALUE(inMenu, bool, "Show in menu", true);
 
@@ -56,5 +56,5 @@ DECLARE_CONFIG(NyaConfig,
     CONFIG_VALUE(menuPosition, UnityEngine::Vector3, "Menu Position", UnityEngine::Vector3(0.0f, 4.0f, 4.0f));
     CONFIG_VALUE(menuRotation, UnityEngine::Vector3, "Menu Rotation", UnityEngine::Vector3(332.0f, 0.0f, 0.0f));
 
-    CONFIG_VALUE(endpoints, StringKeyedMap<EndpointConfig>, "EndpointsConfig", StringKeyedMap<EndpointConfig>());
-)
+    CONFIG_VALUE(endpoints, StringKeyedMap<EndpointConfig>, "EndpointsConfig", {});
+};

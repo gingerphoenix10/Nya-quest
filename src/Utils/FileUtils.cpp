@@ -80,4 +80,16 @@ namespace FileUtils {
     std::string GetFileFormat(std::string path) {
         return System::IO::Path::GetExtension(path);
     }
+
+    // Create a directory if it does not exist (recursively)
+    bool createDirectoryIfNotExists(const std::string& path) {
+        if (!fs::exists(path)) {
+            return fs::create_directories(path);
+        }
+        return true;
+    }
+
+    bool exists(const std::string& path) {
+        return fs::exists(path);
+    }
 }

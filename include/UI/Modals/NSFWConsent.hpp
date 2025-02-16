@@ -33,7 +33,7 @@ using namespace HMUI;
 
 
 
-DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour) {
     public:
         std::vector<ModalContent> ModalContents;
         int ConfirmationStage = 0;
@@ -72,4 +72,4 @@ DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour,
 
         DECLARE_INSTANCE_FIELD(UnityW<BSML::SliderSetting>, slider);
         DECLARE_INSTANCE_FIELD(UnityW<Button>, submitButton);
-)
+};

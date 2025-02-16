@@ -65,7 +65,7 @@ void Nya::ImageView::Awake()
 }
 
 bool Nya::ImageView::HasImageToSave() {
-    return (this->lastImageURL != "" && this->tempName != "" && Nya::Utils::IsImage(this->tempName));
+    return (!this->lastImageURL.empty() && !this->tempName.empty() && Nya::Utils::IsImage(this->tempName));
 }
 
 // AutoNya related stuff
@@ -88,21 +88,47 @@ void Nya::ImageView::LateUpdate()
 // TODO: review crash related to this (https://analyzer.questmodding.com/crashes/4V2U)
 //  filesystem error: in rename: No such file or directory [/sdcard/ModData/com.beatgames.beatsaber/Mods/Nya/Temp/edOwqtb4.png] [/sdcard/ModData/com.beatgames.beatsaber/Mods/Nya/Images/nsfw/edOwqtb4.png]
 void Nya::ImageView::SaveImage() {
-    if (this->lastImageURL != "" && this->tempName != "" && Nya::Utils::IsImage(this->tempName)) {
-        INFO("MOVING FILE");
-        std::string original = NyaGlobals::tempPath + this->tempName;
+    if (this->lastImageURL.empty() || this->tempName.empty() || !Nya::Utils::IsImage(this->tempName)) {
+        ERROR("Invalid image data for saving");
+        return;
+    }
+
+    try {
+        std::string originalPath = NyaGlobals::tempPath + this->tempName;
+        std::string destPath;
+        
+        // Verify source file exists
+        if (!FileUtils::exists(originalPath)) {
+            ERROR("Source file does not exist: {}", originalPath);
+            return;
+        }
+
+        // Determine and create destination directory if needed
         if (this->isNSFW) {
-            FileUtils::moveFile(original, NyaGlobals::imagesPathNSFW + this->tempName);
+            FileUtils::createDirectoryIfNotExists(NyaGlobals::imagesPathNSFW);
+            destPath = NyaGlobals::imagesPathNSFW + this->tempName;
         } else {
-            INFO("MOVING FROM {} TO {}", original,  NyaGlobals::imagesPathSFW + this->tempName);
-            FileUtils::moveFile(original, NyaGlobals::imagesPathSFW + this->tempName);
+            FileUtils::createDirectoryIfNotExists(NyaGlobals::imagesPathSFW);
+            destPath = NyaGlobals::imagesPathSFW + this->tempName;
+        }
+        
+        INFO("Moving file from {} to {}", originalPath, destPath);
+        FileUtils::moveFile(originalPath, destPath);
+
+        if (!FileUtils::exists(destPath)) {
+            ERROR("File move operation failed - destination file not found");
         }
         
         INFO("MOVED FILE");
         // Cleanup 
         this->lastImageURL = "";
         this->tempName = "";
+
+    } catch (const std::exception& e) {
+        ERROR("Failed to save image: {}", e.what());
     }
+
+    
 }
 
 // Update

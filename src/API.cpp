@@ -1,5 +1,7 @@
 #include "API.hpp"
 #include "main.hpp"
+#include <iostream>
+#include <list>
 #include "web-utils/shared/WebUtils.hpp"
 using namespace Nya;
 

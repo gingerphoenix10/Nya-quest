@@ -27,7 +27,7 @@ namespace Nya {
 };
 
 
-DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour) {
         public:
             void initScreen();
             void onPause();
@@ -74,4 +74,4 @@ DECLARE_CLASS_CODEGEN(Nya, NyaFloatingUI, UnityEngine::MonoBehaviour,
             static bool isEnabled();
         private:
             static NyaFloatingUI* instance;       
-)
+};

@@ -12,7 +12,7 @@
 #include "UnityEngine/Material.hpp"
 #include <functional>
 
-DECLARE_CLASS_CODEGEN(Nya, ImageView, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya, ImageView, UnityEngine::MonoBehaviour) {
   public:
     
     std::string lastImageURL;
@@ -49,4 +49,4 @@ DECLARE_CLASS_CODEGEN(Nya, ImageView, UnityEngine::MonoBehaviour,
 
     // Event to sub to when image started loading, returns isLoading, meaning that the image is loading
     UnorderedEventCallback<bool> imageLoadingChange;
-)
+};

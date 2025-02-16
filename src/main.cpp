@@ -1,18 +1,12 @@
 #include "main.hpp"
 #include "ModifiersMenu.hpp"
-#include "UI/ViewControllers/SettingsViewController.hpp"
 #include "bsml/shared/BSML.hpp"
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/LevelCompletionResults.hpp"
 #include "GlobalNamespace/PauseMenuManager.hpp"
 #include "GlobalNamespace/GamePause.hpp"
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
-#include "GlobalNamespace/NoteController.hpp"
-#include "GlobalNamespace/NoteCutInfo.hpp"
 #include "GlobalNamespace/ScoreModel.hpp"
-#include "GlobalNamespace/NoteCutDirection.hpp"
-#include "GlobalNamespace/CutScoreBuffer.hpp"
-#include "GlobalNamespace/ColorScheme.hpp"
 #include "GlobalNamespace/GameplayCoreSceneSetupData.hpp"
 #include "GlobalNamespace/MultiplayerResultsViewController.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
@@ -29,6 +23,7 @@
 #include "UI/FlowCoordinators/NyaSettingsFlowCoordinator.hpp"
 #include <fstream>
 #include "logging.hpp"
+#include "Utils/FileUtils.hpp"
 
 using namespace UnityEngine;
 using namespace GlobalNamespace;
@@ -284,7 +279,7 @@ MAKE_HOOK_MATCH(FixedUpdateHook, &GlobalNamespace::OculusVRHelper::FixedUpdate, 
          // Source: https://developer.oculus.com/documentation/unity/unity-ovrinput/
          useButtonValue = ((useButtonValue - 1) % 2) + 1;
 
-         bool buttonPressed = GlobalNamespace::OVRInput::Get(GlobalNamespace::__OVRInput__Button(useButtonValue), controllerIndex);
+         bool buttonPressed = GlobalNamespace::OVRInput::Get(GlobalNamespace::OVRInput_Button(useButtonValue), controllerIndex);
          if(buttonPressed){
              if(!pressedEventAllreadyRun) {
                  if (Nya::GlobalEvents::onControllerNya.size() > 0) {

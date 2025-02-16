@@ -1,20 +1,14 @@
 #pragma once
 
-#include "main.hpp"
-#include "NyaConfig.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "HMUI/ImageView.hpp"
-#include "HMUI/SimpleTextDropdown.hpp"
 #include "HMUI/ModalView.hpp"
-#include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
-#include "API.hpp"
-#include "Utils/Utils.hpp"
 #include "ImageView.hpp"
 #include "UI/Modals/SettingsMenu.hpp"
 
-DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
+DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour) {
     DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, NYA);
     // DECLARE_INSTANCE_FIELD(bool, );
     DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, nyaButton);
@@ -38,5 +32,4 @@ DECLARE_CLASS_CODEGEN(Nya, ModifiersMenu, UnityEngine::MonoBehaviour,
     DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, settingsButton);
     DECLARE_INSTANCE_FIELD(UnityW<HMUI::ModalView>, settingsModal);
     DECLARE_INSTANCE_FIELD(UnityW<Nya::SettingsMenu>, settingsMenu);
-    
-)
+};

@@ -1,7 +1,7 @@
 #include "EndpointConfigUtils.hpp"
 #include "logging.hpp"
-
-using namespace Nya;
+#include "API.hpp"
+#include "NyaConfig.hpp"
 
 namespace EndpointConfigUtils {
 
