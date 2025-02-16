@@ -5,7 +5,10 @@ Param(
     [Switch] $clean,
 
     [Parameter(Mandatory=$false)]
-    [Switch] $help
+    [Switch] $help,
+
+    [Parameter(Mandatory=$false)]
+    [Switch]$release
 )
 
 if ($help -eq $true) {
@@ -26,7 +29,7 @@ if ($qmodName -eq "")
     exit
 }
 
-& $PSScriptRoot/build.ps1 -clean:$clean
+& $PSScriptRoot/build.ps1 -clean:$clean -release:$release
 
 if ($LASTEXITCODE -ne 0) {
     echo "Failed to build, exiting..."
