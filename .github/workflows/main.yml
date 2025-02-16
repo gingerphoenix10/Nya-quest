@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [ main, dev, bs-v1.24.0 ]
+    branches: [ main, dev ]
   pull_request:
     branches: [ main ]
 
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       name: Checkout
       with:
         submodules: true
@@ -35,7 +35,7 @@ jobs:
         cat ${GITHUB_WORKSPACE}/ndkpath.txt
 
     - name: Get QPM
-      uses: Fernthedev/qpm-action@main
+      uses: Fernthedev/qpm-action@v1
       with:
         resolve_ndk: true
         #required
@@ -62,21 +62,21 @@ jobs:
         echo ::set-output name=NAME::"${files[0]}"
         
     - name: Upload non-debug artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.libname.outputs.NAME }}
         path: ./build/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
 
     - name: Upload qmod artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{env.qmodName}}.qmod
         path: ./mods/${{ env.qmodName }}.qmod
         if-no-files-found: error
 
     - name: Upload debug artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: debug_${{ steps.libname.outputs.NAME }}
         path: ./build/debug/${{ steps.libname.outputs.NAME }}
