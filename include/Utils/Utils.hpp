@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
 
-#include "beatsaber-hook/shared/utils/typedefs.h"
-#include "main.hpp"
-#include "ImageView.hpp"
-#include "Utils/FileUtils.hpp"
+#include "beatsaber-hook/shared/utils/typedefs-string.hpp"
+
+#include "UnityEngine/UI/Button.hpp"
+#include "UnityEngine/UI/Image.hpp"
+#include "UnityEngine/Vector2.hpp"
 
 namespace Nya::Utils {
     bool IsGif(std::string str);

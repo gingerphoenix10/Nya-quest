@@ -6,7 +6,6 @@ set(MOD_ID "Nya")
 
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
-include(${EXTERN_DIR}/includes/kaleb/shared/cmake/assets.cmake)
 
 # c++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -95,12 +94,9 @@ target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGE
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog -lz)
 
-# add assets
-add_assets(${COMPILE_ID}-assets STATIC ${CMAKE_CURRENT_LIST_DIR}/assets ${INCLUDE_DIR}/assets.hpp)
-target_link_libraries(${COMPILE_ID} PRIVATE -llog -lz  ${COMPILE_ID}-assets)
-
 # add extern stuff like libs and other includes
 include(extern.cmake)
+include(assets_include.cmake)
 
 add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_STRIP} -d --strip-all

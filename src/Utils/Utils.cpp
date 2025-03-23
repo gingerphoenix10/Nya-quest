@@ -9,6 +9,7 @@
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 #include "UnityEngine/Networking/DownloadHandler.hpp"
 #include "web-utils/shared/WebUtils.hpp"
+#include "NyaConfig.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
 using namespace UnityEngine;

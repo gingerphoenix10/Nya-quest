@@ -1,12 +1,9 @@
-
 #include "Utils/FileUtils.hpp"
 #include "Utils/Utils.hpp"
 #include <vector>
-#include <fstream>
-#include <iostream>
 #include <filesystem>
 #include "System/IO/Path.hpp"
-#include "beatsaber-hook/shared/utils/typedefs.h"
+#include "logging.hpp"
 namespace fs = std::filesystem;
 
 namespace FileUtils {

@@ -1,25 +1,20 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "ModifiersMenu.hpp"
-#include "Utils/FileUtils.hpp"
-#include "beatsaber-hook/shared/utils/typedefs.h"
-#include "UnityEngine/Resources.hpp"
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/Texture2D.hpp"
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
-#include "System/IO/File.hpp"
 #include "UnityEngine/Sprite.hpp"
-#include "UnityEngine/SpriteMeshType.hpp"
 #include "UnityEngine/UI/ContentSizeFitter.hpp"
 #include "HMUI/ModalView.hpp"
-#include "System/Action.hpp"
 #include "ImageView.hpp"
-#include "EndpointConfigUtils.hpp"
 #include <dirent.h>
-#include <string>
-#include <iostream>
 #include "assets.hpp"
 #include "logging.hpp"
 #include "Utils/Utils.hpp"
+
+#include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Image.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Buttons.hpp"
 
 using namespace UnityEngine;
 using namespace Nya;
@@ -54,7 +49,7 @@ namespace Nya {
             NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
             NYA->set_preserveAspect(true);
             // Set blank sprite to avoid white screens
-            NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
+            NYA->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::placeholder_png));
             auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
             DEBUG("Adds component");
             this->imageView = NYA->get_gameObject()->AddComponent<Nya::ImageView*>();

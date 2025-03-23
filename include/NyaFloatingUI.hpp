@@ -1,24 +1,17 @@
 // This code is mostly taken from https://github.com/Royston1999/SliceDetails-Quest
 #pragma once
 
-#include <cmath>
 #define _USE_MATH_DEFINES
 #include "HMUI/ModalView.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Plane.hpp"
-#include "HMUI/SimpleTextDropdown.hpp"
-#include "HMUI/Screen.hpp"
 #include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UI/Modals/SettingsMenu.hpp"
 #include "ImageView.hpp"
 #include "bsml/shared/BSML/FloatingScreen/FloatingScreen.hpp"
-#include "bsml/shared/BSML.hpp"
-
-
-using namespace UnityEngine::UI;
 
 namespace Nya {
     enum FloatingUIScene {

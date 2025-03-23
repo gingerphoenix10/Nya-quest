@@ -9,6 +9,8 @@
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Text.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Image.hpp"
+#include "NyaConfig.hpp"
 
 DEFINE_TYPE(Nya::UI::Modals, NSFWConsent);
 
@@ -102,7 +104,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Woah There!",
                 "Are you sure you want to enable NSFW features? You have to be 18+ to do this!",
-                Assets::Chocola_Surprised_png,
+                IncludedAssets::Chocola_Surprised_png,
                 "No",
                 "Yes, I'm 18+",
                 true,
@@ -116,7 +118,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Are you sure?",
                 "Mhm... you super sure you're 18 or older??",
-                Assets::Chocola_Question_Mark_png,
+                IncludedAssets::Chocola_Question_Mark_png,
                 "No, I'm not",
                 "Yes, I'm certain",
                 true,
@@ -129,7 +131,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Are you very sure?",
                 "If you're lying I will find out and tell your parents. \r\n(They will be very disappointed in you)",
-                Assets::Chocola_Angry_png,
+                IncludedAssets::Chocola_Angry_png,
                 "Sorry, I lied",
                 "Yes, I'm not lying",
                 true,
@@ -142,7 +144,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Just double checking",
                 "Okay so you're absolutely positive that you're 18+ and want to enable NSFW features?",
-                Assets::Chocola_Howdidyoudothat_png,
+                IncludedAssets::Chocola_Howdidyoudothat_png,
                 "No",
                 "Yes",
                 true,
@@ -155,7 +157,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Surprise math question!",
                 "To confirm that you're really 18, let's do a maths question! \r\nWhat is 6 + 9 * (4 - 2) + 0?",
-                Assets::Chocola_Laugh_png,
+                IncludedAssets::Chocola_Laugh_png,
                 "No",
                 "Yes",
                 true,
@@ -168,7 +170,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Correct!",
                 "If you got that right then you must be a smart and sensible adult!",
-                Assets::Chocola_Happy_png,
+                IncludedAssets::Chocola_Happy_png,
                 "but I'm not...",
                 "I am!",
                 true,
@@ -181,7 +183,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Wait!",
                 "The NSFW features could be dangerous! \r\nWhy else would they be called \"Not Safe For Work??\"",
-                Assets::Chocola_Spooked_png,
+                IncludedAssets::Chocola_Spooked_png,
                 "That sounds risky!",
                 "I am prepared",
                 true,
@@ -195,7 +197,7 @@ void Nya::UI::Modals::NSFWConsent::InitModalContents() {
             {
                 "Last time I'll ask",
                 "So you definitely want to enable the NSFW features and suffer the consequences which may entail from it?",
-                Assets::Chocola_Bashful_png,
+                IncludedAssets::Chocola_Bashful_png,
                 "No",
                 "Yes",
                 true,
@@ -258,7 +260,7 @@ void Nya::UI::Modals::NSFWConsent::Awake() {
             midImage = BSML::Lite::CreateImage(hor->get_transform(), nullptr, {0, 0}, {40, 40});
             midImage->set_preserveAspect(true);
             // TODO: Remove later
-            midImage->set_sprite(BSML::Lite::ArrayToSprite(Assets::Vanilla_Horny_Pastry_Puffer_png));
+            midImage->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::Vanilla_Horny_Pastry_Puffer_png));
             midImage->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(40);
             midImage->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(40);
 
@@ -315,7 +317,7 @@ void Nya::UI::Modals::NSFWConsent::Awake() {
 
         auto hornyImageView = BSML::Lite::CreateImage(hornyPastryPufferLayout->get_transform(), nullptr, {0, 0}, {0, 0});
         hornyImageView->set_preserveAspect(true);
-        hornyImageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Vanilla_Horny_Pastry_Puffer_png));
+        hornyImageView->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::Vanilla_Horny_Pastry_Puffer_png));
         hornyPastryPufferLayout->get_gameObject()->set_active(false);
     }
 }

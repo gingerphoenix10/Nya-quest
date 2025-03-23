@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include "beatsaber-hook/shared/utils/typedefs.h"
 
 namespace FileUtils {
     bool deleteFile(std::string path);

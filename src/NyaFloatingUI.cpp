@@ -59,7 +59,7 @@ namespace Nya {
         NYA = BSML::Lite::CreateImage(vert->get_transform(), nullptr, Vector2::get_zero(), Vector2(50, 50));
         NYA->set_preserveAspect(true);
         // Set blank sprite to avoid white screens
-        NYA->set_sprite(BSML::Lite::ArrayToSprite(Assets::placeholder_png));
+        NYA->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::placeholder_png));
 
         auto ele = NYA->get_gameObject()->AddComponent<UnityEngine::UI::LayoutElement*>();
 

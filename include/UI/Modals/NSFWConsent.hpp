@@ -1,17 +1,20 @@
 #pragma once
 
 #include "custom-types/shared/macros.hpp"
-#include "custom-types/shared/types.hpp"
-#include "main.hpp"
-#include "EndpointConfigUtils.hpp"
 #include "bsml/shared/BSML/Components/Settings/SliderSetting.hpp"
+#include "UnityEngine/MonoBehaviour.hpp"
+#include "bsml/shared/BSML/Components/ModalView.hpp"
+#include "HMUI/ImageView.hpp"
+#include "UnityEngine/UI/VerticalLayoutGroup.hpp"
+#include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
+#include "custom-types/shared/coroutine.hpp"
 
 #include "assets.hpp"
 
 struct ModalContent {
     std::string TopText;
     std::string MidText;
-    Kaleb::Asset MidImage;
+    IncludedAsset MidImage;
     std::string NoButtonText;
     std::string YesButtonText;
     bool ButtonIntractabilityCooldown;
@@ -26,13 +29,6 @@ enum FadeOutContent
     IncorrectMath,
     Blank
 };
-
-using namespace UnityEngine::UI;
-using namespace TMPro;
-using namespace HMUI;
-
-
-
 DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour) {
     public:
         std::vector<ModalContent> ModalContents;
@@ -43,7 +39,7 @@ DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour) 
         void ChangeModalContent(ModalContent& modalContent);
 
         custom_types::Helpers::Coroutine InteractabilityCooldown(BSML::SliderSetting *);
-        custom_types::Helpers::Coroutine InteractabilityCooldown(Button *);
+        custom_types::Helpers::Coroutine InteractabilityCooldown(UnityEngine::UI::Button *);
 
         custom_types::Helpers::Coroutine FadeoutModal(FadeOutContent content);
 
@@ -55,21 +51,21 @@ DECLARE_CLASS_CODEGEN(Nya::UI::Modals, NSFWConsent, UnityEngine::MonoBehaviour) 
         // // Settings buttons and modal
         DECLARE_INSTANCE_FIELD(UnityW<BSML::ModalView>, modal);
 
-        DECLARE_INSTANCE_FIELD(UnityW<VerticalLayoutGroup>, mainLayout);
-        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, hornyPastryPufferLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::VerticalLayoutGroup>, mainLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::HorizontalLayoutGroup>, hornyPastryPufferLayout);
 
-        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, buttonsLayout);
-        DECLARE_INSTANCE_FIELD(UnityW<HorizontalLayoutGroup>, sliderLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::HorizontalLayoutGroup>, buttonsLayout);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::HorizontalLayoutGroup>, sliderLayout);
 
 
-        DECLARE_INSTANCE_FIELD(UnityW<TextMeshProUGUI>, topText);
-        DECLARE_INSTANCE_FIELD(UnityW<TextMeshProUGUI>, midText);
+        DECLARE_INSTANCE_FIELD(UnityW<TMPro::TextMeshProUGUI>, topText);
+        DECLARE_INSTANCE_FIELD(UnityW<TMPro::TextMeshProUGUI>, midText);
         DECLARE_INSTANCE_FIELD(UnityW<HMUI::ImageView>, midImage);
 
 
-        DECLARE_INSTANCE_FIELD(UnityW<Button>, noButton);
-        DECLARE_INSTANCE_FIELD(UnityW<Button>, yesButton);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, noButton);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, yesButton);
 
         DECLARE_INSTANCE_FIELD(UnityW<BSML::SliderSetting>, slider);
-        DECLARE_INSTANCE_FIELD(UnityW<Button>, submitButton);
+        DECLARE_INSTANCE_FIELD(UnityW<UnityEngine::UI::Button>, submitButton);
 };

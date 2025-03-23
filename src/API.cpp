@@ -1,13 +1,10 @@
 #include "API.hpp"
-#include "main.hpp"
-#include <iostream>
-#include <list>
 #include "web-utils/shared/WebUtils.hpp"
-using namespace Nya;
+#include "logging.hpp"
 
+using namespace NyaAPI;
 
-
-inline std::map<std::string, SourceData> endpoint_data = {
+inline std::map<std::string, NyaAPI::SourceData> endpoint_data = {
     {"fluxpoint.dev",
         {
             "https://gallery.fluxpoint.dev/api/",

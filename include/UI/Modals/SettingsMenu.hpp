@@ -1,21 +1,14 @@
 #pragma once
 // Settings menu popup for floating window and non floating window
-#include "UnityEngine/Vector3.hpp"
-#include "UnityEngine/Plane.hpp"
 #include "bsml/shared/BSML/Settings/SettingsMenu.hpp"
 #include "bsml/shared/BSML/Components/Settings/DropdownListSetting.hpp"
 #include "bsml/shared/BSML/Components/Settings/ToggleSetting.hpp"
-#include "HMUI/Screen.hpp"
-#include "UnityEngine/UI/Toggle.hpp"
 #include "UnityEngine/UI/Button.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
 #include "HMUI/ModalView.hpp"
-#include "Utils/CustomSegmentedControl.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "beatsaber-hook/shared/utils/typedefs.h"
+#include "HMUI/TextSegmentedControl.hpp"
 #include "API.hpp"
 
-using namespace NyaAPI;
 
 DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour) {
     public:
@@ -28,7 +21,7 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour) {
         // If the menu is floating
         bool isFloating = false;
 
-        SourceData *selectedDataSource = nullptr;
+        NyaAPI::SourceData *selectedDataSource = nullptr;
         std::string selectedDataSourceName = "";
 
         // Labels
@@ -50,7 +43,7 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour) {
 
         // Settings buttons and modal
         DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
-        DECLARE_INSTANCE_FIELD(NyaUI::CustomTextSegmentedControlData *, tabsSwitch);
+        DECLARE_INSTANCE_FIELD(HMUI::TextSegmentedControl *, tabsSwitch);
         
 
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);

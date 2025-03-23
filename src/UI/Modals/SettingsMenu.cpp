@@ -1,11 +1,17 @@
 #include "UI/Modals/SettingsMenu.hpp"
-#include "GlobalNamespace/LevelCollectionTableView.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
 #include "UnityEngine/UI/ContentSizeFitter.hpp"
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
 
 #include "HMUI/ScrollView.hpp"
 #include "NyaFloatingUI.hpp"
+#include "NyaConfig.hpp"
+#include "EndpointConfigUtils.hpp"
 #include "Utils/Utils.hpp"
+#include "logging.hpp"
+#include "main.hpp"
 DEFINE_TYPE(Nya, SettingsMenu);
 
 static ConstString SourcesSettingsWrapper("SourcesSettingsWrapper");
@@ -58,11 +64,10 @@ void SettingsMenu::Awake() {
     }
 
     // Create tabs control
-    ArrayW<StringW> options(2);
-    options[0] = "sources";
-    options[1] = "floating";
+    static std::vector<std::string_view> optionsVec = { "sources", "floating" };
+    std::span<std::string_view> optionsSpan(optionsVec);
     this->tabsSwitch =
-        Nya::Utils::CreateTextSegmentedControl(controlRect->get_transform(), {0, -5.5}, {45, 5.5}, options,
+        BSML::Lite::CreateTextSegmentedControl(controlRect->get_transform(), {0, -5.5}, {45, 5.5}, optionsSpan,
                                                bind(&SettingsMenu::SwitchTab, this, placeholders::_1));
 
     // Create a text that says "Hello World!" and set the parent to the container.
@@ -71,7 +76,7 @@ void SettingsMenu::Awake() {
     sourcesViewLayout->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
     sourcesViewLayout->GetComponent<LayoutElement*>()->set_preferredWidth(60.0);
 
-    std::vector<std::string_view> loadingOptionStrings = {"Loading.."};
+    static std::vector<std::string_view> loadingOptionStrings = {"Loading.."};
     std::span<std::string_view> loadingOptions(loadingOptionStrings);
     // Nya configuration
     {
@@ -229,7 +234,7 @@ void SettingsMenu::UpdateEndpointLists() {
         sfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->SfwEndpoints);
 
         // Don't add random to local
-        if (selectedDataSource->Mode != DataMode::Local) {
+        if (selectedDataSource->Mode != NyaAPI::DataMode::Local) {
             sfw_endpoint_labels->Add("random");
             sfw_endpoint_urls->Add("random");
         }
@@ -243,7 +248,7 @@ void SettingsMenu::UpdateEndpointLists() {
         nsfw_endpoint_urls = NyaAPI::listEndpointUrls(&selectedDataSource->NsfwEndpoints);
 
         // Don't add random to local
-        if (selectedDataSource->Mode != DataMode::Local) {
+        if (selectedDataSource->Mode != NyaAPI::DataMode::Local) {
             nsfw_endpoint_labels->Add("random");
             nsfw_endpoint_urls->Add("random");
         }
@@ -331,12 +336,12 @@ void SettingsMenu::Show() {
 
     // Run UI on the main thread
     BSML::MainThreadScheduler::Schedule([this] {
-        this->tabsSwitch->segmentedControl->SelectCellWithNumber(0);
+        this->tabsSwitch->SelectCellWithNumber(0);
         // Autonya
         autoNyaButton->set_Value(getNyaConfig().AutoNya.GetValue());
 
         string API = getNyaConfig().API.GetValue();
-        SourceData* source = nullptr;
+        NyaAPI::SourceData* source = nullptr;
 
         // Catch for invalid apis
         try {

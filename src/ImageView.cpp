@@ -1,25 +1,14 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 // OurClass.cpp
-#include "main.hpp"
-#include <fstream>
-#include <iostream>
 #include "ImageView.hpp"
 #include "UnityEngine/Texture2D.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/RenderTexture.hpp"
 #include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/Sprite.hpp"
 #include "UnityEngine/Time.hpp"
 #include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/SpriteMeshType.hpp"
 #include "HMUI/ImageView.hpp"
-#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
-#include "UnityEngine/SpriteMeshType.hpp"
 
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
-#include "bsml/shared/BSML-Lite/Creation/Misc.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
-#include "UnityEngine/Networking/UnityWebRequestTexture.hpp"
 #include "UnityEngine/Networking/DownloadHandlerTexture.hpp"
 #include "assets.hpp"
 
@@ -27,15 +16,11 @@
 #include "Utils/FileUtils.hpp"
 #include "Utils/Utils.hpp"
 #include "UnityEngine/Coroutine.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/WaitForSeconds.hpp"
-#include "UnityEngine/Shader.hpp"
-#include "custom-types/shared/coroutine.hpp"
 
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "Events.hpp"
-#include "System/GC.hpp"
+#include "NyaConfig.hpp"
+#include "EndpointConfigUtils.hpp"
+#include "API.hpp"
 
 // Necessary
 DEFINE_TYPE(Nya, ImageView);
@@ -351,7 +336,7 @@ void Nya::ImageView::SetErrorImage()
     if (this->imageView == nullptr || this->imageView->___m_CachedPtr.m_value == nullptr) return;
     
     Nya::Utils::RemoveAnimationUpdater(this->imageView);
-    this->imageView->set_sprite(BSML::Lite::ArrayToSprite(Assets::Chocola_Dead_png));
+    this->imageView->set_sprite(BSML::Lite::ArrayToSprite(IncludedAssets::Chocola_Dead_png));
 }
 
 

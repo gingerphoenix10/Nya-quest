@@ -1,15 +1,11 @@
 // OurClass.hpp
 #pragma once
 
-#include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "custom-types/shared/coroutine.hpp"
+
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "HMUI/ImageView.hpp"
-#include "UnityEngine/Texture2D.hpp"
-#include "UnityEngine/CanvasRenderer.hpp"
-#include "UnityEngine/Renderer.hpp"
-#include "UnityEngine/Material.hpp"
+
 #include <functional>
 
 DECLARE_CLASS_CODEGEN(Nya, ImageView, UnityEngine::MonoBehaviour) {

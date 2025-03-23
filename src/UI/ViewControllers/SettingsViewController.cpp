@@ -1,11 +1,14 @@
 #include "UI/ViewControllers/SettingsViewController.hpp"
 
-#include "GlobalNamespace/MenuTransitionsHelper.hpp"
-#include "UnityEngine/Resources.hpp"
+
 #include "bsml/shared/BSML-Lite/Creation/Settings.hpp"
 #include "bsml/shared/BSML-Lite/Creation/Layout.hpp"
+#include "NyaConfig.hpp"
+#include "main.hpp"
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
-#include "logging.hpp"
+#include "UnityEngine/Resources.hpp"
+#include "GlobalNamespace/MenuTransitionsHelper.hpp"
+#include "EndpointConfigUtils.hpp"
 
 std::vector<std::string_view> buttonOptions = {
     "None",

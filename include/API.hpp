@@ -1,10 +1,9 @@
 #pragma once
 
-
 #include <map>
 #include <string>
 #include <vector>
-#include "beatsaber-hook/shared/utils/typedefs.h"
+#include "beatsaber-hook/shared/utils/typedefs-string.hpp"
 
 namespace NyaAPI {
 struct EndpointCategory {

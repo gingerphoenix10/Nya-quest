@@ -71,13 +71,6 @@
       "id": "web-utils",
       "versionRange": "^0.6.7",
       "additionalData": {}
-    },
-    {
-      "id": "kaleb",
-      "versionRange": "^0.1.9",
-      "additionalData": {
-        "private": true
-      }
     }
   ]
 }
