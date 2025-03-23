@@ -6,7 +6,7 @@
   "author": "FrozenAlex",
   "version": "${version}",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.40.2_4113",
+  "packageVersion": "1.40.3_4614",
   "description": "Beat Saber mod for displaying nya-tastic images from various anime themed web APIs!",
   "dependencies": [],
   "coverImage": "cover.jpg",
