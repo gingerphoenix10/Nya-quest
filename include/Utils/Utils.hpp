@@ -6,6 +6,7 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/UI/Image.hpp"
 #include "UnityEngine/Vector2.hpp"
+#include "components/CustomTextSegmentedControlData.hpp"
 
 namespace Nya::Utils {
     bool IsGif(std::string str);
@@ -13,6 +14,7 @@ namespace Nya::Utils {
     ListW<StringW> vectorToList(std::vector<StringW> values);
     std::vector<StringW> listWToVector(List<StringW>* values);
     int findStrIndexInList(ListW<StringW> values, StringW string );
+    NyaUI::CustomTextSegmentedControlData* CreateTextSegmentedControl(UnityEngine::Transform* parent, UnityEngine::Vector2 anchoredPosition, UnityEngine::Vector2 sizeDelta, ArrayW<StringW> values, std::function<void(int)> onCellWithIdxClicked);
     // Kill me
     int findStrIndexInListC(std::list<std::string> values, StringW string );
     int random(int min, int max);

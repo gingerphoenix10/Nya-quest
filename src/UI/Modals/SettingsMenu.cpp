@@ -64,11 +64,12 @@ void SettingsMenu::Awake() {
     }
 
     // Create tabs control
-    static std::vector<std::string_view> optionsVec = { "sources", "floating" };
-    std::span<std::string_view> optionsSpan(optionsVec);
+    ArrayW<StringW> options(2);
+        options[0] = "sources";
+        options[1] = "floating";
     this->tabsSwitch =
-        BSML::Lite::CreateTextSegmentedControl(controlRect->get_transform(), {0, -5.5}, {45, 5.5}, optionsSpan,
-                                               bind(&SettingsMenu::SwitchTab, this, placeholders::_1));
+        Nya::Utils::CreateTextSegmentedControl(controlRect->get_transform(), {0, -5.5}, {45, 5.5}, options,
+                                               bind(&SettingsMenu::SwitchTab, this, placeholders::_1));                         
 
     // Create a text that says "Hello World!" and set the parent to the container.
     VerticalLayoutGroup* sourcesViewLayout = BSML::Lite::CreateVerticalLayoutGroup(sourcesView);
@@ -336,7 +337,7 @@ void SettingsMenu::Show() {
 
     // Run UI on the main thread
     BSML::MainThreadScheduler::Schedule([this] {
-        this->tabsSwitch->SelectCellWithNumber(0);
+        this->tabsSwitch->segmentedControl->SelectCellWithNumber(0);
         // Autonya
         autoNyaButton->set_Value(getNyaConfig().AutoNya.GetValue());
 

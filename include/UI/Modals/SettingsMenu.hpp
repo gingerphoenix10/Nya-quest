@@ -6,7 +6,7 @@
 #include "UnityEngine/UI/Button.hpp"
 #include "HMUI/ModalView.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "HMUI/TextSegmentedControl.hpp"
+#include "components/CustomTextSegmentedControlData.hpp"
 #include "API.hpp"
 
 
@@ -43,7 +43,7 @@ DECLARE_CLASS_CODEGEN(Nya, SettingsMenu, UnityEngine::MonoBehaviour) {
 
         // Settings buttons and modal
         DECLARE_INSTANCE_FIELD(HMUI::ModalView*, settingsModal);
-        DECLARE_INSTANCE_FIELD(HMUI::TextSegmentedControl *, tabsSwitch);
+        DECLARE_INSTANCE_FIELD(NyaUI::CustomTextSegmentedControlData *, tabsSwitch);
         
 
         DECLARE_INSTANCE_FIELD(UnityEngine::UI::Button*, settingsButton);
