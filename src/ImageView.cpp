@@ -192,7 +192,7 @@ void Nya::ImageView::GetImage(std::function<void(bool success)> finished = nullp
 
         auto path = fileList[randomIndex];
         DEBUG("Selected file: {}", path);
-        BSML::Utilities::SetImage(this->imageView,  "file://" + path, true, BSML::Utilities::ScaleOptions(), false, [finished, this]() {
+        BSML::Utilities::SetImage(this->imageView,  "file://" + path, false, BSML::Utilities::ScaleOptions(), false, [finished, this]() {
             DEBUG("Image loaded");
             // Set is loading status
             this->isLoading = false;

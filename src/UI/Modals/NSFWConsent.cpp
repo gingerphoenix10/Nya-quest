@@ -21,9 +21,10 @@ using namespace std;
 
 
 custom_types::Helpers::Coroutine Nya::UI::Modals::NSFWConsent::InteractabilityCooldown(SliderSetting * setting) {
-    setting->slider->set_interactable(false);
+    setting->set_interactable(false);
     co_yield reinterpret_cast<System::Collections::IEnumerator*>(WaitForSeconds::New_ctor(2.0f));
-    setting->slider->set_interactable(true);
+    setting->get_interactable();
+    setting->set_interactable(true);
     co_return;
 } 
 
