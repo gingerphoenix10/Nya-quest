@@ -51,7 +51,7 @@ MAKE_HOOK_MATCH(Unpause, &GamePause::Resume, void, GlobalNamespace::GamePause* s
     Unpause(self);
     DEBUG("Unpause");
     if (Main::NyaFloatingUI){
-        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Game);
     }
     
 }
@@ -60,7 +60,7 @@ MAKE_HOOK_MATCH(Restartbutton, &PauseMenuManager::RestartButtonPressed, void, Pa
     Restartbutton(self);
     DEBUG("Restartbutton");
     if (Main::NyaFloatingUI){
-        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Disabled);
+        Nya::Main::NyaFloatingUI->onSceneChange(Nya::FloatingUIScene::Game);
     }
 }
 

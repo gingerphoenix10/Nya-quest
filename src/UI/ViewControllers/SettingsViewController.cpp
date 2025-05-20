@@ -51,6 +51,16 @@ void Nya::UI::ViewControllers::SettingsViewController::DidActivate(bool firstAct
                     Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
                 }
         });
+        BSML::Lite::CreateToggle(container->get_transform(), "Floating in Game",
+            getNyaConfig().inGame.GetValue(), [](bool value) {
+            getNyaConfig().inGame.SetValue(value);
+            if (
+                Main::NyaFloatingUI && 
+                Main::NyaFloatingUI->floatingScreen != nullptr
+            ) {
+                Main::NyaFloatingUI->onSceneChange( Main::NyaFloatingUI->currentScene, true);
+            }
+        });
 
         BSML::Lite::CreateToggle(container->get_transform(), "Show handle",
             getNyaConfig().ShowHandle.GetValue(),

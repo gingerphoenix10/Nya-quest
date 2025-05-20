@@ -158,6 +158,8 @@ namespace Nya {
             ) || (
                 scene == Nya::FloatingUIScene::Pause && !getNyaConfig().inPause.GetValue()
             ) || (
+                scene == Nya::FloatingUIScene::Game && !getNyaConfig().inGame.GetValue()
+            ) || (
                 scene == Nya::FloatingUIScene::MainMenu && !getNyaConfig().inMenu.GetValue()
             )) {
                 INFO("DISABLING THE SCREEN");
@@ -185,10 +187,27 @@ namespace Nya {
             this->floatingScreen->set_ScreenPosition(getNyaConfig().pausePosition.GetValue());
         }
 
+        if (scene == Nya::FloatingUIScene::Game) {
+            INFO("Showing game");
+            this->floatingScreen->set_ScreenRotation(UnityEngine::Quaternion::Euler(getNyaConfig().pauseRotation.GetValue()));
+            this->floatingScreen->set_ScreenPosition(getNyaConfig().pausePosition.GetValue());
+            this->nyaButton->get_gameObject()->set_active(false);
+            this->settingsButton->get_gameObject()->set_active(false);
+        } else {
+            this->nyaButton->get_gameObject()->set_active(true);
+            this->settingsButton->get_gameObject()->set_active(true);
+        }
+
         if (scene == Nya::FloatingUIScene::MainMenu) {
             INFO("Showing main menu");
             this->floatingScreen->set_ScreenRotation(UnityEngine::Quaternion::Euler(getNyaConfig().menuRotation.GetValue()));
             this->floatingScreen->set_ScreenPosition(getNyaConfig().menuPosition.GetValue());
+        }
+
+        if (
+            this->floatingScreen != nullptr
+        ) {
+            this->UpdateHandleVisibility();
         }
 
         floatingScreen->get_gameObject()->set_active(true);
@@ -221,6 +240,11 @@ namespace Nya {
             return;
         }
 
+        if (this->currentScene == Nya::FloatingUIScene::Game) {
+            INFO("Skipping ground check for game screen");
+            return;
+        }
+
         auto handlePosition = this->floatingScreen->handle->get_transform()->get_position();
         if (handlePosition.y < 0.00f) {
             INFO("Screen is below the ground, setting y to 0");
@@ -245,6 +269,10 @@ namespace Nya {
 
     void NyaFloatingUI::updateCoordinates(UnityEngine::Vector3 position, UnityEngine::Vector3 eulerRotation) {
         if (this->currentScene == Nya::FloatingUIScene::Pause){
+            getNyaConfig().pausePosition.SetValue(position);
+            getNyaConfig().pauseRotation.SetValue(eulerRotation);
+        }
+        if (this->currentScene == Nya::FloatingUIScene::Game){
             getNyaConfig().pausePosition.SetValue(position);
             getNyaConfig().pauseRotation.SetValue(eulerRotation);
         }
@@ -313,7 +341,7 @@ namespace Nya {
         } else {
             BSML::MainThreadScheduler::Schedule([this]
             {
-                this->onSceneChange(Nya::FloatingUIScene::Disabled);
+                this->onSceneChange(Nya::FloatingUIScene::Game);
             });
         }
     };
@@ -336,7 +364,7 @@ namespace Nya {
     }
 
     void NyaFloatingUI::UpdateHandleVisibility(){
-        bool visibility = getNyaConfig().ShowHandle.GetValue();
+        bool visibility = getNyaConfig().ShowHandle.GetValue() && this->currentScene != Nya::FloatingUIScene::Game;
         if (this->floatingScreen) {
             this->floatingScreen->set_ShowHandle(visibility);
         }

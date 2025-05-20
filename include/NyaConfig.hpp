@@ -31,6 +31,7 @@ DECLARE_JSON_STRUCT(EndpointConfig) {
 DECLARE_CONFIG(NyaConfig) {
     CONFIG_VALUE(inPause, bool, "Show in pause", true);
     CONFIG_VALUE(inMenu, bool, "Show in menu", true);
+    CONFIG_VALUE(inGame, bool, "Show in-game", true);
 
     CONFIG_VALUE(API, std::string, "Selected API", "waifu.pics");
 

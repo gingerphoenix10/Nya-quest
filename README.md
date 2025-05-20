@@ -1,8 +1,11 @@
-# Nya Quest  <img src="assets\Vanilla_Mini_Sitting.png" align="right" width="150">
-![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/frozenalex/Nya-quest/latest/Nya.qmod)
-![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/frozenalex/Nya-quest/Nya.qmod)
+# Nya Quest In-Game  <img src="assets\Vanilla_Mini_Sitting.png" align="right" width="150">
+![GitHub Downloads (specific asset, latest release)](https://img.shields.io/github/downloads/gingerphoenix10/Nya-quest/latest/Nya.qmod)
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/gingerphoenix10/Nya-quest/Nya.qmod)
 
 Beat Saber Quest mod for displaying nya-tastic images from various anime themed web APIs
+
+> [!NOTE]  
+> This a fork of [Nya-quest by FrozenAlex](https://github.com/FrozenAlex/Nya-quest) that just allows the mod to be shown during gameplay. This is pretty much the first C++ I've ever written, and there is a high likelihood that this will never get any more updates from now on. I was mostly just practicing C++ :3<br>This has been tested on Beat Saber version 1.40.4, however 1.40.5 should work too. Later versions are uncertain.
 
 *GIFs could crash on Quest 1*
 
@@ -28,6 +31,7 @@ Feel free to point out any suggestions or improvements by submitting a PR or con
 
 ## Credits
 
+* [FrozenAlex](https://github.com/FrozenAlex) - the creator of the [quest port of Nya](https://github.com/FrozenAlex/Nya-quest)
 * [Sirspam](https://github.com/Sirspam) - the creator of the original [Nya](https://github.com/Sirspam/Nya) 
 * [RedBrumbler](https://github.com/RedBrumbler) - for making a lot of tools I use, including a better gif implementation
 * [Futuremappermydud](https://github.com/Futuremappermydud) - for the original code of the port

@@ -15,7 +15,7 @@
 
 namespace Nya {
     enum FloatingUIScene {
-        Disabled, Pause, MainMenu
+        Disabled, Pause, MainMenu, Game
     };
 };
 
